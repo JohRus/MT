@@ -78,9 +78,6 @@ public class Controller {
 			selectAlgorithm();
 			executeTask();
 			startOver();
-
-			
-
 		}
 		else if(command == 2) {
 
