@@ -26,7 +26,7 @@ import datasets.CellID;
 import datasets.CellTowerDto;
 import datasets.CellTowerEntryConverter;
 import datasets.MeasurementDto;
-import datasets.MeasurementsEntryParser;
+import datasets.MeasurementEntryParser;
 import datasets.SelectDataset;
 
 public class Controller {

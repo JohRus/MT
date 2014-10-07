@@ -1,15 +1,47 @@
 package datasets;
 
-public class CellID {
-	int mcc;
-	int net;
-	int area;
-	long cell;
+public class CellID implements Comparable<CellID> {
+	private int mcc;
+	private int net;
+	private int area;
+	private long cell;
 	
 	public CellID(int mcc, int net, int area, long cell) {
 		this.mcc = mcc;
 		this.net = net;
 		this.area = area;
+		this.cell = cell;
+	}
+
+	public int getMcc() {
+		return mcc;
+	}
+
+	public void setMcc(int mcc) {
+		this.mcc = mcc;
+	}
+
+	public int getNet() {
+		return net;
+	}
+
+	public void setNet(int net) {
+		this.net = net;
+	}
+
+	public int getArea() {
+		return area;
+	}
+
+	public void setArea(int area) {
+		this.area = area;
+	}
+
+	public long getCell() {
+		return cell;
+	}
+
+	public void setCell(long cell) {
 		this.cell = cell;
 	}
 
@@ -43,8 +75,23 @@ public class CellID {
 			return false;
 		return true;
 	}
-	
-	
-	
-	
+
+	@Override
+	public int compareTo(CellID o) {
+		if(this.getMcc() < o.getMcc()) {return -1;}
+		else if(this.getMcc() > o.getMcc()) {return 1;}
+		else {
+			if(this.getNet() < o.getNet()) {return -1;}
+			else if(this.getNet() > o.getNet()) {return 1;}
+			else {
+				if(this.getArea() < o.getArea()) {return -1;}
+				else if(this.getArea() > o.getArea()) {return 1;}
+				else {
+					if(this.getCell() < o.getCell()) {return -1;}
+					else if(this.getCell() > o.getCell()) {return 1;}
+					else {return 0;}
+				}
+			}
+		}
+	}
 }

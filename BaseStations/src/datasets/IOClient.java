@@ -26,18 +26,18 @@ public class IOClient {
 		System.out.println("Done writing Cell Towers to file "+fileName);
 	}
 	
-	public static void writeMeasurementsToCSVFile(String fileName, boolean append, List<CellTowerDto> measurements) {
-		System.out.println("Writing Measurements to file "+fileName);
-
-		Writer out;
-		try {
-			out = new FileWriter(fileName, append);
-			CSVWriter<MeasurementDto> csvWriter = new CSVWriterBuilder<MeasurementDto>(out).strategy(CSVStrategy.UK_DEFAULT).entryConverter(new MeasurementsEntryParser()).build();
-			csvWriter.writeAll(measurements);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Done writing Measurements to file "+fileName);
-	}
+//	public static void writeMeasurementsToCSVFile(String fileName, boolean append, List<CellTowerDto> measurements) {
+//		System.out.println("Writing Measurements to file "+fileName);
+//
+//		Writer out;
+//		try {
+//			out = new FileWriter(fileName, append);
+//			CSVWriter<MeasurementDto> csvWriter = new CSVWriterBuilder<MeasurementDto>(out).strategy(CSVStrategy.UK_DEFAULT).entryConverter(new MeasurementsEntryParser()).build();
+//			csvWriter.writeAll(measurements);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println("Done writing Measurements to file "+fileName);
+//	}
 }

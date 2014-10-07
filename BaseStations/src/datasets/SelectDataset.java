@@ -40,7 +40,7 @@ public class SelectDataset {
 					fileReader = new FileReader(pathToMeasurementsFile);
 					CSVReader<MeasurementDto> csvMeasurementsParser = new CSVReaderBuilder<MeasurementDto>(fileReader)
 							.strategy(CSVStrategy.UK_DEFAULT)
-							.entryParser(new MeasurementsEntryParser())
+							.entryParser(new MeasurementEntryParser())
 							.build();
 					measurements = csvMeasurementsParser.readAll();
 				} catch (FileNotFoundException e) {

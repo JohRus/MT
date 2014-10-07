@@ -2,7 +2,7 @@ package datasets;
 
 import com.googlecode.jcsv.reader.CSVEntryParser;
 
-public class MeasurementsEntryParser implements CSVEntryParser<MeasurementDto> {
+public class MeasurementEntryParser implements CSVEntryParser<MeasurementDto> {
 	
 	@Override
     public MeasurementDto parseEntry(String... data) {

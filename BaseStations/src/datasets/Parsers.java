@@ -44,7 +44,29 @@ public class Parsers {
 	}
 
 	public static String[] measurementDtoToStringArray(MeasurementDto measurement) {
-		String[]
-		return null;
+		String[] stringArray = new String[22];
+		stringArray[0] = String.valueOf(measurement.getMcc());
+		stringArray[1] = String.valueOf(measurement.getNet());
+		stringArray[2] = String.valueOf(measurement.getArea());
+		stringArray[3] = String.valueOf(measurement.getCell());
+		stringArray[4] = String.valueOf(measurement.getLon());
+		stringArray[5] = String.valueOf(measurement.getLat());
+		stringArray[6] = String.valueOf(measurement.getSignal());
+		stringArray[7] = String.valueOf(measurement.getMeasured().getTime());
+		stringArray[8] = String.valueOf(measurement.getCreated().getTime());
+		stringArray[9] = String.valueOf(measurement.getRating());
+		stringArray[10] = String.valueOf(measurement.getSpeed());
+		stringArray[11] = String.valueOf(measurement.getDirection());
+		stringArray[12] = measurement.getRadio();
+		stringArray[13] = String.valueOf(measurement.getTa());
+		stringArray[14] = String.valueOf(measurement.getRnc());
+		stringArray[15] = String.valueOf(measurement.getCid());
+		stringArray[16] = String.valueOf(measurement.getPsc());
+		stringArray[17] = String.valueOf(measurement.getTac());
+		stringArray[18] = String.valueOf(measurement.getPci());
+		stringArray[19] = String.valueOf(measurement.getSid());
+		stringArray[20] = String.valueOf(measurement.getNid());
+		stringArray[21] = String.valueOf(measurement.getBid());
+		return stringArray;
 	}
 }

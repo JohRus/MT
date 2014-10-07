@@ -25,7 +25,7 @@ public class Algorithms {
 	}
 	
 	public static CellTowerDto weightedCentroid(TaskBuilder task) {
-		List<Long> sumOfSignals = new ArrayList<Long>();
+//		List<Long> sumOfSignals = new ArrayList<Long>();
 		
 		LinkedList<MeasurementDto> list = new LinkedList<MeasurementDto>(measurements);
 		double cellTowerLongitude = 0.0;

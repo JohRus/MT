@@ -3,7 +3,7 @@ package datasets;
 import java.util.Date;
 import java.util.UUID;
 
-public class MeasurementDto {
+public class MeasurementDto implements Comparable<MeasurementDto> {
 	
 	//private UUID id;
 	private int mcc;
@@ -49,6 +49,16 @@ public class MeasurementDto {
 	this.rating = rating;
 	this.speed = speed;
 	this.direction = direction;
+	this.radio = "";
+	this.ta = -1;
+	this.rnc = -1;
+	this.cid = -1;
+	this.psc = -1;
+	this.tac = -1;
+	this.pci = -1;
+	this.sid = -1;
+	this.nid = -1;
+	this.bid = -1;
 }
 
 
@@ -266,11 +276,68 @@ public class MeasurementDto {
 //		this.fromMeasurementsFile = fromMeasurementsFile;
 //	}
 
+	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + area;
+		result = prime * result + (int) (cell ^ (cell >>> 32));
+		result = prime * result + mcc;
+		result = prime * result + net;
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		return "MeasurementDto [mcc=" + mcc + ", net=" + net + ", area=" + area
 				+ ", cell=" + cell + ", lon=" + lon + ", lat=" + lat
-				+ ", signal=" + signal + "]";
+				+ ", signal=" + signal + ", measured=" + measured
+				+ ", created=" + created + ", rating=" + rating + ", speed="
+				+ speed + ", direction=" + direction + ", radio=" + radio
+				+ ", ta=" + ta + ", rnc=" + rnc + ", cid=" + cid + ", psc="
+				+ psc + ", tac=" + tac + ", pci=" + pci + ", sid=" + sid
+				+ ", nid=" + nid + ", bid=" + bid + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MeasurementDto other = (MeasurementDto) obj;
+		if (area != other.area)
+			return false;
+		if (cell != other.cell)
+			return false;
+		if (mcc != other.mcc)
+			return false;
+		if (net != other.net)
+			return false;
+		return true;
+	}
+
+	@Override
+	public int compareTo(MeasurementDto o) {
+		if(this.getMcc() < o.getMcc()) {return -1;}
+		else if(this.getMcc() > o.getMcc()) {return 1;}
+		else {
+			if(this.getNet() < o.getNet()) {return -1;}
+			else if(this.getNet() > o.getNet()) {return 1;}
+			else {
+				if(this.getArea() < o.getArea()) {return -1;}
+				else if(this.getArea() > o.getArea()) {return 1;}
+				else {
+					if(this.getCell() < o.getCell()) {return -1;}
+					else if(this.getCell() > o.getCell()) {return 1;}
+					else {return 0;}
+				}
+			}
+		}
 	}
 
 }
