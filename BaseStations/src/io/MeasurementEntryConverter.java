@@ -1,6 +1,8 @@
-package datasets;
+package io;
 
 import com.googlecode.jcsv.writer.CSVEntryConverter;
+
+import datasets.MeasurementDto;
 
 public class MeasurementEntryConverter implements CSVEntryConverter<MeasurementDto> {
 

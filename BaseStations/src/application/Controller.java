@@ -1,5 +1,8 @@
 package application;
 
+import io.CellTowerEntryConverter;
+import io.MeasurementEntryParser;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -22,12 +25,10 @@ import com.googlecode.jcsv.writer.internal.CSVWriterBuilder;
 import algorithms.Algorithms;
 import algorithms.SelectAlgorithm;
 import datahandler.CassandraClient;
+import datahandler.SelectDataset;
 import datasets.CellID;
 import datasets.CellTowerDto;
-import datasets.CellTowerEntryConverter;
 import datasets.MeasurementDto;
-import datasets.MeasurementEntryParser;
-import datasets.SelectDataset;
 
 public class Controller {
 

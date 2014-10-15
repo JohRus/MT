@@ -27,8 +27,8 @@ public class SelectAlgorithm {
 			System.out.println("Using weighted centroid on dataset");
 			cellTowers = new ArrayList<CellTowerDto>();
 			for(Entry<CellID, List<MeasurementDto>> entry : dataMap.entrySet()) {
-				CellTowerDto cellTower = Algorithms.weightedCentroid(entry.getValue());
-				cellTowers.add(cellTower);
+//				CellTowerDto cellTower = Algorithms.weightedCentroid(entry.getValue());
+//				cellTowers.add(cellTower);
 			}
 		}
 		else if(command == 3) {

@@ -1,4 +1,6 @@
-package datasets;
+package datahandler;
+
+import io.MeasurementEntryParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +18,10 @@ import com.googlecode.jcsv.CSVStrategy;
 import com.googlecode.jcsv.reader.CSVReader;
 import com.googlecode.jcsv.reader.internal.CSVReaderBuilder;
 
+import datasets.CellID;
+import datasets.MeasurementDto;
+
+@Deprecated
 public class SelectDataset {
 
 	private static String pathToExternalHardrive = "/Volumes/My Passport";

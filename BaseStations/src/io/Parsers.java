@@ -1,8 +1,15 @@
-package datasets;
+package io;
 
 import java.util.Date;
 
+import datasets.CellTowerDto;
+import datasets.MeasurementDto;
+
 public class Parsers {
+	
+	public static final int MEASUREMENT_SIZE = 22;
+	public static final int CELL_TOWER_SIZE = 3;
+	
 	public static MeasurementDto stringArrayToMeasurementDto(String[] stringArray) {
 		int mcc = Integer.parseInt(stringArray[0]);
 		int net = Integer.parseInt(stringArray[1]);
@@ -36,7 +43,7 @@ public class Parsers {
 	}
 	
 	public static String[] cellTowerDtoToStringArray(CellTowerDto cellTower) {
-		String[] data = new String[cellTower.size()];
+		String[] data = new String[CELL_TOWER_SIZE];
 		data[0] = String.valueOf(cellTower.getCell());
 		data[1] = String.valueOf(cellTower.getLon());
 		data[2] = String.valueOf(cellTower.getLat());
@@ -44,7 +51,7 @@ public class Parsers {
 	}
 
 	public static String[] measurementDtoToStringArray(MeasurementDto measurement) {
-		String[] stringArray = new String[22];
+		String[] stringArray = new String[MEASUREMENT_SIZE];
 		stringArray[0] = String.valueOf(measurement.getMcc());
 		stringArray[1] = String.valueOf(measurement.getNet());
 		stringArray[2] = String.valueOf(measurement.getArea());

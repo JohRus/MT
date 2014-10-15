@@ -1,9 +1,7 @@
 package datasets;
 
 public class CellTowerDto {
-	
-	private int size = 3;
-	
+		
 	private long cell;
 	private double lon;
 	private double lat;
@@ -12,10 +10,6 @@ public class CellTowerDto {
 		this.cell = cell;
 		this.lon = lon;
 		this.lat = lat;
-	}
-	
-	public int size() {
-		return this.size;
 	}
 
 	public long getCell() {

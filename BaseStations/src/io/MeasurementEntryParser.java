@@ -1,6 +1,8 @@
-package datasets;
+package io;
 
 import com.googlecode.jcsv.reader.CSVEntryParser;
+
+import datasets.MeasurementDto;
 
 public class MeasurementEntryParser implements CSVEntryParser<MeasurementDto> {
 	
