@@ -11,10 +11,12 @@ public class DatasetHelper {
 		while(!fileOne.isEmpty() || !fileTwo.isEmpty()) {
 			if(fileOne.isEmpty()) {
 				merged.addAll(fileTwo);
+				fileTwo.clear();
 				break;
 			}
 			else if(fileTwo.isEmpty()) {
 				merged.addAll(fileOne);
+				fileOne.clear();
 				break;
 			}
 			if(fileOne.peek().compareTo(fileTwo.peek()) == -1 || fileOne.peek().compareTo(fileTwo.peek()) == 0) {

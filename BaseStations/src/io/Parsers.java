@@ -14,7 +14,7 @@ public class Parsers {
 		int mcc = Integer.parseInt(stringArray[0]);
 		int net = Integer.parseInt(stringArray[1]);
 		int area = Integer.parseInt(stringArray[2]);
-		long cell = Integer.parseInt(stringArray[3]);
+		long cell = Long.parseLong(stringArray[3]);
 		double lon = Double.parseDouble(stringArray[4]);
 		double lat = Double.parseDouble(stringArray[5]);
 		int signal = stringArray[6].equals("") ? 99 : Integer.parseInt(stringArray[6]);

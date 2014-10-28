@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import application.TaskBuilder;
 import datasets.CellTowerDto;
 import datasets.MeasurementDto;
 
 public class Algorithms {
 	
-	public static CellTowerDto centroid(TaskBuilder task) {
+	public static CellTowerDto centroid(List<MeasurementDto> task) {
 //		double sumOfLongitudes = 0;
 //		double sumOfLatitudes = 0;
 //		for(MeasurementDto measurement : measurements) {
@@ -24,7 +23,7 @@ public class Algorithms {
 		return null;
 	}
 	
-	public static CellTowerDto weightedCentroid(TaskBuilder task) {
+	public static CellTowerDto weightedCentroid(List<MeasurementDto> task) {
 //		List<Long> sumOfSignals = new ArrayList<Long>();
 		
 //		LinkedList<MeasurementDto> list = new LinkedList<MeasurementDto>(measurements);
@@ -52,7 +51,7 @@ public class Algorithms {
 		return new CellTowerDto(list.get(0).getCell(), cellTowerLongitude, cellTowerLatitude);
 	}
 	
-	public static CellTowerDto strongestRSS(TaskBuilder task) {
+	public static CellTowerDto strongestRSS(List<MeasurementDto> task) {
 //		int invalidMeasurements = 0;
 //		int currentStrongestRSS = -1000;
 //		List<MeasurementDto> strongestRSSMeasurements = new ArrayList<MeasurementDto>();
@@ -84,7 +83,7 @@ public class Algorithms {
 		return null;
 	}
 	
-	private static int inDbm(int signalStrength) {
+	public static int inDbm(int signalStrength) {
 		if(signalStrength == 0) return -113;
 		else if(signalStrength == 1) return -111;
 		else if(signalStrength >= 2 && signalStrength <= 30) {
