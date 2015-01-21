@@ -1,0 +1,55 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: ProblemDescription.aux
+The style file: plain.bst
+Database file #1: ref.bib
+Warning--to sort, need author or key in opencellid
+Too many commas in name 1 of "Yang, Varshavsky, Liu, Chen and Gruteser" for entry AccuracyCellTowerLocalization
+while executing---line 1049 of file plain.bst
+Warning--empty journal in DetectionTheory
+Warning--empty journal in SignalDetectability
+Too many commas in name 1 of "Yang, Varshavsky, Liu, Chen and Gruteser" for entry AccuracyCellTowerLocalization
+while executing---line 1090 of file plain.bst
+Warning--empty journal in AccuracyCellTowerLocalization
+You've used 6 entries,
+            2118 wiz_defined-function locations,
+            528 strings with 4674 characters,
+and the built_in function-call counts, 1361 in all, are:
+= -- 125
+> -- 60
+< -- 0
++ -- 25
+- -- 18
+* -- 65
+:= -- 242
+add.period$ -- 17
+call.type$ -- 6
+change.case$ -- 27
+chr.to.int$ -- 0
+cite$ -- 10
+duplicate$ -- 59
+empty$ -- 114
+format.name$ -- 18
+if$ -- 278
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 6
+newline$ -- 32
+num.names$ -- 10
+pop$ -- 41
+preamble$ -- 1
+purify$ -- 21
+quote$ -- 0
+skip$ -- 46
+stack$ -- 0
+substring$ -- 31
+swap$ -- 3
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 22
+warning$ -- 4
+while$ -- 10
+width$ -- 7
+write$ -- 57
+(There were 2 error messages)

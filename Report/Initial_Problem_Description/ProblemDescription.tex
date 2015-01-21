@@ -1,0 +1,127 @@
+\documentclass[a4paper, 12pt]{article}
+\setlength{\parskip}{\baselineskip}%
+\setlength{\parindent}{0pt}%
+
+
+
+\begin{document}
+
+\begin{center}
+\begin{huge}
+Master Thesis - Problem Description
+\end{huge}
+\bigskip
+\begin{large}
+Johan Alexander Nordstrand Rusvik
+\end{large}
+\end{center}
+
+\section{Description}
+\subsection{Background}
+OpenCellID \cite{opencellid} is the worlds largest collaborative community project for collecting GPS positions of cell towers. The GPS positions of the cell towers are calculated by looking at data collected with crowdsourcing. Everyone with a smartphone can download an application free of charge which registers, relative to the connected cell tower, signal strength, mobile country code, mobile network code, along with other parameters. It also registers the current GPS position of the smartphone. All of these parameters makes a measurement, and all measurements are collected by a server and stored in a database. As of August 2014, the database contained more than 6 million unique Cell IDs and 1 Billion measurements.
+
+OpenCellID provides a visual service that consists of a world map where you can zoom in and out, and move around the globe. The service plots every measurement along with the calculated position of cell towers within the map's current scale. The algorithm for calculating a cell tower position is very simple. It looks at every measurement connected to a given cell tower and calculates the mean of the longitudes and latitudes of the GPS position of the smartphones, and gives this mean as the cell tower position.
+
+\subsection{Dataset}
+
+\subsection{Scope and Goal}
+\subsubsection{Implementing existing methods and improving them}
+Yang, Varshavsky, Liu, Chen and Gruteser \cite{AccuracyCellTowerLocalization} describes two existing methods (Weighted Centroid and Strongest Received Signal Strength) for cell tower localization and a process to improve the accuracy of these methods. First, I want to implement the two existing methods and test them on the dataset provided by opencellid.org. Then I want to implement the suggested improvements and test them on the same dataset. This will give me a basis for my own research to improve the methods further, or to come up with my own method.
+
+\subsubsection{My own improvement of existing methods}
+I want to improve the algorithm mentioned to calculate the position of cell towers. The dataset provides several parameters that are not being taken advantage of. Including some of these parameters in the calculation might significantly improve the exactness of cell tower positions. The tools I want to use to accomplish this is signal detection theory and geometry.
+
+\subsubsection{Blindspots}
+If I manage to create an algorithm that gives close to the exact location of cell towers I might also be able to search for and locate any smaller or larger blindspots, if they exist. That is, areas that are not covered by any cell. Looking at the entire world would be too time consuming. The areas of most interest to me would be the city I currently live in, Bergen, or my birth city, Oslo.
+
+\subsubsection{Position of mobile phone}
+If I'm able to create an algorithm that gives close to the exact location of cell towers I want to investigate the possibility to find the exact location of the mobile phone, by not using the GPS functionality. By knowing which cell towers the mobile phone is connected to during a specific time interval, and by using the phones own equipment for measuring speed, time and direction (without using the GPS), it might be possible to calculate the exact position of the mobile phone by using triangulation.
+
+\subsubsection{Health issues}
+I would also like to investigate the health issues associated with mobile phones and base stations. For now it is not a priority as it is a bit of a sidestep from the main goal of improving the algorithm for calculating the location of cell towers. It would be a rough overview of the discussion surrounding this issue.
+
+\subsubsection{Crowdsourcing}
+
+
+\subsection{Schedule}
+\textbf{18.09.14 - 18.11.14:} Implementing and testing the methods described in \cite{AccuracyCellTowerLocalization}, both the original and the improved versions.\\
+\textbf{18.11.14 - 20.12.14:} Documenting the results previously obtained and how I got there.\\
+\textbf{20.12.14 - 15.03.15:} Researching for and implementing my own method for calculating the localization of cell towers.\\
+\textbf{15.03.15 - 01.06.15:} Testing my method, documenting the results obtained and how I got there, and completing the written part of my master thesis. 
+
+\section{Terms and Terminology}
+\subsection{Cells}
+A \textit{base station} is responsible for sending and receiving data to and from multiple wireless hosts \cite{ComputerNetworking}. The hosts use the base station to connect to the larger network. \textit{Cell towers} in \textit{cellular networks} and access points in 802.11 wireless Local Area Networks, also known as WiFi networks, are examples of base stations.
+
+A cellular network is partitioned into a number of geographic coverage areas, known as \textit{cells}. In a \textit{Global System for Mobile Communications} (GSM) cellular network, the correct term for a cell tower is \textit{base transceiver station} (BTS). The BTS transmits signals to and receives signals from the mobile stations in its cell, typically mobile cell phones. The coverage area of a cell depends on many factors, including the transmitting power of the BTS, the transmitting power of the user devices, obstructing buildings in the cell, and the height of base station antennas. Many systems today place the BTS at corners where three cells intersect, so that a single BTS with directional antennas can service three cells.
+
+\subsection{Signal Detection Theory}
+The work done by Peterson, Birdsall and Fox in 1954 \cite{SignalDetectability} is considered to be the first fully developed work on signal detection theory. They describe it as follows: Suppose an observer is given a voltage varying with time during a prescribed observation interval and is asked to decide whether its source is noise or signal plus noise. What method should the observer use to make this decision, and what receiver is a realization of that method? The receiver is typically a mobile phone or some other device that can receive such a voltage. The voltage is also called the receiver input.
+
+Heeger gives a more introductory version \cite{DetectionTheory}. When the receiver receives input, two kinds of noise factors contribute to the uncertainty; external noise and internal noise. The evaluation of the input can result in four different outcomes:
+\begin{itemize}
+\item Hit: There is some information (signal) contained in the voltage and we found it.
+\item Miss: There is some information (signal) contained in the voltage but we did not find it.
+\item False Alarm: There is no information (signal) contained in the voltage but we still think we found some.
+\item Correct Reject: There is no information (signal) contained in the voltage and we did not find any.
+\end{itemize}
+
+Another factor that plays a part is the criterion for how often we decide there is some information contained in the voltage. If we set a low criterion we will find the information every time it is there but we will also get a lot of false alarms. If we set a high criterion we will not get many false alarms, but may also miss a lot.
+
+
+\subsection{Computational geometry}
+\subsubsection{Triangulation}
+\subsection{Crowdsourcing}
+The word crowdsourcing is used for a wide group of activities that take on different forms. The flexibility and adaptability of crowdsourcing makes it an effective and powerful practice, but difficult to define and categorize. Jeff Howe says that crowdsourcing "is a business practice that means literally to outsource an activity to the crowd". Enrique Estellé-Arolas propose a more general, but specific definition \cite{CrowdsourcingDefinition}:
+
+\begin{quote}
+"Crowdsourcing is a type of participative online activity in which an individual, an institution, a non-profit 
+organization, or company proposes to a group of individuals of varying knowledge, heterogeneity, and 
+number, via a flexible open call, the voluntary undertaking of a task. The undertaking of the task, of variable 
+complexity and modularity, and in which the crowd should participate bringing their work, money, knowledge 
+and/or experience, always entails mutual benefit. The user will receive the satisfaction of a given type of need, 
+be it economic, social recognition, self-esteem, or the development of individual skills, while the crowdsourcer will obtain and utilize to their advantage that what the user has brought to the venture, whose form will depend 
+on the type of activity undertaken."
+\end{quote}
+
+With respect to my project, the crowdsourcing has already been carried out. The initiators of the opencellid project has already gathered loads of data from the public, which you can download for free. The process described in the background section above, which was used to gather this data, matches both of the definitions mentioned here.
+
+\bibliographystyle{plain}
+\bibliography{ref}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

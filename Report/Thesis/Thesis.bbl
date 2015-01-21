@@ -1,0 +1,14 @@
+\begin{thebibliography}{1}
+
+\bibitem{Chen}
+M.~Y. Chen, T.~Sohn, D.~Chmlev, D.~Hachmel, J.~Hightower, J.~Hughes,
+  A.~LaMarca, F.~Potter, I.~Smith, and A.~Varshavsky.
+\newblock {Practical Metropolitan-Scale Positioning for GSM Phones}.
+\newblock {\em UbiComp}, 2006.
+
+\bibitem{Yang}
+J.~Yang, A.~Varshavsky, H.~Liu, Y.~Chen, and M.~Gruteser.
+\newblock {Accuracy Characterization of Cell Tower Localization}.
+\newblock {\em UbiComp}, 2010.
+
+\end{thebibliography}

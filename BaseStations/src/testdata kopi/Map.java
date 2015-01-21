@@ -1,7 +1,5 @@
 package testdata;
 
-import infrastructure.SimpleMeasurement;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -18,10 +16,10 @@ import javax.swing.JPanel;
 
 class Surface extends JPanel {
 	
-	Compute statistics;
+	Statistics statistics;
 	
 	public Surface() {
-		this.statistics = new Compute(40);
+		this.statistics = new Statistics(40);
 	}
 	
 	private void doDrawing(Graphics g) {
@@ -50,8 +48,8 @@ class Surface extends JPanel {
 		g2d.fillRect(x, y, 5, 5);
 		
 		// Measurements coords
-		List<SimpleMeasurement> measurements = this.statistics.getCell().getMeasurements();
-		for(SimpleMeasurement measurement : measurements) {
+		List<Measurement> measurements = this.statistics.getCell().getMeasurements();
+		for(Measurement measurement : measurements) {
 			x = doubleToInt(enlarge(measurement.getCoordinates().getX()));
 			y = invertLatitude(h, enlarge(measurement.getCoordinates().getY()));
 			g2d.fillOval(x, y, 5, 5);
