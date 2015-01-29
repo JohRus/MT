@@ -1,6 +1,7 @@
 package infrastructure;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
 import testdata.Geom;
@@ -13,7 +14,7 @@ public class DynamicCell extends DefaultCell {
 	// The angle from the first vector (vectorAngle) to the second vector
 	private double sectorAngle;
 
-	public DynamicCell(Double cellTowerCoordinates, double vectorAngle, double sectorAngle) {
+	public DynamicCell(Point2D.Double cellTowerCoordinates, double vectorAngle, double sectorAngle) {
 		super(cellTowerCoordinates);
 		this.vectorAngle = vectorAngle;
 		this.sectorAngle = sectorAngle;	
@@ -42,7 +43,7 @@ public class DynamicCell extends DefaultCell {
 		String s = String.format("Cell Tower Coordinates = (%.1f , %.1f)\n", super.getCellTowerCoordinates().getX(), super.getCellTowerCoordinates().getY());
 		s += String.format("Vector Angle = %.1f degrees\nSector Angle = %.1f degrees\n", this.vectorAngle, this.sectorAngle);
 		s += String.format("Measurements: %d\n", super.getMeasurements().size());
-		if(super.getMeasurements().size() <= 10) {
+		if(super.getMeasurements().size() <= 20) {
 			for(int i = 0; i < super.getMeasurements().size(); i++) {
 				s += String.format("\t");
 				s += super.getMeasurements().get(i).toString();

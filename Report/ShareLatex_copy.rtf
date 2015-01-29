@@ -4,7 +4,7 @@
 \paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\f0\fs24 \cf0 \\documentclass[a4paper, 12pt]\{article\}\
+\f0\fs24 \cf0 \\documentclass[a4paper, 10pt]\{article\}\
 \
 \\usepackage\{listings\}\
 \\usepackage\{color\}\
@@ -257,6 +257,99 @@ We wrote a small Java program for generating testdata. Below follow three exampl
 \\caption\{Random generated cell with 40 measurements\}\
 \\end\{figure\}\
 \
+\\section\{Positioning Cell Towers Heuristically\}\
+To predict the positon of a cell tower as effective as possible in real time, we need to develop algorithms that uses only a random subset of the measurements available. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower, we start by computing a linear vector from the chosen set of measurements to give us a good impression of which direction the cell tower is pointing. We have two algorithms for doing this; the Longest Vector method and the Least Square method.\
+\
+After computing the linear vector we need to find out which endpoint of the vector the cell tower is most likely to be close to, pointing towards the other endpoint. For this we use the Distance From Surrounding Points To Vector method.\
+\
+This approach gets less and less reliable when we increase the angle of the cell sector. We use 10 degrees as the smallest angle. When increasing the angle the area of the sector grows, thus increasing the probability of computing a poor vector if we are unlucky with the subset of measurements used. Throughout the thesis we assume the measurements for the cell are randomly distributed over the given cell area and not sorted in any particular way.\
+\
+\\subsection\{Longest Vector\}\
+This algorithm is simple and therefore not that reliable. We start by randomly pairing the measurements from the chosen subset and pick the pair furthest appart from each other to be the endpoints of our vector. For a small sector angle this method gives a good impression of the direction of the cell, but the endpoint chosen to be closest to the cell tower may still be far from it.\
+\
+\\begin\{algorithm\}\
+\\caption\{Longest Vector\}\
+\\label\{alg:LV\}\
+\\begin\{algorithmic\}[1]\
+\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
+\\State $m1$, $m2$\
+\\State $d \\gets 0.0$\
+\\State $i \\gets n-1$\
+\\While \{$i > 0$\}\
+\\State $m1Temp \\gets M(i--)$\
+\\State $m2Temp \\gets M(i--)$\
+\\State $dTemp \\gets$ distance from $m1Temp$ to $m2Temp$\
+\\If \{$dTemp > d$\}\
+\\State $m1 \\gets m1Temp$\
+\\State $m2 \\gets m2Temp$\
+\\State $d \\gets dTemp$\
+\\EndIf\
+\\EndWhile\
+\\State \\Return $[m1,m2]$\\Comment\{A vector with $m1$ and $m2$ as endpoints\}\
+\\EndProcedure\
+\\end\{algorithmic\}\
+\\end\{algorithm\}\
+\
+Algorithm \\ref\{alg:LV\} takes as input an array of measurements $M$, and the integer $n$ which is the size of $M$. It outputs a vector to give an impression of the direction of the cell tower. %The running time is\
+%\\begin\{center\}\
+%$O(\\frac\{n\}\{2\}) = O(n)$\
+%\\end\{center\}\
+%since we decrement $i$ twice per iteration.\
+\
+\\subsection\{Least Square\}\
+The Least Square method is a simple linear regression method for computing a straight line through a set of points, making the sum of the squared vertical distances from each point to the line, as small as possible. This algorithm is more mathematical than algorithm \\ref\{alg:LV\} and gives a more accurate result. It still runs in linear time and tend to give a better projecion of the direction of the cell tower and distance from the closest endpoint to the cell tower.\
+\
+\\begin\{algorithm\}\
+\\caption\{Least Square\}\
+\\label\{alg:LS\}\
+\\begin\{algorithmic\}[1]\
+\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
+\\State $x_\{min\} \\gets 113.0$\
+\\State $x_\{max\} \\gets -113.0$\
+\\State $x_\{mean\}, y_\{mean\}, xy_\{mean\}, x_\{squared\\_mean\}, x_\{mean\\_squared\}, m, b \\gets 0.0$\
+\\ForAll \{$m \\in M$\}\
+\\State $x_\{mean\} \\gets x_\{mean\} + m(x)$\
+\\State $y_\{mean\} \\gets y_\{mean\} + m(y)$\
+\\State $xy_\{mean\} \\gets xy_\{mean\} + (m(x)\\times m(y))$\
+\\State $x_\{squared\\_mean\} \\gets x_\{squared\\_mean\} + m(x)^2$\
+\\If \{$m(x) > x_\{max\}$\}\
+\\State $x_\{max\} \\gets m(x)$\
+\\EndIf\
+\\If \{$m(x) < x_\{min\}$\}\
+\\State $x_\{min\} \\gets m(x)$\
+\\EndIf\
+\\EndFor\
+\\State $x_\{mean\} \\gets \\frac\{x_\{mean\}\}\{n\}$\
+\\State $y_\{mean\} \\gets \\frac\{y_\{mean\}\}\{n\}$\
+\\State $xy_\{mean\} \\gets \\frac\{xy_\{mean\}\}\{n\}$\
+\\State $x_\{squared\\_mean\} \\gets \\frac\{x_\{squared\\_mean\}\}\{n\}$\
+\\State $x_\{mean\\_squared\} \\gets (x_\{mean\})^2$\
+\\State $m \\gets \\frac\{(x_\{mean\}\\times y_\{mean\})-xy_\{mean\}\}\{x_\{mean\\_squared\}-x_\{squared\\_mean\}\}$\
+\\State $b \\gets y_\{mean\}-(m\\times x_\{mean\})$\
+\\State $ep1 \\gets (x_\{min\},b+(m\\times x_\{min\}))$\
+\\State $ep2 \\gets (x_\{max\},b+(m\\times x_\{max\}))$\
+\\State \\Return $[ep1,ep2]$\\Comment\{A vector with $ep1$ and $ep2$ as endpoints\}\
+\\EndProcedure\
+\\end\{algorithmic\}\
+\\end\{algorithm\}\
+\
+Algorithm \\ref\{alg:LS\} takes as input an array of measurements $M$, and the integer $n$ which is the size of $M$. It outputs a vector to give an impression of the direction of the cell tower. %The running time is $O(n)$ since we iterate through the $n$ measurements once.\
+\
+\\subsection\{Distance From Surrounding Points To Vector\}\
+This is a method to decide which endpoint of the vector retreived from algorithms \\ref\{alg:LV\} and \\ref\{alg:LS\}, are closest to the cell tower. In a cell sector, the further away from the cell tower we get, the distance between the two vectors forming the sector, $v_1$ and $v_2$, increases. The perfect vector $v$ to give an impression of which direction the cell tower is pointing would intersect with the cell tower and go between $v_1$ and $v_2$ such that the distance from $v$ to $v_1$ and the distance from $v$ to $v_2$ always are equal. This means that measurements further away from the cell tower than those close to it, may be further away from $v$. Now consider the two endpoints of $v$, $ep_1$ and $ep_2$, and our randomly distributed measurements. If $ep_1$ is the endpoint on top of the cell tower, $m_1$ are those measurements closer to $ep_1$ than $ep_2$ and $m_2$ are those measurements closer to $ep_2$ than $ep_1$, then the mean of the least possible distances from each point in $m_1$ to $v$ are very likely to be smaller than the mean of the least possible distances from each point in $m_2$ to $v$.\
+\
+We do not have such a perfect vector, but when we apply this theory to our heuristic vectors retreived from algorithm \\ref\{alg:LV\} or \\ref\{alg:LS\}, we compute an endpoint that is likely to be close to the cell tower.\
+\
+\\section\{Conclusion\}\
+\\subsection\{Challenges along the road\}\
+I have met several challenges while working on this master thesis. Some where easy to fix, and some were not.\
+\\subsubsection\{Doing computations on a vector that do not have one of its endpoints at origo\}\
+When I started computing heuristic cell sectors I did not think about the fact that the heuristic cell tower position was at some point relative to the real cell tower position, at one of the endpoints of the heuristic vector that gives an impression of which direction the cell tower is pointing. This became a problem when I began computing the vectors forming the boundries of the heuristic cell sector. As I have described earlier, these vectors are generated from the heuristic direction vector, by rotating it in both directions by the sector angle divided by two. My initial thought was to just perform a simple rotation with the endpoint on the heuristic direction vector that do not lie on top of the heuristic cell tower position, thinking it would rotate around the heuristic cell tower position. But in reality the rotation performed was around the real cell tower position. I had to really dig into the code and theory to locate this mistake. The solution was to do the rotation with a virtual vector parallel to the heuristic direction vector, where the new x-values and y-values were computed by subtracting the x-value and y-value at the endpoint on top of the heuristic cell tower, from the x-value and y-value at both endpoints. After the rotation the values that were subtracted are added back to the values forming the new vector to compute the correct vector.\
+\
+I had the same problem when computing a vectors angle, but when I had already figured out the problem with the rotation, it was an easy fix.\
+\\subsubsection\{Visualizing the data\}\
+I was not very familiar with the Swing library before I started working on this thesis.\
+% Problemet med at origo er \'f8verst til h\'f8yre\
 \
 %\\newpage\
 %\\section\{Work\}\

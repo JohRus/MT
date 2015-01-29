@@ -48,7 +48,7 @@ public class Generate {
 		DynamicCell dynamicCell = new DynamicCell(cellTowerCoordinates, vectorAngle, sectorAngle);
 		dynamicCell.setMeasurements(defaultMeasurements(measurements, vectorAngle, vectorAngle+sectorAngle, 
 				measurementMaxDistanceFromCellTower, measurementMinDistanceFromCellTower));
-		
+
 		return dynamicCell;
 	}
 
