@@ -21,18 +21,26 @@ public class Generate {
 	 * @param minDistanceFromCT Min distance from the cell tower
 	 * @return An instance of DefaultMeasurement
 	 */
-	public static Measurement defaultMeasurement(double angle1, double angle2, double maxDistanceFromCT, double minDistanceFromCT) {
-		double randomAngle = angle1 + ((angle2 - angle1)*new Random().nextDouble());
-		double randomDistance = minDistanceFromCT + ((maxDistanceFromCT - minDistanceFromCT)*new Random().nextDouble());
+//	public static Measurement defaultMeasurement(double angle1, double angle2, double maxDistanceFromCT, double minDistanceFromCT) {
+//		double randomAngle = angle1 + ((angle2 - angle1)*new Random().nextDouble());
+//		double randomDistance = minDistanceFromCT + ((maxDistanceFromCT - minDistanceFromCT)*new Random().nextDouble());
+//		double x = randomDistance*Math.cos(Math.toRadians(randomAngle));
+//		double y = randomDistance*Math.sin(Math.toRadians(randomAngle));
+//		return new DefaultMeasurement(new Point2D.Double(x, y));
+//	}
+	
+	public static Measurement defaultMeasurement(DynamicCell dc) {
+		double randomAngle = dc.getVectorAngle() + (dc.getSectorAngle()*new Random().nextDouble());
+		double randomDistance = dc.getMinDistance() + ((dc.getMaxDistance()-dc.getMinDistance())*new Random().nextDouble());
 		double x = randomDistance*Math.cos(Math.toRadians(randomAngle));
 		double y = randomDistance*Math.sin(Math.toRadians(randomAngle));
-		return new DefaultMeasurement(new Point2D.Double(x, y));
+		return new DefaultMeasurement(new Point2D.Double(dc.getCellTowerCoordinates().getX()+x, dc.getCellTowerCoordinates().getY()+y));
 	}
 	
-	public static List<Measurement> defaultMeasurements(int measurements, double angle1, double angle2, double maxDistanceFromCT, double minDistanceFromCT) {
+	public static List<Measurement> defaultMeasurements(int measurements, DynamicCell dc) {
 		List<Measurement> list = new ArrayList<Measurement>();
 		for(int i = 0; i < measurements; i++) {
-			list.add(defaultMeasurement(angle1, angle2, maxDistanceFromCT, minDistanceFromCT));
+			list.add(defaultMeasurement(dc));
 		}
 		return list;
 	}
@@ -45,9 +53,11 @@ public class Generate {
 			double measurementMinDistanceFromCellTower,
 			int measurements) {
 		
-		DynamicCell dynamicCell = new DynamicCell(cellTowerCoordinates, vectorAngle, sectorAngle);
-		dynamicCell.setMeasurements(defaultMeasurements(measurements, vectorAngle, vectorAngle+sectorAngle, 
-				measurementMaxDistanceFromCellTower, measurementMinDistanceFromCellTower));
+		DynamicCell dynamicCell = new DynamicCell(cellTowerCoordinates, vectorAngle, sectorAngle, 
+				measurementMaxDistanceFromCellTower, measurementMinDistanceFromCellTower);
+		dynamicCell.setVectors();
+		
+		dynamicCell.setMeasurements(defaultMeasurements(measurements, dynamicCell));
 
 		return dynamicCell;
 	}

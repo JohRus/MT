@@ -38,28 +38,43 @@ public class SystemFrame extends JFrame {
 						DynamicCell dc = Generate.dynamicCellWithDefaultMeasurements(
 								new Point2D.Double(200.0, 200.0), 
 								190.0, 
-								30.0, 
+								10.0, 
 								113.0, 
 								30.0, 
 								20);
 						
 						
-//						Line2D.Double heuristicVector1 = Geom.linearRegressionVector(dc.getMeasurements(), 10);
-						Line2D.Double heuristicVector2 = Geom.longestVector(dc.getMeasurements(), 10);
+						Line2D.Double heuristicVector1 = Geom.longestVector(dc.getMeasurements(), 10);
+						Line2D.Double heuristicVector = Geom.linearRegressionVector(dc.getMeasurements(), 10, heuristicVector1);
+
 //						List<Line2D.Double> heuristicVectorList = new ArrayList<Line2D.Double>();
 //						heuristicVectorList.add(heuristicVector1);
 //						heuristicVectorList.add(heuristicVector2);
 						
 						// Dobbellagring av dette punktet når hele den heuristiske DynamicCell'en blir lagret
-						Point2D.Double heuristicCTPos = Geom.distanceFromSurroundingPointsToVector(heuristicVector2, dc.getMeasurements(), 10);
+						Point2D.Double heuristicCTPos = Geom.distanceFromSurroundingPointsToVector(heuristicVector, dc.getMeasurements(), 10);
 //						List<Point2D.Double> heuristicCTList = new ArrayList<Point2D.Double>();
 //						heuristicCTList.add(heuristicCTPos);
 						
-						Line2D.Double heuristicVectorWithCorrectEndPoints = Geom.adjustEndpoints(heuristicVector2, heuristicCTPos);
+						Line2D.Double heuristicVectorWithCorrectEndPoints = Geom.adjustEndpoints(heuristicVector, heuristicCTPos);
 						
-						DynamicCell heuristicDC = Geom.calculateSector(heuristicVectorWithCorrectEndPoints, dc.getSectorAngle());
+//						DynamicCell heuristicDC = Geom.calculateSector(heuristicVectorWithCorrectEndPoints, dc, 10);
+						DynamicCell heuristicDC = Geom.findSector(heuristicVectorWithCorrectEndPoints, dc, 10);
 //						List<DynamicCell> heuristicDCList = new ArrayList<DynamicCell>();
 //						heuristicDCList.add(heuristicDC);
+						
+						double d1 = dc.getVector1().getP2().distance(dc.getVector2().getP2());
+						double d2 = heuristicDC.getVector1().getP2().distance(heuristicDC.getVector2().getP2());
+						System.out.printf("d1 = %.2f\nd2 = %.2f\n", d1, d2);
+						double d1v1 = dc.getVector1().getP1().distance(dc.getVector1().getP2());
+						double d1v2 = dc.getVector2().getP1().distance(dc.getVector2().getP2());
+						double d2v1 = heuristicDC.getVector1().getP1().distance(heuristicDC.getVector1().getP2());
+						double d2v2 = heuristicDC.getVector2().getP1().distance(heuristicDC.getVector2().getP2());
+						System.out.printf("d orig v1 = %.2f\nd orig v2 = %.2f\nd heu v1 = %.2f\nd heu v2 = %.2f\n", d1v1, d1v2, d2v1, d2v2);
+						double dFromHeuVToV1 = heuristicDC.getVector1().ptLineDist(heuristicVectorWithCorrectEndPoints.getP2());
+						double dFromHeuVToV2 = heuristicDC.getVector2().ptLineDist(heuristicVectorWithCorrectEndPoints.getP2());
+						System.out.printf("d from heuV to heu v1 = %.2f\nd from heuV to heu v2 = %.2f\n", dFromHeuVToV1, dFromHeuVToV2);
+						System.out.printf("heuV x = %.2f\nheu ct x = %.2f\n", heuristicVector1.getX1(), heuristicDC.getCellTowerCoordinates().getX());
 						
 						Computation computation = new Computation(
 								heuristicVectorWithCorrectEndPoints, 

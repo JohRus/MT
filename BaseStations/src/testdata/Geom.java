@@ -1,28 +1,16 @@
 package testdata;
 
-import infrastructure.DefaultMeasurement;
 import infrastructure.DynamicCell;
 import infrastructure.Measurement;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Line2D.Double;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Geom {
 
-//	public static Line2D.Double rotateVector(Line2D.Double toBeRotated, double degrees) {
-//		Point2D.Double a = (Point2D.Double) toBeRotated.getP1();
-//		double radians = Math.toRadians(degrees);
-//		double x = (toBeRotated.getX2()*Math.cos(radians))-(toBeRotated.getY2()*Math.sin(radians));
-//		double y = (toBeRotated.getX2()*Math.sin(radians))+(toBeRotated.getY2()*Math.cos(radians));
-//		return new Line2D.Double(a, new Point2D.Double(a.getX()+x, a.getY()+y));
-//	}
-	
 	public static Line2D.Double rotateVector(Line2D.Double toBeRotated, double degrees) {
-//		Point2D.Double a = (Point2D.Double) toBeRotated.getP1();
+		//		Point2D.Double a = (Point2D.Double) toBeRotated.getP1();
 		Point2D.Double adjustedP1 = new Point2D.Double(toBeRotated.getX1()-toBeRotated.getX1(), toBeRotated.getY1()-toBeRotated.getY1());
 		Point2D.Double adjustedP2 = new Point2D.Double(toBeRotated.getX2()-toBeRotated.getX1(), toBeRotated.getY2()-toBeRotated.getY1());
 		double radians = Math.toRadians(degrees);
@@ -31,22 +19,6 @@ public class Geom {
 		return new Line2D.Double(toBeRotated.getP1(), new Point2D.Double(x+toBeRotated.getX1(), y+toBeRotated.getY1()));
 	}
 
-//	private static Line2D.Double vectorFromOrigo(Line2D.Double originalVector) {
-//		
-//	}
-
-//	public static double angle(Line2D.Double vector) {
-//		if(vector.getX2() == 0.0) {
-//			if(vector.getY2() > 0.0) return 0.5*Math.PI;
-//			else return 1.5*Math.PI;
-//		}
-//		double tan = vector.getY2()/vector.getX2();
-//		double a = Math.atan(tan);
-//		if(vector.getX2() > 0.0 && vector.getY2() >= 0.0) return a; // 0-90
-//		else if(vector.getX2() > 0.0 && vector.getY2() < 0.0) return a+2.0*Math.PI; // 270-360
-//		else return a + Math.PI;
-//	}
-	
 	public static double angle(Line2D.Double vector) {
 		Point2D.Double adjustedP2 = new Point2D.Double(vector.getX2()-vector.getX1(), vector.getY2()-vector.getY1());
 		if(adjustedP2.getX() == 0.0) {
@@ -69,7 +41,8 @@ public class Geom {
 		else {
 			// returnerer vinkelen fra a1 og helt rundt til a2
 			// eks: hvis a1 = 60 grader og a2 = 10 grader blir 310 grader returnert
-			return 2*Math.PI+a2-a1;
+			//			return 2*Math.PI+a2-a1;
+			return a1-a2;
 		}
 	}
 
@@ -77,43 +50,84 @@ public class Geom {
 	 * 
 	 * @param t The angle in degrees
 	 * @param r The radius/weight
-	 * @return An x,y coordinate
+	 * @return A vector in cartesian coordinates
 	 */
-	public static Point2D.Double toCartesian(double t, double r) {
+	public static Line2D.Double toCartesian(double t, double r, Point2D.Double relativOrigo) {
 		double x = r*Math.cos(Math.toRadians(t));
 		double y = r*Math.sin(Math.toRadians(t));
-		return new Point2D.Double(x, y);
+		return new Line2D.Double(relativOrigo, new Point2D.Double(relativOrigo.getX()+x, relativOrigo.getY()+y));
 	}
 
 	/**
 	 * 
-	 * @param origo The center of the coordinate system
+	 * @param origo The center of the sector
 	 * @param angle1 Angle from x-axis to first vector
 	 * @param angle2 Angle from x-axis to second vector
-	 * @param m The point
+	 * @param p The point
 	 * @return
 	 */
-	public static boolean pointIsWithinBoundries(Point2D.Double origo, double angle1, double angle2, 
-			double maxDistanceFromOrigo, double minDistanceFromOrigo, Measurement m) {
-		Line2D.Double vectorToM = new Line2D.Double(origo, m.getCoordinates());
-		if(Math.toDegrees(angle(vectorToM)) >= angle1 && Math.toDegrees(angle(vectorToM)) <= angle2) {
-			if(origo.distance(m.getCoordinates()) <= maxDistanceFromOrigo && origo.distance(m.getCoordinates()) >= minDistanceFromOrigo) {
-				return true;
-			}
-			else
-				return false;
+	public static boolean pointIsWithinBoundries(Point2D.Double p, Point2D.Double origo, double angle1, 
+			double angle2, double maxDistanceFromOrigo, double minDistanceFromOrigo) {
+
+		if(pointIsWithinSectorAngleBoundries(p, origo, angle1, angle2) && 
+				pointIsWithinSectorDistanceBoundries(p, origo, maxDistanceFromOrigo, minDistanceFromOrigo)) {
+			return true;
 		}
 		else
 			return false;
 	}
 
-	public static Line2D.Double linearRegressionVector(List<Measurement> measurements, int threshold) {
+	public static boolean pointIsWithinSectorAngleBoundries(Point2D.Double p, Point2D.Double origo, 
+			double angle1, double angle2) {
+		Line2D.Double vectorToP = new Line2D.Double(origo, p);
+		double vectorToPAngle = Math.toDegrees(angle(vectorToP));
+		System.out.printf("Angle1=%.2f -- Angle2=%.2f -- Vector to P Angle=%.2f\n", angle1, angle2, vectorToPAngle);
+
+		// TODO hvis den positive delen av x-aksen går igjennom sektoren blir dette feil
+		if(vectorToPAngle >= angle1 && vectorToPAngle <= angle2) {
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public static boolean pointIsWithinSectorDistanceBoundries(Point2D.Double p, Point2D.Double origo,
+			double maxDistanceFromOrigo, double minDistanceFromOrigo) {
+		if(origo.distance(p) <= maxDistanceFromOrigo && origo.distance(p) >= minDistanceFromOrigo) {
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public static Line2D.Double changeVectorLengthByP2(Line2D.Double vector, double newLength) {
+		double oldLength = vector.getP1().distance(vector.getP2());
+		if(oldLength == newLength) return vector;
+
+		double newOldLengthRatio = newLength/oldLength;
+
+		double newX2 = (newOldLengthRatio*(vector.getX2()-vector.getX1()))+vector.getX1();
+		double newY2 = (newOldLengthRatio*(vector.getY2()-vector.getY1()))+vector.getY1();
+
+		return new Line2D.Double(vector.getP1(), new Point2D.Double(newX2, newY2));
+	}
+	
+	public static Line2D.Double changeVectorLengthByP1(Line2D.Double vector, double newLength) {
+		Line2D.Double tempVector = new Line2D.Double(vector.getP2(), vector.getP1());
+//		double newLength = heuristicVector.getP1().distance(heuristicVector.getP2())+lengthToMoveBackwards;
+
+		tempVector = changeVectorLengthByP2(tempVector, newLength);
+
+		return new Line2D.Double(tempVector.getP2(), tempVector.getP1());
+	}
+
+	public static Line2D.Double linearRegressionVector(List<Measurement> measurements, int threshold, Line2D.Double longestVector) {
 		//		Collections.sort(measurements);
 
 		List<Measurement> measurementSelection = measurements.subList(0, threshold);
 		//		System.out.println("List size = "+measurementSelection.size());
-		double smallestX = 113.0;
-		double largestX = -113.0;
+//		double smallestX = 113.0;
+//		double largestX = -113.0;
 
 		double meanOfX = 0.0;
 		double meanOfY = 0.0;
@@ -131,8 +145,8 @@ public class Geom {
 			meanOfXY += m.getCoordinates().getX()*m.getCoordinates().getY();
 			meanOfXSquared += Math.pow(m.getCoordinates().getX(), 2);
 
-			if(m.getCoordinates().getX() > largestX) largestX = m.getCoordinates().getX();
-			if(m.getCoordinates().getX() < smallestX) smallestX = m.getCoordinates().getX();
+//			if(m.getCoordinates().getX() > largestX) largestX = m.getCoordinates().getX();
+//			if(m.getCoordinates().getX() < smallestX) smallestX = m.getCoordinates().getX();
 		}
 		meanOfX = meanOfX/measurementSelection.size();
 		meanOfY = meanOfY/measurementSelection.size();
@@ -155,12 +169,14 @@ public class Geom {
 		//		Point2D.Double pointA = new Point2D.Double(measurements.get(0).getCoordinates().getX(), 
 		//				(m*measurements.get(0).getCoordinates().getX())+b);
 
-		Point2D.Double pointA = new Point2D.Double(smallestX, (m*smallestX)+b);
+//		Point2D.Double pointA = new Point2D.Double(smallestX, (m*smallestX)+b);
+		Point2D.Double pointA = new Point2D.Double(longestVector.getX1(), (m*longestVector.getX1())+b);
 
 		//		Point2D.Double pointB = new Point2D.Double(measurements.get(measurements.size()-1).getCoordinates().getX(),
 		//				(m*measurements.get(measurements.size()-1).getCoordinates().getX())+b);
 
-		Point2D.Double pointB = new Point2D.Double(largestX, (m*largestX)+b);
+//		Point2D.Double pointB = new Point2D.Double(largestX, (m*largestX)+b);
+		Point2D.Double pointB = new Point2D.Double(longestVector.getX2(), (m*longestVector.getX2())+b);
 
 		return new Line2D.Double(pointA, pointB);
 	}
@@ -237,21 +253,94 @@ public class Geom {
 		}
 	}
 
-	public static DynamicCell calculateSector(Line2D.Double heuristicVector, double sectorAngle) {
-//		Line2D.Double correctVector = heuristicVector;
-//		if(pointClosestToOrigo.equals(heuristicVector.getP2())) {
-//			correctVector = new Line2D.Double(heuristicVector.getP2(), heuristicVector.getP1());
-//		}
-		double degreesToRotate = sectorAngle/2;
-		Line2D.Double heuristicSectorVector1 = rotateVector(heuristicVector, degreesToRotate*-1);
-		Line2D.Double heuristicSectorVector2 = rotateVector(heuristicVector, degreesToRotate);
-//		System.out.printf("Heuristic Vector Angle: %.2f\n", Math.toDegrees(angle(heuristicVector)));
-//		System.out.printf("Degrees to rotate in each direction: %.2f\n", degreesToRotate);
-//		System.out.printf("Heuristic Sector Vector 1 Angle: %.2f\n", Math.toDegrees(angle(heuristicSectorVector1)));
-//		System.out.printf("Heuristic Sector Vector 2 Angle: %.2f\n\n", Math.toDegrees(angle(heuristicSectorVector2)));
-		return new DynamicCell((Point2D.Double) heuristicVector.getP1(), Math.toDegrees(angle(heuristicSectorVector1)), sectorAngle);
-	}
-	
+		public static DynamicCell calculateSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
+			
+			double degreesToRotate = originalCell.getSectorAngle()/2;
+			Line2D.Double heuristicSectorVector1 = rotateVector(heuristicVector, degreesToRotate*-1);
+			heuristicSectorVector1 = changeVectorLengthByP2(heuristicSectorVector1, originalCell.getMaxDistance());
+			Line2D.Double heuristicSectorVector2 = rotateVector(heuristicVector, degreesToRotate);
+			heuristicSectorVector2 = changeVectorLengthByP2(heuristicSectorVector2, originalCell.getMaxDistance());
+	//		System.out.printf("GEOM: Heuristic Vector Angle: %.2f\n", Math.toDegrees(angle(heuristicVector)));
+	//		System.out.printf("GEOM: Degrees to rotate in each direction: %.2f\n", degreesToRotate);
+	//		System.out.printf("GEOM: Heuristic Sector Vector 1 Angle: %.2f\n", Math.toDegrees(angle(heuristicSectorVector1)));
+	//		System.out.printf("GEOM: Heuristic Sector Vector 2 Angle: %.2f\n\n", Math.toDegrees(angle(heuristicSectorVector2)));
+			DynamicCell heuristicCell = new DynamicCell(
+					(Point2D.Double) heuristicVector.getP1(), 
+					Math.toDegrees(angle(heuristicSectorVector1)), 
+					originalCell.getSectorAngle(), 
+					originalCell.getMaxDistance(), 
+					originalCell.getMinDistance());
+			heuristicCell.setVector1(heuristicSectorVector1);
+			heuristicCell.setVector2(heuristicSectorVector2);
+			return heuristicCell;
+		}
+		
+		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, int threshold) {
+			DynamicCell heuristicSector = calculateSector(heuristicVector, originalCell);
+			List<Measurement> subset = originalCell.getMeasurements();
+			Line2D.Double newHeuristicVector = heuristicVector;
+			double distToAdd = 16.0;
+			while(!pointsFitInsideSectorAngle(subset, heuristicSector)) {
+				if(distToAdd >= 512.0) break;
+				System.out.println(distToAdd);
+				newHeuristicVector = changeVectorLengthByP1(
+						newHeuristicVector, 
+						newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+distToAdd);
+				heuristicSector = calculateSector(newHeuristicVector, originalCell);
+				distToAdd = distToAdd*2;
+			}
+			return heuristicSector;
+		}
+		
+		public static boolean pointsFitInsideSectorAngle(List<Measurement> measurements, DynamicCell dc) {
+			for(Measurement m : measurements) {
+				if(!pointIsWithinSectorAngleBoundries(m.getCoordinates(), dc.getCellTowerCoordinates(),
+						dc.getVectorAngle(), dc.getVectorAngle()+dc.getSectorAngle())) {
+//				if(!pointIsWithinBoundries(m.getCoordinates(), dc.getCellTowerCoordinates(), dc.getVectorAngle(), 
+//						dc.getVectorAngle()+dc.getSectorAngle(), dc.getMaxDistance(), dc.getMinDistance())) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+
+//	public static Line2D.Double moveSectorOrigoBackwards(Line2D.Double heuristicVector, Point2D.Double p, double sectorAngle) {
+//		// flytt P1 bakover til p er innenfor vinkelboundries
+//		double pvDist = heuristicVector.ptLineDist(p);
+//		double pvDistSquared = Math.pow(pvDist, 2);
+//		double poDist = heuristicVector.getP1().distance(p);
+//		double poDistSquared = Math.pow(poDist, 2);
+//
+//		double a = pvDist/Math.tan(sectorAngle/2);
+//		double b = Math.sqrt(poDistSquared-pvDistSquared);
+//
+//		double angle = Math.toDegrees(angle(heuristicVector, new Line2D.Double(heuristicVector.getP1(), p)));
+//
+//		double lengthToMoveBackwards = 0.0;
+//
+//		if(pvDist == 0.0)
+//			lengthToMoveBackwards = poDist;
+//		else if(angle > 90)
+//			lengthToMoveBackwards = a+b;
+//		else if(angle < 90)
+//			lengthToMoveBackwards = a-b;
+//		else
+//			lengthToMoveBackwards = a;
+//
+//		//		System.out.printf("Length to move backwards=%.2f\n", lengthToMoveBackwards);
+//
+//		double newLength = heuristicVector.getP1().distance(heuristicVector.getP2())+lengthToMoveBackwards;
+//
+//		Line2D.Double newHeuristicVector = changeVectorLengthByP1(heuristicVector, newLength);
+//
+//		return newHeuristicVector;
+//	}
+
+
+
+
+
 	public static Line2D.Double adjustEndpoints(Line2D.Double originalVector, Point2D.Double pointClosestToOrigo) {
 		if(pointClosestToOrigo.equals(originalVector.getP2())) {
 			return new Line2D.Double(originalVector.getP2(), originalVector.getP1());
@@ -264,15 +353,22 @@ public class Geom {
 
 
 	public static void main(String[] args) {
-		//		double angle = Geom.angle(new Line2D.Double(new Point2D.Double(0,0), new Point2D.Double(0, 10)));
-		//		System.out.println(angle);
-		List<Measurement> measurements = new ArrayList<Measurement>();
-		measurements.add(new DefaultMeasurement(new Point2D.Double(1, 2)));
-		measurements.add(new DefaultMeasurement(new Point2D.Double(2, 1)));
-		measurements.add(new DefaultMeasurement(new Point2D.Double(4, 3)));
-		Line2D.Double line = linearRegressionVector(measurements, 3);
-		String s = String.format("(%.2f,%.2f) (%.2f,%.2f)", line.getX1(), line.getY1(), line.getX2(), line.getY2());
-		System.out.println(s);
+		Line2D.Double v = new Line2D.Double(0.0, 0.0, 9.0, 9.0);
+		double angle = Math.toDegrees(Geom.angle(v));
+		double angleToRotate = 10.0;
+		double newAngle = angle+angleToRotate;
+		Line2D.Double vectorRotated = Geom.rotateVector(v, angleToRotate);
+		double angleOfVRotated = Math.toDegrees(Geom.angle(vectorRotated));
+		Line2D.Double vectorComputed = Geom.toCartesian(newAngle, v.getP1().distance(v.getP2()), new Point2D.Double(0.0, 0.0));
+		double angleOfVComputed = Math.toDegrees(Geom.angle(vectorComputed));
+		double angleBetweenThem = Math.toDegrees(Geom.angle(vectorComputed, vectorRotated));
+		
+		System.out.printf("Original vector angle = %.2f\n", angle);
+		System.out.printf("Angle of vector rotated = %.2f\n", angleOfVRotated);
+		System.out.printf("Vector rotated = %s,%s\n", vectorRotated.getP1(), vectorRotated.getP2());
+		System.out.printf("Angle of vector computed = %.2f\n", angleOfVComputed);
+		System.out.printf("Vector computed = %s,%s\n", vectorComputed.getP1(), vectorComputed.getP2());
+		System.out.printf("Angle between = %.2f\n", angleBetweenThem);
 	}
 
 }

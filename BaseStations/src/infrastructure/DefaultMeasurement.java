@@ -2,6 +2,7 @@ package infrastructure;
 
 import java.awt.geom.Point2D;
 
+// TODO heller bruke kun Point2D.Double og extende denne om nødvendig senere?
 public class DefaultMeasurement implements Measurement {
 	
 	private Point2D.Double coordinates;
