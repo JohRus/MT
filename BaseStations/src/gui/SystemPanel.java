@@ -44,54 +44,52 @@ public class SystemPanel extends JPanel {
 	// distance of coordinate strings from axis
 	public static final int AXIS_STRING_DISTANCE = 20;
 
-//	private List<DynamicCell> cellList = new ArrayList<DynamicCell>();
-//	private Map<DynamicCell, List<Line2D.Double>> heuristicVectorMap = new HashMap<DynamicCell,List<Line2D.Double>>();
-//	private Map<DynamicCell, List<Point2D.Double>> heuristicCellTowerMap = new HashMap<DynamicCell,List<Point2D.Double>>();
-//	private Map<DynamicCell, List<DynamicCell>> heuristicDynamicCellMap = new HashMap<DynamicCell,List<DynamicCell>>();
+	private Map<DynamicCell, Computation> data;// = new HashMap<DynamicCell, Computation>();
 	
-	private Map<DynamicCell, List<Computation>> data = new HashMap<DynamicCell, List<Computation>>();
+	private boolean showHideLongestVectors;
+//	private boolean showHideLeastSquareVectors;
+	private boolean showHideHeuristicDCs;
 	
-	public void addData(DynamicCell dc, List<Computation> computationList) {
-		data.put(dc, computationList);
+	public SystemPanel() {
+		data = new HashMap<DynamicCell, Computation>();
+		showHideLongestVectors = false;
+//		showHideLeastSquareVectors = false;
+		showHideHeuristicDCs = false;
 	}
-	
+
+	public void addData(DynamicCell dc, Computation computation) {
+		data.put(dc, computation);
+	}
+
 	public void clearData() {
 		data.clear();
 	}
+
+	public Map<DynamicCell, Computation> getData() {
+		return data;
+	}
 	
-//	public void addDynamicCell(DynamicCell dc) {
-//		cellList.add(dc);
-//	}
-//
-//	public void clearCells() {
-//		cellList.clear();
-//	}
-//
-//	public void addHeuristicVectors(DynamicCell dc, List<Line2D.Double> heuristicVectors) {
-//		heuristicVectorMap.put(dc, heuristicVectors);
-//	}
-//
-//	public void clearHeuristicVectors() {
-//		heuristicVectorMap.clear();
-//	}
-//
-//	public void addHeuristicCellTowers(DynamicCell dc, List<Point2D.Double> heuristicCellTowers) {
-//		heuristicCellTowerMap.put(dc, heuristicCellTowers);
-//	}
-//
-//	public void clearHeuristicCellTowers() {
-//		heuristicCellTowerMap.clear();
-//	}
-//	
-//	public void addHeuristicDynamicCells(DynamicCell dc, List<DynamicCell> heuristicDynamicCells) {
-//		heuristicDynamicCellMap.put(dc, heuristicDynamicCells);
-//	}
-//	
-//	public void clearHeuristicDynamicCells() {
-//		heuristicDynamicCellMap.clear();
+	public void showHideLongestVectors() {
+		showHideLongestVectors = !showHideLongestVectors;
+	}
+	
+	
+//	public void showHideLeastSquareVectors() {
+//		showHideLeastSquareVectors = !showHideLeastSquareVectors;
 //	}
 
+	public void showHideHeuristicDCs() {
+		showHideHeuristicDCs = !showHideHeuristicDCs;
+	}
 	
+	public void hideAll() {
+		showHideLongestVectors = false;
+//		showHideLeastSquareVectors = false;
+		showHideHeuristicDCs = false;
+	}
+
+
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -102,205 +100,126 @@ public class SystemPanel extends JPanel {
 				RenderingHints.VALUE_ANTIALIAS_ON);
 
 		// x-axis
-		g2d.drawLine(X_AXIS_FIRST_X_COORD, X_AXIS_Y_COORD,
-				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
+		//		g2d.drawLine(X_AXIS_FIRST_X_COORD, X_AXIS_Y_COORD,
+		//				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
 		// y-axis
-		g2d.drawLine(Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD,
-				Y_AXIS_X_COORD, Y_AXIS_SECOND_Y_COORD);
+		//		g2d.drawLine(Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD,
+		//				Y_AXIS_X_COORD, Y_AXIS_SECOND_Y_COORD);
 
 		// x-axis arrow
-		g2d.drawLine(X_AXIS_SECOND_X_COORD - FIRST_LENGHT,
-				X_AXIS_Y_COORD - SECOND_LENGHT,
-				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
-		g2d.drawLine(X_AXIS_SECOND_X_COORD - FIRST_LENGHT,
-				X_AXIS_Y_COORD + SECOND_LENGHT,
-				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
+		//		g2d.drawLine(X_AXIS_SECOND_X_COORD - FIRST_LENGHT,
+		//				X_AXIS_Y_COORD - SECOND_LENGHT,
+		//				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
+		//		g2d.drawLine(X_AXIS_SECOND_X_COORD - FIRST_LENGHT,
+		//				X_AXIS_Y_COORD + SECOND_LENGHT,
+		//				X_AXIS_SECOND_X_COORD, X_AXIS_Y_COORD);
 
 		// y-axis arrow
-		g2d.drawLine(Y_AXIS_X_COORD - SECOND_LENGHT,
-				Y_AXIS_FIRST_Y_COORD + FIRST_LENGHT,
-				Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD);
-		g2d.drawLine(Y_AXIS_X_COORD + SECOND_LENGHT, 
-				Y_AXIS_FIRST_Y_COORD + FIRST_LENGHT,
-				Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD);
+		//		g2d.drawLine(Y_AXIS_X_COORD - SECOND_LENGHT,
+		//				Y_AXIS_FIRST_Y_COORD + FIRST_LENGHT,
+		//				Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD);
+		//		g2d.drawLine(Y_AXIS_X_COORD + SECOND_LENGHT, 
+		//				Y_AXIS_FIRST_Y_COORD + FIRST_LENGHT,
+		//				Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD);
 
 		// draw origin Point
-		g2d.fillOval(
-				X_AXIS_FIRST_X_COORD - (ORIGIN_COORDINATE_LENGHT / 2), 
-				Y_AXIS_SECOND_Y_COORD - (ORIGIN_COORDINATE_LENGHT / 2),
-				ORIGIN_COORDINATE_LENGHT, ORIGIN_COORDINATE_LENGHT);
+		//		g2d.fillOval(
+		//				X_AXIS_FIRST_X_COORD - (ORIGIN_COORDINATE_LENGHT / 2), 
+		//				Y_AXIS_SECOND_Y_COORD - (ORIGIN_COORDINATE_LENGHT / 2),
+		//				ORIGIN_COORDINATE_LENGHT, ORIGIN_COORDINATE_LENGHT);
 
 		// draw text "X" and draw text "Y"
-		g2d.drawString("X", X_AXIS_SECOND_X_COORD - AXIS_STRING_DISTANCE / 2,
-				X_AXIS_Y_COORD + AXIS_STRING_DISTANCE);
-		g2d.drawString("Y", Y_AXIS_X_COORD - AXIS_STRING_DISTANCE,
-				Y_AXIS_FIRST_Y_COORD + AXIS_STRING_DISTANCE / 2);
-		g2d.drawString("(0, 0)", X_AXIS_FIRST_X_COORD - AXIS_STRING_DISTANCE,
-				Y_AXIS_SECOND_Y_COORD + AXIS_STRING_DISTANCE);
+		//		g2d.drawString("X", X_AXIS_SECOND_X_COORD - AXIS_STRING_DISTANCE / 2,
+		//				X_AXIS_Y_COORD + AXIS_STRING_DISTANCE);
+		//		g2d.drawString("Y", Y_AXIS_X_COORD - AXIS_STRING_DISTANCE,
+		//				Y_AXIS_FIRST_Y_COORD + AXIS_STRING_DISTANCE / 2);
+		//		g2d.drawString("(0, 0)", X_AXIS_FIRST_X_COORD - AXIS_STRING_DISTANCE,
+		//				Y_AXIS_SECOND_Y_COORD + AXIS_STRING_DISTANCE);
 
 		// numerate axis
-		int xCoordNumbers = 10;
-		int yCoordNumbers = 10;
-		int xLength = (X_AXIS_SECOND_X_COORD - X_AXIS_FIRST_X_COORD)
-				/ xCoordNumbers;
-		int yLength = (Y_AXIS_SECOND_Y_COORD - Y_AXIS_FIRST_Y_COORD)
-				/ yCoordNumbers;
+		//		int xCoordNumbers = 10;
+		//		int yCoordNumbers = 10;
+		//		int xLength = (X_AXIS_SECOND_X_COORD - X_AXIS_FIRST_X_COORD)
+		//				/ xCoordNumbers;
+		//		int yLength = (Y_AXIS_SECOND_Y_COORD - Y_AXIS_FIRST_Y_COORD)
+		//				/ yCoordNumbers;
 
 		// draw x-axis numbers
-		for(int i = 1; i < xCoordNumbers; i++) {
-			g2d.drawLine(X_AXIS_FIRST_X_COORD + (i * xLength),
-					X_AXIS_Y_COORD - SECOND_LENGHT,
-					X_AXIS_FIRST_X_COORD + (i * xLength),
-					X_AXIS_Y_COORD + SECOND_LENGHT);
-			g2d.drawString(Integer.toString(i), 
-					X_AXIS_FIRST_X_COORD + (i * xLength) - 3,
-					X_AXIS_Y_COORD + AXIS_STRING_DISTANCE);
-		}
+		//		for(int i = 1; i < xCoordNumbers; i++) {
+		//			g2d.drawLine(X_AXIS_FIRST_X_COORD + (i * xLength),
+		//					X_AXIS_Y_COORD - SECOND_LENGHT,
+		//					X_AXIS_FIRST_X_COORD + (i * xLength),
+		//					X_AXIS_Y_COORD + SECOND_LENGHT);
+		//			g2d.drawString(Integer.toString(i), 
+		//					X_AXIS_FIRST_X_COORD + (i * xLength) - 3,
+		//					X_AXIS_Y_COORD + AXIS_STRING_DISTANCE);
+		//		}
 
 		//draw y-axis numbers
-		for(int i = 1; i < yCoordNumbers; i++) {
-			g2d.drawLine(Y_AXIS_X_COORD - SECOND_LENGHT,
-					Y_AXIS_SECOND_Y_COORD - (i * yLength), 
-					Y_AXIS_X_COORD + SECOND_LENGHT,
-					Y_AXIS_SECOND_Y_COORD - (i * yLength));
-			g2d.drawString(Integer.toString(i), 
-					Y_AXIS_X_COORD - AXIS_STRING_DISTANCE, 
-					Y_AXIS_SECOND_Y_COORD - (i * yLength));
-		}
-		
-		for(Entry<DynamicCell, List<Computation>> entry : data.entrySet()) {
+		//		for(int i = 1; i < yCoordNumbers; i++) {
+		//			g2d.drawLine(Y_AXIS_X_COORD - SECOND_LENGHT,
+		//					Y_AXIS_SECOND_Y_COORD - (i * yLength), 
+		//					Y_AXIS_X_COORD + SECOND_LENGHT,
+		//					Y_AXIS_SECOND_Y_COORD - (i * yLength));
+		//			g2d.drawString(Integer.toString(i), 
+		//					Y_AXIS_X_COORD - AXIS_STRING_DISTANCE, 
+		//					Y_AXIS_SECOND_Y_COORD - (i * yLength));
+		//		}
+
+		for(Entry<DynamicCell, Computation> entry : data.entrySet()) {
 			drawEntry(entry, g2d);
 		}
 
-//		for(DynamicCell dc : cellList) {
-//			drawCell(dc, g2d);
-//		}
-//
-//		for(Entry<DynamicCell, List<Line2D.Double>> entry : heuristicVectorMap.entrySet()) {
-//			drawHeuristicVectors(entry.getKey(), entry.getValue(), g2d);
-//		}
-//		
-//		for(Entry<DynamicCell, List<Point2D.Double>> entry : heuristicCellTowerMap.entrySet()) {
-//			drawHeuristicCellTowers(entry.getKey(), entry.getValue(), g2d);
-//		}
-//		
-//		for(Entry<DynamicCell, List<DynamicCell>> entry : heuristicDynamicCellMap.entrySet()) {
-//			
-//			for(DynamicCell heuristicDC : entry.getValue()) {
-//				int ctX = doubleToInt(calcX(entry.getKey().getCellTowerCoordinates().getX(), heuristicDC.getCellTowerCoordinates().getX()));
-//				int ctY = doubleToInt(calcY(entry.getKey().getCellTowerCoordinates().getY(), heuristicDC.getCellTowerCoordinates().getY()));
-//				drawSectorVectors(ctX, ctY, heuristicDC, g2d, Color.pink);
-//			}
-//		}
-
-		g2d.drawRect(10, 10, 10, 10);
-
 	}
-	
-	private void drawEntry(Entry<DynamicCell, List<Computation>> entry, Graphics2D g2d) {
-		DynamicCell actuallCell = entry.getKey();
-		double xBasis = xBasis(actuallCell.getCellTowerCoordinates().getX());
-		double yBasis = yBasis(actuallCell.getCellTowerCoordinates().getY());
+
+	private void drawEntry(Entry<DynamicCell, Computation> entry, Graphics2D g2d) {
 		
-		g2d.setColor(Color.black);
-//		Point2D.Double v1 = new Point2D.Double(xBasis+actuallCell.getVector1().getX2(), yBasis-actuallCell.getVector1().getY2());
-//		Point2D.Double v2 = new Point2D.Double(xBasis+actuallCell.getVector2().getX2(), yBasis-actuallCell.getVector2().getY2());
-//		Point2D.Double v1 = new Point2D.Double(X_AXIS_FIRST_X_COORD+actuallCell.getVector1().getX2(), Y_AXIS_SECOND_Y_COORD-actuallCell.getVector1().getY2());
-//		Point2D.Double v2 = new Point2D.Double(X_AXIS_FIRST_X_COORD+actuallCell.getVector2().getX2(), Y_AXIS_SECOND_Y_COORD-actuallCell.getVector2().getY2());
+		drawCell(entry.getKey(), 6, g2d, Color.black);
 		
-//		g2d.drawLine(doubleToInt(xBasis), doubleToInt(yBasis), doubleToInt(v1.getX()), doubleToInt(v1.getY()));
-//		g2d.drawLine(doubleToInt(xBasis), doubleToInt(yBasis), doubleToInt(v2.getX()), doubleToInt(v2.getY()));
-		g2d.drawLine(
-				doubleToInt(X_AXIS_FIRST_X_COORD+actuallCell.getCellTowerCoordinates().getX()),
-				doubleToInt(Y_AXIS_SECOND_Y_COORD-actuallCell.getCellTowerCoordinates().getY()), 
-				doubleToInt(X_AXIS_FIRST_X_COORD+actuallCell.getVector1().getX2()), 
-				doubleToInt(Y_AXIS_SECOND_Y_COORD-actuallCell.getVector1().getY2()));
-		g2d.drawLine(
-				doubleToInt(X_AXIS_FIRST_X_COORD+actuallCell.getCellTowerCoordinates().getX()), 
-				doubleToInt(Y_AXIS_SECOND_Y_COORD-actuallCell.getCellTowerCoordinates().getY()), 
-				doubleToInt(X_AXIS_FIRST_X_COORD+actuallCell.getVector2().getX2()), 
-				doubleToInt(Y_AXIS_SECOND_Y_COORD-actuallCell.getVector2().getY2()));
-//		int rectX = doubleToInt(xBasis)-(6/2);
-//		int rectY = doubleToInt(yBasis)-(6/2);
-		int rectX = doubleToInt(X_AXIS_FIRST_X_COORD+actuallCell.getCellTowerCoordinates().getX()-(6/2));
-		int rectY = doubleToInt(Y_AXIS_SECOND_Y_COORD-actuallCell.getCellTowerCoordinates().getY()-(6/2));
-		g2d.drawRect(rectX, rectY, 6, 6);
-		for(Measurement m : actuallCell.getMeasurements()) {
-//			int mX = doubleToInt(xBasis+m.getCoordinates().getX());
-//			int mY = doubleToInt(yBasis-m.getCoordinates().getY());
+		for(Measurement m : entry.getKey().getMeasurements()) {
+
 			int mX = doubleToInt(X_AXIS_FIRST_X_COORD+m.getCoordinates().getX()-(4/2));
 			int mY = doubleToInt(Y_AXIS_SECOND_Y_COORD-m.getCoordinates().getY()-(4/2));
-//			mX = mX-(4/2);
-//			mY = mY-(4/2);
+
 			g2d.fillOval(mX, mY, 4, 4);
 		}
-		
-//		System.out.printf("GUI: Sector Vector 1 Angle: %.2f\n", Math.toDegrees(Geom.angle(actuallCell.getVector1())));
-//		System.out.printf("GUI: Sector Vector 2 Angle: %.2f\n\n", Math.toDegrees(Geom.angle(actuallCell.getVector2())));
-		
-		
-		for(Computation c : entry.getValue()) {
+
+		if(showHideLongestVectors) {			
+			drawVector(entry.getValue().getLongestVector(), g2d, Color.magenta);
+		}
+
+//		if(showHideLeastSquareVectors) {			
+//			drawVector(entry.getValue().getLeastSquareVector(), g2d, Color.green);
+//		}
+
+		if(showHideHeuristicDCs) {			
+			drawCell(entry.getValue().getHeuristicDynamicCell1(), 4, g2d, Color.pink);
 			
-			Line2D.Double v = c.getHeuristicDirectionVector();
-//			double angle = Math.toDegrees(Geom.angle(v));
-			g2d.setColor(Color.blue);
-			g2d.drawLine(
-					doubleToInt(X_AXIS_FIRST_X_COORD+v.getX1()), 
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-v.getY1()), 
-					doubleToInt(X_AXIS_FIRST_X_COORD+v.getX2()), 
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-v.getY2()));
-			
-			DynamicCell dc = c.getHeuristicDynamicCell();
-			g2d.setColor(Color.pink);
-//			Point2D.Double v1 = new Point2D.Double(xBasis+dc.getVector1().getX2(), yBasis-dc.getVector1().getY2());
-//			Point2D.Double v2 = new Point2D.Double(xBasis+dc.getVector2().getX2(), yBasis-dc.getVector2().getY2());
-//			g2d.drawLine(doubleToInt(xBasis+dc.getCellTowerCoordinates().getX()), 
-//					doubleToInt(yBasis-dc.getCellTowerCoordinates().getY()), 
-//					doubleToInt(v1.getX()), doubleToInt(v1.getY()));
-//			g2d.drawLine(doubleToInt(xBasis+dc.getCellTowerCoordinates().getX()),
-//					doubleToInt(yBasis-dc.getCellTowerCoordinates().getY()),
-//					doubleToInt(v2.getX()), doubleToInt(v2.getY()));
-			g2d.drawLine(
-					doubleToInt(X_AXIS_FIRST_X_COORD+dc.getCellTowerCoordinates().getX()),
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getCellTowerCoordinates().getY()), 
-					doubleToInt(X_AXIS_FIRST_X_COORD+dc.getVector1().getX2()), 
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getVector1().getY2()));
-			g2d.drawLine(
-					doubleToInt(X_AXIS_FIRST_X_COORD+dc.getCellTowerCoordinates().getX()), 
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getCellTowerCoordinates().getY()), 
-					doubleToInt(X_AXIS_FIRST_X_COORD+dc.getVector2().getX2()), 
-					doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getVector2().getY2()));
-//			rectX = doubleToInt(xBasis+dc.getCellTowerCoordinates().getX())-(4/2);
-//			rectY = doubleToInt(yBasis-dc.getCellTowerCoordinates().getY())-(4/2);
-			rectX = doubleToInt(X_AXIS_FIRST_X_COORD+dc.getCellTowerCoordinates().getX()-(4/2));
-			rectY = doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getCellTowerCoordinates().getY()-(4/2));
-			g2d.drawRect(rectX, rectY, 4, 4);
-			
-//			System.out.printf("GUI: Heuristic Vector Angle: %.2f\n", Math.toDegrees(Geom.angle(v)));
-//			System.out.printf("GUI: Heuristic Sector Vector 1 Angle: %.2f\n", Math.toDegrees(Geom.angle(dc.getVector1())));
-//			System.out.printf("GUI: Heuristic Sector Vector 2 Angle: %.2f\n\n", Math.toDegrees(Geom.angle(dc.getVector2())));
-			
+			drawCell(entry.getValue().getHeuristicDynamicCell2(), 4, g2d, Color.cyan);
 		}
 	}
-
-
-	private double xBasis(double realCTX) {
-//		double sum = (double) X_AXIS_FIRST_X_COORD;
-//		for(int i = 0; i < parameters.length; i++) {
-//			sum += parameters[i];
-//		}
-//		return sum;
-		return (double) X_AXIS_FIRST_X_COORD + realCTX;
+	
+	private void drawCell(DynamicCell dc, int ctSize, Graphics2D g2d, Color color) {
+		g2d.setColor(color);
+		
+		drawVector(dc.getVector1(), g2d, color);
+		
+		drawVector(dc.getVector2(), g2d, color);
+		
+		int rectX = doubleToInt(X_AXIS_FIRST_X_COORD+dc.getCellTowerCoordinates().getX()-(ctSize/2));
+		int rectY = doubleToInt(Y_AXIS_SECOND_Y_COORD-dc.getCellTowerCoordinates().getY()-(ctSize/2));
+		g2d.drawRect(rectX, rectY, ctSize, ctSize);
+	}
+	
+	private void drawVector(Line2D.Double vector, Graphics2D g2d, Color color) {
+		g2d.setColor(color);
+		g2d.drawLine(
+				doubleToInt(X_AXIS_FIRST_X_COORD+vector.getX1()), 
+				doubleToInt(Y_AXIS_SECOND_Y_COORD-vector.getY1()), 
+				doubleToInt(X_AXIS_FIRST_X_COORD+vector.getX2()), 
+				doubleToInt(Y_AXIS_SECOND_Y_COORD-vector.getY2()));
 	}
 
-	private double yBasis(double realCTY) {
-//		double sum = (double) Y_AXIS_SECOND_Y_COORD;
-//		for(int i = 0; i < parameters.length; i++) {
-//			sum -= parameters[i];
-//		}
-//		return sum;
-		return (double) Y_AXIS_SECOND_Y_COORD - realCTY;
-	}
 
 	private int doubleToInt(double d) {
 		int toInt = (int)d;

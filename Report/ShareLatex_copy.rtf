@@ -1,4 +1,4 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
@@ -10,10 +10,14 @@
 \\usepackage\{color\}\
 \\usepackage\{algorithm\}\
 \\usepackage\{algpseudocode\}\
-\\usepackage\{amsmath\}\
+%\\usepackage\{algorithm2e\}\
+\\usepackage\{amssymb,amsmath,amsthm\}\
 \\usepackage\{graphicx\}\
 \\usepackage[backend=bibtex]\{biblatex\}\
 \\usepackage\{textcomp\}\
+\\usepackage\{microtype\}\
+\\usepackage\{subcaption\}\
+%\\usepackage\{tikz\}\
 \
 \\addbibresource\{references.bib\}\
 \
@@ -257,89 +261,215 @@ We wrote a small Java program for generating testdata. Below follow three exampl
 \\caption\{Random generated cell with 40 measurements\}\
 \\end\{figure\}\
 \
+\\newpage\
 \\section\{Positioning Cell Towers Heuristically\}\
-To predict the positon of a cell tower as effective as possible in real time, we need to develop algorithms that uses only a random subset of the measurements available. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower, we start by computing a linear vector from the chosen set of measurements to give us a good impression of which direction the cell tower is pointing. We have two algorithms for doing this; the Longest Vector method and the Least Square method.\
+To predict the positon of a cell tower as effective as possible in real time, we need to develop heuristic algorithms that works on a random subset of the measurements available $M$. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower we start by computing a linear vector $\\vec\{v\}_\{direction\}$ from the measurements in $M$. This will give us a good impression of which direction the cell tower is pointing, but only works well on small sector angles. This is done with the Longest Vector method. After the computation of $\\vec\{v\}_\{direction\}$ we propose two possible cell tower positions, one for each endpoint of $\\vec\{v\}_\{direction\}$. We use the Find Sector method for this.\
 \
-After computing the linear vector we need to find out which endpoint of the vector the cell tower is most likely to be close to, pointing towards the other endpoint. For this we use the Distance From Surrounding Points To Vector method.\
+\\begin\{figure\}[h!]\
+%\\label\{fig:40meas\}\
+\\centering\
+\\includegraphics[scale=1]\{pictures/cell.png\}\
+\\caption\{Randomly generated cell with a 10 degree sector angle and 20 measurements\}\
+\\end\{figure\}\
 \
-This approach gets less and less reliable when we increase the angle of the cell sector. We use 10 degrees as the smallest angle. When increasing the angle the area of the sector grows, thus increasing the probability of computing a poor vector if we are unlucky with the subset of measurements used. Throughout the thesis we assume the measurements for the cell are randomly distributed over the given cell area and not sorted in any particular way.\
-\
+\\newpage\
 \\subsection\{Longest Vector\}\
-This algorithm is simple and therefore not that reliable. We start by randomly pairing the measurements from the chosen subset and pick the pair furthest appart from each other to be the endpoints of our vector. For a small sector angle this method gives a good impression of the direction of the cell, but the endpoint chosen to be closest to the cell tower may still be far from it.\
+The purpose of this algorithm is to find two measurements that are far apart from each other by looking at $n^2$ randomly picked pairs of measurements. We choose the two measurements that are furthest apart from each other to be the endpoints of $\\vec\{v\}_\{direction\}$.\
 \
-\\begin\{algorithm\}\
-\\caption\{Longest Vector\}\
-\\label\{alg:LV\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
-\\State $m1$, $m2$\
-\\State $d \\gets 0.0$\
-\\State $i \\gets n-1$\
-\\While \{$i > 0$\}\
-\\State $m1Temp \\gets M(i--)$\
-\\State $m2Temp \\gets M(i--)$\
-\\State $dTemp \\gets$ distance from $m1Temp$ to $m2Temp$\
-\\If \{$dTemp > d$\}\
-\\State $m1 \\gets m1Temp$\
-\\State $m2 \\gets m2Temp$\
-\\State $d \\gets dTemp$\
-\\EndIf\
-\\EndWhile\
-\\State \\Return $[m1,m2]$\\Comment\{A vector with $m1$ and $m2$ as endpoints\}\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
+\\begin\{figure\}[h!]\
+%\\label\{fig:40meas\}\
+\\centering\
+\\includegraphics[scale=1]\{pictures/cell_lv.png\}\
+\\caption\{$\\vec\{v\}_\{LV\}$ is shown as a purple line\}\
+\\end\{figure\}\
 \
-Algorithm \\ref\{alg:LV\} takes as input an array of measurements $M$, and the integer $n$ which is the size of $M$. It outputs a vector to give an impression of the direction of the cell tower. %The running time is\
-%\\begin\{center\}\
-%$O(\\frac\{n\}\{2\}) = O(n)$\
-%\\end\{center\}\
-%since we decrement $i$ twice per iteration.\
+Longest Vector takes as input $M$ and $n$. First it declares the variables $m_1$, $m_2$ and $d$ for storing the two measurements with the current largest distance between them, and that distance. For each of the following $n$ iterations it randomly picks a measurement from $M$, compares the distance between it to $n$ other randomly picked measurements from $M$, and stores the largest distance and the pair of measurements representing it in $m_1$, $m_2$ and $d$. The algorithm outputs the vector $\\vec\{v\}_\{direction\}$ with $m_1$ and $m_2$ as endpoints.\
 \
-\\subsection\{Least Square\}\
-The Least Square method is a simple linear regression method for computing a straight line through a set of points, making the sum of the squared vertical distances from each point to the line, as small as possible. This algorithm is more mathematical than algorithm \\ref\{alg:LV\} and gives a more accurate result. It still runs in linear time and tend to give a better projecion of the direction of the cell tower and distance from the closest endpoint to the cell tower.\
+\\bigskip\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 1:\} Longest Vector\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>$M$ and $n$ \\\\ \
+        %\\> \\>in branch decomposition \\\\\
+        \\>\\textbf\{output:\}\\>$\\vec\{v\}_\{direction\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      Declare variables $m_1$,$m_2$ and $d$\\\\\
+      \\textbf\{for\} $0$ to $n$\\\\\
+      %\\=\\textbf\{output:\} \\=\\kill\
+      \\hspace\{10pt\}randomly pick a measurement $a \\in M$\\\\ \
+      \\hspace\{10pt\}\\textbf\{for\} $0$ to $n$\\\\\
+      \\hspace\{20pt\}randomly pick a measurement $b \\in M$\\\\ \
+      \\hspace\{20pt\}\\textbf\{if\} the distance between $a$ and $b$ is larger than the distance                   currently\\\\\
+      \\hspace\{20pt\}stored in $d$, store $a$ in $m_1$, $b$ in $m_2$, and the distance between them in         $d$\\\\\
+      \\textbf\{return\} $\\vec\{v\}_\{direction\}$ with $m_1$ and $m_2$ as endpoints\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
 \
-\\begin\{algorithm\}\
-\\caption\{Least Square\}\
-\\label\{alg:LS\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
-\\State $x_\{min\} \\gets 113.0$\
-\\State $x_\{max\} \\gets -113.0$\
-\\State $x_\{mean\}, y_\{mean\}, xy_\{mean\}, x_\{squared\\_mean\}, x_\{mean\\_squared\}, m, b \\gets 0.0$\
-\\ForAll \{$m \\in M$\}\
-\\State $x_\{mean\} \\gets x_\{mean\} + m(x)$\
-\\State $y_\{mean\} \\gets y_\{mean\} + m(y)$\
-\\State $xy_\{mean\} \\gets xy_\{mean\} + (m(x)\\times m(y))$\
-\\State $x_\{squared\\_mean\} \\gets x_\{squared\\_mean\} + m(x)^2$\
-\\If \{$m(x) > x_\{max\}$\}\
-\\State $x_\{max\} \\gets m(x)$\
-\\EndIf\
-\\If \{$m(x) < x_\{min\}$\}\
-\\State $x_\{min\} \\gets m(x)$\
-\\EndIf\
-\\EndFor\
-\\State $x_\{mean\} \\gets \\frac\{x_\{mean\}\}\{n\}$\
-\\State $y_\{mean\} \\gets \\frac\{y_\{mean\}\}\{n\}$\
-\\State $xy_\{mean\} \\gets \\frac\{xy_\{mean\}\}\{n\}$\
-\\State $x_\{squared\\_mean\} \\gets \\frac\{x_\{squared\\_mean\}\}\{n\}$\
-\\State $x_\{mean\\_squared\} \\gets (x_\{mean\})^2$\
-\\State $m \\gets \\frac\{(x_\{mean\}\\times y_\{mean\})-xy_\{mean\}\}\{x_\{mean\\_squared\}-x_\{squared\\_mean\}\}$\
-\\State $b \\gets y_\{mean\}-(m\\times x_\{mean\})$\
-\\State $ep1 \\gets (x_\{min\},b+(m\\times x_\{min\}))$\
-\\State $ep2 \\gets (x_\{max\},b+(m\\times x_\{max\}))$\
-\\State \\Return $[ep1,ep2]$\\Comment\{A vector with $ep1$ and $ep2$ as endpoints\}\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
+%\\begin\{algorithm\}\
+%\\caption\{Longest Vector\}\
+%\\label\{alg:LV\}\
+%\\begin\{algorithmic\}[1]\
+%\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
+%\\State $m1$, $m2$\
+%\\State $d \\gets 0.0$\
+%\\State $i \\gets n-1$\
+%\\While \{$i > 0$\}\
+%\\State $m1Temp \\gets M(i--)$\
+%\\State $m2Temp \\gets M(i--)$\
+%\\State $dTemp \\gets$ distance from $m1Temp$ to $m2Temp$\
+%\\If \{$dTemp > d$\}\
+%\\State $m1 \\gets m1Temp$\
+%\\State $m2 \\gets m2Temp$\
+%\\State $d \\gets dTemp$\
+%\\EndIf\
+%\\EndWhile\
+%\\State \\Return $[m1,m2]$\\Comment\{A vector with $m1$ and $m2$ as endpoints\}\
+%\\EndProcedure\
+%\\end\{algorithmic\}\
+%\\end\{algorithm\}\
 \
-Algorithm \\ref\{alg:LS\} takes as input an array of measurements $M$, and the integer $n$ which is the size of $M$. It outputs a vector to give an impression of the direction of the cell tower. %The running time is $O(n)$ since we iterate through the $n$ measurements once.\
 \
+\
+\
+\\newpage\
+\\subsection\{Find Sector\}\
+After retrieving $\\vec\{v\}_\{direction\}$ we have two suggested solutions for which direction the cell tower is pointing. It is either from $ep_1$ to $ep_2$, or from $ep_2$ to $ep_1$. We compute solution cells for both directions. To describe the process we look at the solution where the direction of the cell tower points from $ep_1$ to $ep_2$.\
+\
+To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M$ fits inside the sector. We start by computing a heuristic sector $C_\{heuristic\}$ with the same angle as the original cell sector, with the origin at $ep_1$, such that $\\vec\{v\}_\{direction\}$ lies in the middle of the sector. That is, the distance from a point on $\\vec\{v\}_\{direction\}$ to both boundries of $C_\{heuristic\}$ is equal for every point on $\\vec\{v\}_\{direction\}$. The computation of $C_\{heuristic\}$ is done with the Compute Sector method. After this first computation of $C_\{heuristic\}$ we do several iterations. For each iteration, if every $m$ does not fit inside we move $ep_1$ backwards along $\\vec\{v\}_\{direction\}$ by a constant factor $d$, and compute $C_\{heuristic\}$ with the new origin. The iterations stop when every $m$ fits inside $C_\{heuristic\}$.\
+\
+\\bigskip\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 3:\} Find Sector\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>$\\vec\{v\}_\{direction\}$, $M$, and $d$\\\\ \
+        %\\> \\>in branch decomposition \\\\\
+        \\>\\textbf\{output:\}\\>$C_\{heuristic\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      compute initial $C_\{heuristic\}$\\\\\
+      \\textbf\{while\} every measurement $m$ $\\in$ $M$ does not fit inside $C_\{heuristic\}$\\\\\
+      %\\=\\textbf\{output:\} \\=\\kill\
+      \\hspace\{10pt\}move $ep_1$ backwards by length $d$\\\\\
+      \\hspace\{10pt\}compute new $C_\{heuristic\}$ with the new origin $ep_1$\\\\\
+      \\textbf\{return\} $C_\{heuristic\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
+\
+\\bigskip\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 4:\} Compute Sector\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>$\\vec\{v\}_\{direction\}$ and sector angle $\\alpha$\\\\ \
+        %\\> \\>in branch decomposition \\\\\
+        \\>\\textbf\{output:\}\\>$C_\{heuristic\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      rotate $\\vec\{v\}_\{direction\}$ around $ep_1$ in both directions, by an angle of $\\frac\{\\alpha\}\{2\}$\\\\\
+      \\textbf\{return\} $C_\{heuristic\}$ with $ep_1$ as origin and the two vectors obtained\\\\ \
+      \\hspace\{35pt\}from the rotations as boundries\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
+\
+\\bigskip\
+As described above we apply this process on both directions of $\\vec\{v\}_\{direction\}$, thereby creating two solutions for the cell.\
+\
+\\begin\{figure\}[h!]\
+%\\label\{fig:40meas\}\
+\\centering\
+\\includegraphics[scale=1]\{pictures/cell_hdcs.png\}\
+\\caption\{The two solution sectors are shown\}\
+\\end\{figure\}\
+\
+\\bigskip\
+\\begin\{figure\}[h!]\
+%\\label\{fig:40meas\}\
+\\centering\
+\\includegraphics[scale=1]\{pictures/cell_lv_ls_hdcs.png\}\
+\\caption\{All variables are shown\}\
+\\end\{figure\}\
+\
+%\\begin\{algorithm\}\
+%\\caption\{Least Square\}\
+%\\label\{alg:LS\}\
+%\\begin\{algorithmic\}[1]\
+%\\Procedure\{LV\}\{M, n\}\\Comment\{An array $M$ and integer $n$\}\
+%\\State $x_\{min\} \\gets 113.0$\
+%\\State $x_\{max\} \\gets -113.0$\
+%\\State $x_\{mean\}, y_\{mean\}, xy_\{mean\}, x_\{squared\\_mean\}, x_\{mean\\_squared\}, m, b \\gets 0.0$\
+%\\ForAll \{$m \\in M$\}\
+%\\State $x_\{mean\} \\gets x_\{mean\} + m(x)$\
+%\\State $y_\{mean\} \\gets y_\{mean\} + m(y)$\
+%\\State $xy_\{mean\} \\gets xy_\{mean\} + (m(x)\\times m(y))$\
+%\\State $x_\{squared\\_mean\} \\gets x_\{squared\\_mean\} + m(x)^2$\
+%\\If \{$m(x) > x_\{max\}$\}\
+%\\State $x_\{max\} \\gets m(x)$\
+%\\EndIf\
+%\\If \{$m(x) < x_\{min\}$\}\
+%\\State $x_\{min\} \\gets m(x)$\
+%\\EndIf\
+%\\EndFor\
+%\\State $x_\{mean\} \\gets \\frac\{x_\{mean\}\}\{n\}$\
+%\\State $y_\{mean\} \\gets \\frac\{y_\{mean\}\}\{n\}$\
+%\\State $xy_\{mean\} \\gets \\frac\{xy_\{mean\}\}\{n\}$\
+%\\State $x_\{squared\\_mean\} \\gets \\frac\{x_\{squared\\_mean\}\}\{n\}$\
+%\\State $x_\{mean\\_squared\} \\gets (x_\{mean\})^2$\
+%\\State $m \\gets \\frac\{(x_\{mean\}\\times y_\{mean\})-xy_\{mean\}\}\{x_\{mean\\_squared\}-x_\{squared\\_mean\}\}$\
+%\\State $b \\gets y_\{mean\}-(m\\times x_\{mean\})$\
+%\\State $ep1 \\gets (x_\{min\},b+(m\\times x_\{min\}))$\
+%\\State $ep2 \\gets (x_\{max\},b+(m\\times x_\{max\}))$\
+%\\State \\Return $[ep1,ep2]$\\Comment\{A vector with $ep1$ and $ep2$ as endpoints\}\
+%\\EndProcedure\
+%\\end\{algorithmic\}\
+%\\end\{algorithm\}\
+\
+\\newpage\
+\\subsection\{Greater angles\}\
+This approach gets less and less reliable when we increase the angle of the cell sector. When we use an angle of only 10 degrees, we can be quite sure that we will get usable results. When increasing the angle the area of the sector grows. This will increase the probability of computing a poor vector if we are unlucky with the subset of measurements used and the combination of pairs of measurements.\
+\
+\\newpage\
 \\subsection\{Distance From Surrounding Points To Vector\}\
 This is a method to decide which endpoint of the vector retreived from algorithms \\ref\{alg:LV\} and \\ref\{alg:LS\}, are closest to the cell tower. In a cell sector, the further away from the cell tower we get, the distance between the two vectors forming the sector, $v_1$ and $v_2$, increases. The perfect vector $v$ to give an impression of which direction the cell tower is pointing would intersect with the cell tower and go between $v_1$ and $v_2$ such that the distance from $v$ to $v_1$ and the distance from $v$ to $v_2$ always are equal. This means that measurements further away from the cell tower than those close to it, may be further away from $v$. Now consider the two endpoints of $v$, $ep_1$ and $ep_2$, and our randomly distributed measurements. If $ep_1$ is the endpoint on top of the cell tower, $m_1$ are those measurements closer to $ep_1$ than $ep_2$ and $m_2$ are those measurements closer to $ep_2$ than $ep_1$, then the mean of the least possible distances from each point in $m_1$ to $v$ are very likely to be smaller than the mean of the least possible distances from each point in $m_2$ to $v$.\
 \
 We do not have such a perfect vector, but when we apply this theory to our heuristic vectors retreived from algorithm \\ref\{alg:LV\} or \\ref\{alg:LS\}, we compute an endpoint that is likely to be close to the cell tower.\
 \
+\\newpage\
 \\section\{Conclusion\}\
 \\subsection\{Challenges along the road\}\
 I have met several challenges while working on this master thesis. Some where easy to fix, and some were not.\
@@ -347,6 +477,79 @@ I have met several challenges while working on this master thesis. Some where ea
 When I started computing heuristic cell sectors I did not think about the fact that the heuristic cell tower position was at some point relative to the real cell tower position, at one of the endpoints of the heuristic vector that gives an impression of which direction the cell tower is pointing. This became a problem when I began computing the vectors forming the boundries of the heuristic cell sector. As I have described earlier, these vectors are generated from the heuristic direction vector, by rotating it in both directions by the sector angle divided by two. My initial thought was to just perform a simple rotation with the endpoint on the heuristic direction vector that do not lie on top of the heuristic cell tower position, thinking it would rotate around the heuristic cell tower position. But in reality the rotation performed was around the real cell tower position. I had to really dig into the code and theory to locate this mistake. The solution was to do the rotation with a virtual vector parallel to the heuristic direction vector, where the new x-values and y-values were computed by subtracting the x-value and y-value at the endpoint on top of the heuristic cell tower, from the x-value and y-value at both endpoints. After the rotation the values that were subtracted are added back to the values forming the new vector to compute the correct vector.\
 \
 I had the same problem when computing a vectors angle, but when I had already figured out the problem with the rotation, it was an easy fix.\
+\
+\\subsubsection\{Least Square\}\
+The Least Square method is a simple linear regression method for computing a straight line $l_\{LS\}$ through a set of points, making the sum of the squared vertical distances from each point to $l_\{LS\}$, as small as possible. This algorithm is for our problem more accurate than Longest Vector, but outputs a linear line in the form of $y=ax+b$, where $a$ and $b$ are computed and $x$ is for us to choose. This is where the Longest Vector algorithm comes to use. After computing the equation $y=ax+b$ from $S$, we pick the x-values from $m_1$ and $m_2$ and input them into the equation, thus creating the endpoints $ep_1$ and $ep_2$ for $\\vec\{v\}_\{direction\}$.\
+\
+\\begin\{figure\}[h!]\
+%\\label\{fig:40meas\}\
+\\centering\
+\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=1]\{pictures/cell_ls.png\}\
+    \\caption\{$\\vec\{v\}_\{direction\}$ is shown as a green line\}\
+  \\end\{subfigure\}\
+  \\hspace\{.03\\textwidth\}\
+  \\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=1]\{pictures/cell_lv_ls.png\}\
+    \\caption\{$\\vec\{v\}_\{LV\}$ and $\\vec\{v\}_\{direction\}$ together\}\
+  \\end\{subfigure\}\
+%\\includegraphics[scale=1]\{pictures/cell_lv.png\}\
+%\\caption\{$\\vec\{v\}_\{LV\}$ is shown as a purple line\}\
+\\end\{figure\}\
+\
+To compute $a$ and $b$ we first need to compute several other variables from $S$:\
+\\begin\{itemize\}\
+\\item The mean of all x-values, $x_\{mean\}$ \
+\\item The mean of all y-values, $y_\{mean\}$\
+\\item The mean of all x$\\times$y-values, $xy_\{mean\}$\
+\\item The mean of all x$^2$-values, $x_\{squared-mean\}$\
+\\item $x_\{mean\}$ squared, $x_\{mean-squared\}$\
+\\end\{itemize\}\
+We then compute $a$ and $b$ in the following way.\
+\\begin\{center\}\
+$a = \\frac\{x_\{mean\}\\times y_\{mean\} - xy_\{mean\}\}\{x_\{mean-squared\}-x_\{squared-mean\}\}$\\\\\\vspace\{7pt\}and\\\\\
+\\vspace\{3pt\}$b = y_\{mean\}-a\\times x_\{mean\}$\
+\\end\{center\}\
+We now have our equation $y=ax+b$ for the line $l_\{LS\}$.\
+\
+\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 2:\} Least Square\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>subset $S$ $\\in$ $M$, the integer $n$ $=$ $|S|$, and the vector $\\vec\{v\}_\{LV\}$\\\\ \
+        %\\> \\>in branch decomposition \\\\\
+        \\>\\textbf\{output:\}\\>$\\vec\{v\}_\{direction\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      declare variables $x_\{mean\}$, $y_\{mean\}$, $xy_\{mean\}$, $x_\{squared-mean\}$, $x_\{mean-squared\}$\\\\\
+      \\textbf\{for each\} measurement $m$ $\\in$ $S$\\\\\
+      %\\=\\textbf\{output:\} \\=\\kill\
+      \\hspace\{10pt\}add the x-value of $m$ to $x_\{mean\}$\\\\\
+      \\hspace\{10pt\}add the y-value of $m$ to $y_\{mean\}$\\\\\
+      \\hspace\{10pt\}add the x$\\times$y-value of $m$ to $xy_\{mean\}$\\\\\
+      \\hspace\{10pt\}add the x$^2$-value of $m$ to $x_\{squared-mean\}$\\\\\
+      divide $x_\{mean\}$, $y_\{mean\}$, $xy_\{mean\}$ and $x_\{squared-mean\}$ by $n$\\\\ \
+      compute $x_\{mean-squared\}$ by squaring $x_\{mean\}$\\\\\
+      compute $a$ and $b$\\\\\
+      create $ep_1$ and $ep_2$ by inputing the x-values from the endpoints of $\\vec\{v\}_\{LV\}$\\\\ into the equation $y=ax+b$\\\\\
+      \\textbf\{return\} $\\vec\{v\}_\{direction\}$ created from $ep_1$ and $ep_2$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
+\
 \\subsubsection\{Visualizing the data\}\
 I was not very familiar with the Swing library before I started working on this thesis.\
 % Problemet med at origo er \'f8verst til h\'f8yre\
@@ -894,40 +1097,4 @@ public class Map extends JFrame \{\
 	\}\
 \}\
 \\end\{lstlisting\}\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
-\
 \\end\{document\}}

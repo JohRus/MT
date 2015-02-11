@@ -5,7 +5,9 @@ import infrastructure.Measurement;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class Geom {
 
@@ -81,7 +83,7 @@ public class Geom {
 			double angle1, double angle2) {
 		Line2D.Double vectorToP = new Line2D.Double(origo, p);
 		double vectorToPAngle = Math.toDegrees(angle(vectorToP));
-		System.out.printf("Angle1=%.2f -- Angle2=%.2f -- Vector to P Angle=%.2f\n", angle1, angle2, vectorToPAngle);
+//		System.out.printf("Angle1=%.2f -- Angle2=%.2f -- Vector to P Angle=%.2f\n", angle1, angle2, vectorToPAngle);
 
 		// TODO hvis den positive delen av x-aksen går igjennom sektoren blir dette feil
 		if(vectorToPAngle >= angle1 && vectorToPAngle <= angle2) {
@@ -181,25 +183,62 @@ public class Geom {
 		return new Line2D.Double(pointA, pointB);
 	}
 
+//	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
+//		//		boolean[] used = new boolean[measurements.size()];
+//		//		int nUsed = 0;
+//
+//		Measurement m1 = measurements.get(0);
+//		Measurement m2 = measurements.get(1);
+//		double d = m1.getCoordinates().distance(m2.getCoordinates());
+//
+//		int i = 2;
+//
+//		while(threshold-i > 1) {
+//			Measurement currM1 = measurements.get(i++);
+//			Measurement currM2 = measurements.get(i++);
+//			double tempD = currM1.getCoordinates().distance(currM2.getCoordinates());
+//			if(tempD > d) {
+//				m1 = currM1;
+//				m2 = currM2;
+//				d = tempD;
+//			}
+//		}
+//		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
+//	}
+	
 	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
-		//		boolean[] used = new boolean[measurements.size()];
-		//		int nUsed = 0;
-
-		Measurement m1 = measurements.get(0);
-		Measurement m2 = measurements.get(1);
-		double d = m1.getCoordinates().distance(m2.getCoordinates());
-
-		int i = 2;
-
-		while(threshold-i > 1) {
-			Measurement currM1 = measurements.get(i++);
-			Measurement currM2 = measurements.get(i++);
-			double tempD = currM1.getCoordinates().distance(currM2.getCoordinates());
-			if(tempD > d) {
-				m1 = currM1;
-				m2 = currM2;
-				d = tempD;
-			}
+		List<Measurement> linkedList = new LinkedList<Measurement>(measurements);
+		
+		Random r1 = new Random();
+		
+		int min = 0;
+		int max = linkedList.size()-1;
+		
+		Measurement m1 = null;
+		Measurement m2 = null;
+		double d = 0.0;
+		
+		for(int i = 0; i < threshold; i++) {
+			
+//			int e1 = min + r1.nextInt((max-min)+1);
+			int e1 = r1.nextInt(linkedList.size());
+//			Measurement item1 = linkedList.remove(e1);
+			Measurement item1 = linkedList.get(e1);
+//			linkedList.add(min++, item1);
+			
+			Random r2 = new Random();
+			
+			for(int j = 0; j < threshold; j++) {
+//				int e2 = min + r2.nextInt((max-min)+1);
+				int e2 = r2.nextInt(linkedList.size());
+				Measurement item2 = linkedList.get(e2);
+				double currd = item1.getCoordinates().distance(item2.getCoordinates());
+				if(currd > d) {
+					m1 = item1;
+					m2 = item2;
+					d = currd;
+				}
+			}	
 		}
 		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
 	}
@@ -253,7 +292,7 @@ public class Geom {
 		}
 	}
 
-		public static DynamicCell calculateSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
+		public static DynamicCell computeSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
 			
 			double degreesToRotate = originalCell.getSectorAngle()/2;
 			Line2D.Double heuristicSectorVector1 = rotateVector(heuristicVector, degreesToRotate*-1);
@@ -276,18 +315,20 @@ public class Geom {
 		}
 		
 		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, int threshold) {
-			DynamicCell heuristicSector = calculateSector(heuristicVector, originalCell);
+			DynamicCell heuristicSector = computeSector(heuristicVector, originalCell);
 			List<Measurement> subset = originalCell.getMeasurements();
 			Line2D.Double newHeuristicVector = heuristicVector;
-			double distToAdd = 16.0;
+			double distToAdd = 10.0;
 			while(!pointsFitInsideSectorAngle(subset, heuristicSector)) {
+//				System.out.println(distToAdd);
+				// modifisere subset slik at jeg utelukker de målingene jeg vet passer
 				if(distToAdd >= 512.0) break;
-				System.out.println(distToAdd);
+				
 				newHeuristicVector = changeVectorLengthByP1(
 						newHeuristicVector, 
 						newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+distToAdd);
-				heuristicSector = calculateSector(newHeuristicVector, originalCell);
-				distToAdd = distToAdd*2;
+				heuristicSector = computeSector(newHeuristicVector, originalCell);
+//				distToAdd += 20.0;
 			}
 			return heuristicSector;
 		}
