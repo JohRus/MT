@@ -12,7 +12,6 @@ import java.util.Random;
 public class Geom {
 
 	public static Line2D.Double rotateVector(Line2D.Double toBeRotated, double degrees) {
-		//		Point2D.Double a = (Point2D.Double) toBeRotated.getP1();
 		Point2D.Double adjustedP1 = new Point2D.Double(toBeRotated.getX1()-toBeRotated.getX1(), toBeRotated.getY1()-toBeRotated.getY1());
 		Point2D.Double adjustedP2 = new Point2D.Double(toBeRotated.getX2()-toBeRotated.getX1(), toBeRotated.getY2()-toBeRotated.getY1());
 		double radians = Math.toRadians(degrees);
@@ -83,14 +82,16 @@ public class Geom {
 			double angle1, double angle2) {
 		Line2D.Double vectorToP = new Line2D.Double(origo, p);
 		double vectorToPAngle = Math.toDegrees(angle(vectorToP));
-//		System.out.printf("Angle1=%.2f -- Angle2=%.2f -- Vector to P Angle=%.2f\n", angle1, angle2, vectorToPAngle);
-
-		// TODO hvis den positive delen av x-aksen går igjennom sektoren blir dette feil
+		if(angle2 > 360 && vectorToPAngle >= 0.0 && vectorToPAngle <= (angle2-360)) {
+			vectorToPAngle += 360;
+		}
 		if(vectorToPAngle >= angle1 && vectorToPAngle <= angle2) {
 			return true;
 		}
-		else
+		else {
 			return false;
+		}
+			
 	}
 
 	public static boolean pointIsWithinSectorDistanceBoundries(Point2D.Double p, Point2D.Double origo,
@@ -116,7 +117,6 @@ public class Geom {
 	
 	public static Line2D.Double changeVectorLengthByP1(Line2D.Double vector, double newLength) {
 		Line2D.Double tempVector = new Line2D.Double(vector.getP2(), vector.getP1());
-//		double newLength = heuristicVector.getP1().distance(heuristicVector.getP2())+lengthToMoveBackwards;
 
 		tempVector = changeVectorLengthByP2(tempVector, newLength);
 
@@ -299,10 +299,6 @@ public class Geom {
 			heuristicSectorVector1 = changeVectorLengthByP2(heuristicSectorVector1, originalCell.getMaxDistance());
 			Line2D.Double heuristicSectorVector2 = rotateVector(heuristicVector, degreesToRotate);
 			heuristicSectorVector2 = changeVectorLengthByP2(heuristicSectorVector2, originalCell.getMaxDistance());
-	//		System.out.printf("GEOM: Heuristic Vector Angle: %.2f\n", Math.toDegrees(angle(heuristicVector)));
-	//		System.out.printf("GEOM: Degrees to rotate in each direction: %.2f\n", degreesToRotate);
-	//		System.out.printf("GEOM: Heuristic Sector Vector 1 Angle: %.2f\n", Math.toDegrees(angle(heuristicSectorVector1)));
-	//		System.out.printf("GEOM: Heuristic Sector Vector 2 Angle: %.2f\n\n", Math.toDegrees(angle(heuristicSectorVector2)));
 			DynamicCell heuristicCell = new DynamicCell(
 					(Point2D.Double) heuristicVector.getP1(), 
 					Math.toDegrees(angle(heuristicSectorVector1)), 
@@ -314,21 +310,18 @@ public class Geom {
 			return heuristicCell;
 		}
 		
-		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, int threshold) {
+		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell) {
 			DynamicCell heuristicSector = computeSector(heuristicVector, originalCell);
 			List<Measurement> subset = originalCell.getMeasurements();
 			Line2D.Double newHeuristicVector = heuristicVector;
 			double distToAdd = 10.0;
 			while(!pointsFitInsideSectorAngle(subset, heuristicSector)) {
-//				System.out.println(distToAdd);
 				// modifisere subset slik at jeg utelukker de målingene jeg vet passer
-				if(distToAdd >= 512.0) break;
 				
 				newHeuristicVector = changeVectorLengthByP1(
 						newHeuristicVector, 
 						newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+distToAdd);
 				heuristicSector = computeSector(newHeuristicVector, originalCell);
-//				distToAdd += 20.0;
 			}
 			return heuristicSector;
 		}
@@ -337,8 +330,7 @@ public class Geom {
 			for(Measurement m : measurements) {
 				if(!pointIsWithinSectorAngleBoundries(m.getCoordinates(), dc.getCellTowerCoordinates(),
 						dc.getVectorAngle(), dc.getVectorAngle()+dc.getSectorAngle())) {
-//				if(!pointIsWithinBoundries(m.getCoordinates(), dc.getCellTowerCoordinates(), dc.getVectorAngle(), 
-//						dc.getVectorAngle()+dc.getSectorAngle(), dc.getMaxDistance(), dc.getMinDistance())) {
+
 					return false;
 				}
 			}

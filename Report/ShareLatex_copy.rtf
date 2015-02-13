@@ -16,7 +16,7 @@
 \\usepackage[backend=bibtex]\{biblatex\}\
 \\usepackage\{textcomp\}\
 \\usepackage\{microtype\}\
-\\usepackage\{subcaption\}\
+\\usepackage\{caption,subcaption\}\
 %\\usepackage\{tikz\}\
 \
 \\addbibresource\{references.bib\}\
@@ -71,8 +71,8 @@
 \\newpage\
 \\listoffigures\
 \
-%\\newpage\
-%\\listoftables\
+\\newpage\
+\\listoftables\
 \
 \\newpage\
 \\listofalgorithms\
@@ -229,61 +229,33 @@ We wrote a small Java program for generating testdata. Below follow three exampl
 \\item \\text\{Red square:\} Position of cell tower calculated by Strongest RSS\
 \\end\{itemize\}\
 \
-\\begin\{figure\}[h!]\
-\\label\{fig:10meas\}\
-  \\centering\
-  %\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
-    %\\centering\
-    \\includegraphics[scale=0.8]\{pictures/testData_10meas.png\}\
-    \\caption\{Random generated cell with 10 measurements\}\
-  %\\end\{subfigure\}\
-  %\\hspace\{.03\\textwidth\}\
-  %\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
-    %\\centering\
-    %\\includegraphics[width=10em]\{Steiner_after.png\}\
-    %\\caption\{\\textsf\{Grapher\} with Steiner tree highlighted\}\
-  %\\end\{subfigure\}\
-  %\\caption\{\\textsf\{Grapher\} before and after computing the Steiner tree.\}\
-\\end\{figure\}\
-\
-\\newpage\
-\\begin\{figure\}[h!]\
-\\label\{fig:20meas\}\
-\\centering\
-\\includegraphics[scale=0.56]\{pictures/testData_20meas.png\}\
-\\caption\{Random generated cell with 20 measurements\}\
-\\end\{figure\}\
-\
-\\begin\{figure\}[h!]\
-\\label\{fig:40meas\}\
-\\centering\
-\\includegraphics[scale=0.56]\{pictures/testData_40meas.png\}\
-\\caption\{Random generated cell with 40 measurements\}\
-\\end\{figure\}\
-\
 \\newpage\
 \\section\{Positioning Cell Towers Heuristically\}\
 To predict the positon of a cell tower as effective as possible in real time, we need to develop heuristic algorithms that works on a random subset of the measurements available $M$. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower we start by computing a linear vector $\\vec\{v\}_\{direction\}$ from the measurements in $M$. This will give us a good impression of which direction the cell tower is pointing, but only works well on small sector angles. This is done with the Longest Vector method. After the computation of $\\vec\{v\}_\{direction\}$ we propose two possible cell tower positions, one for each endpoint of $\\vec\{v\}_\{direction\}$. We use the Find Sector method for this.\
 \
-\\begin\{figure\}[h!]\
-%\\label\{fig:40meas\}\
-\\centering\
-\\includegraphics[scale=1]\{pictures/cell.png\}\
-\\caption\{Randomly generated cell with a 10 degree sector angle and 20 measurements\}\
-\\end\{figure\}\
-\
 \\newpage\
 \\subsection\{Longest Vector\}\
-The purpose of this algorithm is to find two measurements that are far apart from each other by looking at $n^2$ randomly picked pairs of measurements. We choose the two measurements that are furthest apart from each other to be the endpoints of $\\vec\{v\}_\{direction\}$.\
-\
 \\begin\{figure\}[h!]\
-%\\label\{fig:40meas\}\
+\\label\{fig:10deg20m\}\
 \\centering\
-\\includegraphics[scale=1]\{pictures/cell_lv.png\}\
-\\caption\{$\\vec\{v\}_\{LV\}$ is shown as a purple line\}\
+\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=1]\{pictures/cell.png\}\
+    \\caption\{No computations\}\
+  \\end\{subfigure\}\
+  \\hspace\{.03\\textwidth\}\
+  \\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=1]\{pictures/cell_lv.png\}\
+    \\caption\{$\\vec\{v\}_\{direction\}$ computed with $n=10$\}\
+  \\end\{subfigure\}\
+\\caption\{A cell with a 10 degree sector angle and 20 measurements\}\
 \\end\{figure\}\
 \
-Longest Vector takes as input $M$ and $n$. First it declares the variables $m_1$, $m_2$ and $d$ for storing the two measurements with the current largest distance between them, and that distance. For each of the following $n$ iterations it randomly picks a measurement from $M$, compares the distance between it to $n$ other randomly picked measurements from $M$, and stores the largest distance and the pair of measurements representing it in $m_1$, $m_2$ and $d$. The algorithm outputs the vector $\\vec\{v\}_\{direction\}$ with $m_1$ and $m_2$ as endpoints.\
+\
+The purpose of this algorithm is to find two measurements that are far apart from each other by looking at $n^2$ randomly picked pairs of measurements. We choose the two measurements that are furthest apart from each other to be the endpoints of $\\vec\{v\}_\{direction\}$. See figure 2.\
+\
+Longest Vector takes as input $M$ and $n$. First it declares the variables $ep_1$, $ep_2$ and $d$ for storing the two measurements with the current largest distance between them, and that distance. For each of the following $n$ iterations it randomly picks a measurement from $M$, compares the distance between it to $n$ other randomly picked measurements from $M$, and stores the largest distance and the pair of measurements representing it in $ep_1$, $ep_2$ and $d$. The algorithm outputs the vector $\\vec\{v\}_\{direction\}$ with $ep_1$ and $ep_2$ as endpoints.\
 \
 \\bigskip\
 \\begin\{figure\}[h!]\
@@ -303,15 +275,15 @@ Longest Vector takes as input $M$ and $n$. First it declares the variables $m_1$
     \\begin\{minipage\}\{1.0\\linewidth\}\
       \\vspace\{2pt\}\
       \\begin\{tabbing\}\
-      Declare variables $m_1$,$m_2$ and $d$\\\\\
+      Declare variables $ep_1$,$ep_2$ and $d$\\\\\
       \\textbf\{for\} $0$ to $n$\\\\\
       %\\=\\textbf\{output:\} \\=\\kill\
       \\hspace\{10pt\}randomly pick a measurement $a \\in M$\\\\ \
       \\hspace\{10pt\}\\textbf\{for\} $0$ to $n$\\\\\
       \\hspace\{20pt\}randomly pick a measurement $b \\in M$\\\\ \
       \\hspace\{20pt\}\\textbf\{if\} the distance between $a$ and $b$ is larger than the distance                   currently\\\\\
-      \\hspace\{20pt\}stored in $d$, store $a$ in $m_1$, $b$ in $m_2$, and the distance between them in         $d$\\\\\
-      \\textbf\{return\} $\\vec\{v\}_\{direction\}$ with $m_1$ and $m_2$ as endpoints\
+      \\hspace\{20pt\}stored in $d$, store $a$ in $ep_1$, $b$ in $ep_2$, and the distance between them in         $d$\\\\\
+      \\textbf\{return\} $\\vec\{v\}_\{direction\}$ with $ep_1$ and $ep_2$ as endpoints\
       \\end\{tabbing\}\
     \\end\{minipage\}\\\\\
     \\hline\
@@ -408,21 +380,13 @@ To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M
 \\end\{figure\}\
 \
 \\bigskip\
-As described above we apply this process on both directions of $\\vec\{v\}_\{direction\}$, thereby creating two solutions for the cell.\
+As described above we apply this process on both directions of $\\vec\{v\}_\{direction\}$, thereby creating two solutions for the cell. See figure 3.\
 \
 \\begin\{figure\}[h!]\
-%\\label\{fig:40meas\}\
+\\label\{fig:cell_lv_hdcs\}\
 \\centering\
-\\includegraphics[scale=1]\{pictures/cell_hdcs.png\}\
+\\includegraphics[scale=1]\{pictures/cell_lv_hdcs.png\}\
 \\caption\{The two solution sectors are shown\}\
-\\end\{figure\}\
-\
-\\bigskip\
-\\begin\{figure\}[h!]\
-%\\label\{fig:40meas\}\
-\\centering\
-\\includegraphics[scale=1]\{pictures/cell_lv_ls_hdcs.png\}\
-\\caption\{All variables are shown\}\
 \\end\{figure\}\
 \
 %\\begin\{algorithm\}\
@@ -461,7 +425,65 @@ As described above we apply this process on both directions of $\\vec\{v\}_\{dir
 \
 \\newpage\
 \\subsection\{Greater angles\}\
-This approach gets less and less reliable when we increase the angle of the cell sector. When we use an angle of only 10 degrees, we can be quite sure that we will get usable results. When increasing the angle the area of the sector grows. This will increase the probability of computing a poor vector if we are unlucky with the subset of measurements used and the combination of pairs of measurements.\
+This approach gets less and less reliable when we increase the sector angle $\\alpha$ of the cell. For $\\alpha = 10$, we can be quite sure that we will get usable results as long as we have a properly large set of measurements to work with. When increasing $\\alpha$ the area of the sector grows. This will increase the probability of computing a poor vector if we are unlucky with the subset of measurements used and the combination of pairs of measurements. \
+\
+We now present several tables where we show the error of the heuristic cells. The error is the average distance between the actuall position of the cell tower and the one of the two heurisic cell towers closest to it. We base each error on 1000 test subjects. That is, 1000 generated cells. Each error is a function of $\\alpha$, $M$ and $n$.\
+\
+\\bigskip\
+\\begin\{table\}[h!]\
+\\centering\
+\\caption\{$M=10$\}\
+\\label\{tab:10m\}\
+\\begin\{tabular\}\{|c|c|c|c|c|\}\
+\\hline\
+$n \\backslash \\alpha$ & $10^\{\\circ\}$ & $45^\{\\circ\}$ & $90^\{\\circ\}$ & $120^\{\\circ\}$ \\\\ \\hline\
+10 & 26,26 & 26,72 & 48,72 & 62,68 \\\\ \\hline\
+\\end\{tabular\}\
+\\end\{table\}\
+\
+\\bigskip\
+\\begin\{table\}[h!]\
+\\centering\
+\\caption\{$M=100$\}\
+\\label\{tab:10m\}\
+\\begin\{tabular\}\{|c|c|c|c|c|\}\
+\\hline\
+$n \\backslash \\alpha$ & $10^\{\\circ\}$ & $45^\{\\circ\}$ & $90^\{\\circ\}$ & $120^\{\\circ\}$ \\\\ \\hline\
+20 & 47,80 & 48,66 & 100,83 & 107,43 \\\\ \\hline\
+40 & 48,91 & 51,48 & 109,12 & 108,98 \\\\ \\hline\
+60 & 48,85 & 50,20 & 111,46 & 108,57 \\\\ \\hline\
+80 & 49,82 & 49,40 & 112,58 & 108,79 \\\\ \\hline\
+100 & 48,30 & 49,61 & 112,32 & 108,86 \\\\ \\hline\
+\\end\{tabular\}\
+\\end\{table\}\
+\
+\\bigskip\
+\\begin\{table\}[h!]\
+\\centering\
+\\caption\{$M=1000$\}\
+\\label\{tab:10m\}\
+\\begin\{tabular\}\{|c|c|c|c|c|\}\
+\\hline\
+$n \\backslash \\alpha$ & $10^\{\\circ\}$ & $45^\{\\circ\}$ & $90^\{\\circ\}$ & $120^\{\\circ\}$ \\\\ \\hline\
+200 & 58,30 & 59,03 & 116,76 & 116,58 \\\\ \\hline\
+400 & 55,37 & 58,87 & 116,23 & 116,86 \\\\ \\hline\
+600 & 57,59 & 58,79 & 116,35 & 117,17 \\\\ \\hline\
+800 & 56,88 & 58,77 & 116,35 & 117,47 \\\\ \\hline\
+1000 & 56,59 & 59,91 & 116,35 & 117,65 \\\\ \\hline\
+\\end\{tabular\}\
+\\end\{table\}\
+\
+\\newpage\
+To put these numbers into perspective, we give an example in figure 4.\
+\
+\\begin\{figure\}[h!]\
+\\label\{fig:cell_perspective\}\
+\\centering\
+\\includegraphics[scale=1]\{pictures/cell_perspective.png\}\
+\\caption\{Example cell\}\
+\\end\{figure\}\
+\
+The black cell is the generated cell $C$ and the pink and cyan colored cells are heuristic cells computed from $C$. We call the pink one $C_\{pink\}$ and the cyan one $C_\{cyan\}$. The distance from the cell tower in $C$ to the cell tower in $C_\{pink\}$ is 200,29, and so the error of $C_\{pink\}$ is 200,29. The distance from the cell tower in $C$ to the cell tower in $C_\{cyan\}$ is 55,61, and so the error of $C_\{cyan\}$ is 55,61. \
 \
 \\newpage\
 \\subsection\{Distance From Surrounding Points To Vector\}\
@@ -480,24 +502,6 @@ I had the same problem when computing a vectors angle, but when I had already fi
 \
 \\subsubsection\{Least Square\}\
 The Least Square method is a simple linear regression method for computing a straight line $l_\{LS\}$ through a set of points, making the sum of the squared vertical distances from each point to $l_\{LS\}$, as small as possible. This algorithm is for our problem more accurate than Longest Vector, but outputs a linear line in the form of $y=ax+b$, where $a$ and $b$ are computed and $x$ is for us to choose. This is where the Longest Vector algorithm comes to use. After computing the equation $y=ax+b$ from $S$, we pick the x-values from $m_1$ and $m_2$ and input them into the equation, thus creating the endpoints $ep_1$ and $ep_2$ for $\\vec\{v\}_\{direction\}$.\
-\
-\\begin\{figure\}[h!]\
-%\\label\{fig:40meas\}\
-\\centering\
-\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
-    \\centering\
-    \\includegraphics[scale=1]\{pictures/cell_ls.png\}\
-    \\caption\{$\\vec\{v\}_\{direction\}$ is shown as a green line\}\
-  \\end\{subfigure\}\
-  \\hspace\{.03\\textwidth\}\
-  \\begin\{subfigure\}[t]\{0.45\\textwidth\}\
-    \\centering\
-    \\includegraphics[scale=1]\{pictures/cell_lv_ls.png\}\
-    \\caption\{$\\vec\{v\}_\{LV\}$ and $\\vec\{v\}_\{direction\}$ together\}\
-  \\end\{subfigure\}\
-%\\includegraphics[scale=1]\{pictures/cell_lv.png\}\
-%\\caption\{$\\vec\{v\}_\{LV\}$ is shown as a purple line\}\
-\\end\{figure\}\
 \
 To compute $a$ and $b$ we first need to compute several other variables from $S$:\
 \\begin\{itemize\}\

@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 public class Computation {
 	
 	private Line2D.Double longestVector;
-//	private Line2D.Double leastSquareVector;
 	private Point2D.Double heuristicCellTowerPoint;
 	private DynamicCell heuristicDynamicCell1;
 	private DynamicCell heuristicDynamicCell2;
@@ -27,14 +26,6 @@ public class Computation {
 	public void setLongestVector(Line2D.Double longestVector) {
 		this.longestVector = longestVector;
 	}
-
-//	public Line2D.Double getLeastSquareVector() {
-//		return leastSquareVector;
-//	}
-//
-//	public void setLeastSquareVector(Line2D.Double leastSquareVector) {
-//		this.leastSquareVector = leastSquareVector;
-//	}
 
 	public Point2D.Double getHeuristicCellTowerPoint() {
 		return heuristicCellTowerPoint;

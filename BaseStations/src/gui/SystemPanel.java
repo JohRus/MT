@@ -46,14 +46,13 @@ public class SystemPanel extends JPanel {
 
 	private Map<DynamicCell, Computation> data;// = new HashMap<DynamicCell, Computation>();
 	
+	private boolean showhideMeasurements;
 	private boolean showHideLongestVectors;
-//	private boolean showHideLeastSquareVectors;
 	private boolean showHideHeuristicDCs;
 	
 	public SystemPanel() {
 		data = new HashMap<DynamicCell, Computation>();
 		showHideLongestVectors = false;
-//		showHideLeastSquareVectors = false;
 		showHideHeuristicDCs = false;
 	}
 
@@ -69,26 +68,24 @@ public class SystemPanel extends JPanel {
 		return data;
 	}
 	
+	public void showHideMeasurements() {
+		showhideMeasurements = !showhideMeasurements;
+	}
+	
 	public void showHideLongestVectors() {
 		showHideLongestVectors = !showHideLongestVectors;
 	}
 	
-	
-//	public void showHideLeastSquareVectors() {
-//		showHideLeastSquareVectors = !showHideLeastSquareVectors;
-//	}
 
 	public void showHideHeuristicDCs() {
 		showHideHeuristicDCs = !showHideHeuristicDCs;
 	}
 	
 	public void hideAll() {
+		showhideMeasurements = false;
 		showHideLongestVectors = false;
-//		showHideLeastSquareVectors = false;
 		showHideHeuristicDCs = false;
 	}
-
-
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -176,25 +173,23 @@ public class SystemPanel extends JPanel {
 		
 		drawCell(entry.getKey(), 6, g2d, Color.black);
 		
-		for(Measurement m : entry.getKey().getMeasurements()) {
+		if(showhideMeasurements) {
+			for(Measurement m : entry.getKey().getMeasurements()) {
 
-			int mX = doubleToInt(X_AXIS_FIRST_X_COORD+m.getCoordinates().getX()-(4/2));
-			int mY = doubleToInt(Y_AXIS_SECOND_Y_COORD-m.getCoordinates().getY()-(4/2));
+				int mX = doubleToInt(X_AXIS_FIRST_X_COORD+m.getCoordinates().getX()-(4/2));
+				int mY = doubleToInt(Y_AXIS_SECOND_Y_COORD-m.getCoordinates().getY()-(4/2));
 
-			g2d.fillOval(mX, mY, 4, 4);
+				g2d.fillOval(mX, mY, 4, 4);
+			}
 		}
 
 		if(showHideLongestVectors) {			
 			drawVector(entry.getValue().getLongestVector(), g2d, Color.magenta);
 		}
 
-//		if(showHideLeastSquareVectors) {			
-//			drawVector(entry.getValue().getLeastSquareVector(), g2d, Color.green);
-//		}
-
-		if(showHideHeuristicDCs) {			
+		if(showHideHeuristicDCs) {
 			drawCell(entry.getValue().getHeuristicDynamicCell1(), 4, g2d, Color.pink);
-			
+
 			drawCell(entry.getValue().getHeuristicDynamicCell2(), 4, g2d, Color.cyan);
 		}
 	}
