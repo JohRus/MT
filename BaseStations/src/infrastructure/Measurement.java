@@ -15,4 +15,8 @@ public interface Measurement extends Comparable<Measurement> {
 	@Override
 	public int compareTo(Measurement o);
 	
+	public int getSignalStrength();
+	
+	public void setSignalStrength(int signalStrength);
+	
 }

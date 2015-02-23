@@ -38,6 +38,16 @@ public class DefaultMeasurement implements Measurement {
 			else return 0;
 		}
 	}
+
+	@Override
+	public int getSignalStrength() {
+		throw new UnsupportedOperationException("Default measurements do not contain signal strength");
+	}
+
+	@Override
+	public void setSignalStrength(int signalStrength) {
+		throw new UnsupportedOperationException("Default measurements do not contain signal strength");
+	}
 	
 
 

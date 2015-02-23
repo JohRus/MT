@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +30,7 @@ import javax.swing.SwingUtilities;
 import testdata.Controller;
 import testdata.Generate;
 import testdata.Geom;
+import testdata.Stopwatch;
 
 
 public class SystemFrame extends JFrame {
@@ -50,6 +52,8 @@ public class SystemFrame extends JFrame {
 		
 		statsPanel = new JPanel();
 		statsPanel.setPreferredSize(new Dimension(300, 700));
+//		JPanel buttonPane = new JPanel();
+//		statsPanel.setLayout(new BoxLayout(buttonPane, BoxLayout.Y_AXIS));
 		
 		controller = new Controller();
 		
@@ -64,32 +68,80 @@ public class SystemFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Thread generateCellThread = new Thread() {
-					@Override
-					public void run() {
-						DynamicCell dc = controller.generateDynamicCell(
-								new Point2D.Double(200.0, 200.0), 
-								150.0, 
-								60.0, 
-								113.0, 
-								0.0, 
-								100);
+//				Thread generateCellThread = new Thread() {
+//					@Override
+//					public void run() {
+//						Stopwatch sw = new Stopwatch();
 						
-						Computation comp = controller.generateComputation(dc, 20);
+						JTextField ctX = new JTextField("200.0");
+						JTextField ctY = new JTextField("200.0");
+						JTextField vectorAngle = new JTextField("30.0");
+						JTextField sectorAngle = new JTextField("120.0");
+						JTextField maxDist = new JTextField("113.0");
+						JTextField minDist = new JTextField("0.0");
+						JTextField measurements = new JTextField("100");
+						JTextField hasSignal = new JTextField("true");
+						JTextField someMeasurementsAreDefect = new JTextField("true");
+						JTextField n = new JTextField("30");
+						JTextField d = new JTextField("10.0");
 						
-						double dist1 = dc.getCellTowerCoordinates().distance(comp.getHeuristicDynamicCell1().getCellTowerCoordinates());
-						double dist2 = dc.getCellTowerCoordinates().distance(comp.getHeuristicDynamicCell2().getCellTowerCoordinates());
-//						if(dist1 <= dist2)
-							System.out.printf("%.2f\n", dist1);
-//						else
-							System.out.printf("%.2f\n", dist2);
+						JPanel inputPanel = new JPanel();
+						inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
+						inputPanel.add(new JLabel("Cell Tower x: "));
+						inputPanel.add(ctX);
+						inputPanel.add(new JLabel("Cell Tower y: "));
+						inputPanel.add(ctY);
+						inputPanel.add(new JLabel("Vector Angle: "));
+						inputPanel.add(vectorAngle);
+						inputPanel.add(new JLabel("Sector Angle: "));
+						inputPanel.add(sectorAngle);
+						inputPanel.add(new JLabel("Max distance: "));
+						inputPanel.add(maxDist);
+						inputPanel.add(new JLabel("Min distance: "));
+						inputPanel.add(minDist);
+						inputPanel.add(new JLabel("Measurements: "));
+						inputPanel.add(measurements);
+						inputPanel.add(new JLabel("Has Signal"));
+						inputPanel.add(hasSignal);
+						inputPanel.add(new JLabel("Some measurements are defect"));
+						inputPanel.add(someMeasurementsAreDefect);
+						inputPanel.add(new JLabel("n: "));
+						inputPanel.add(n);
+						inputPanel.add(new JLabel("d: "));
+						inputPanel.add(d);
+						
+						int result = JOptionPane.showConfirmDialog(
+								null, 
+								inputPanel, 
+								"Enter values for the computation", 
+								JOptionPane.OK_CANCEL_OPTION);
+						
+						if(result == JOptionPane.OK_OPTION) {
+							
+							DynamicCell dc = controller.generateDynamicCell(
+									new Point2D.Double(java.lang.Double.parseDouble(ctX.getText()), java.lang.Double.parseDouble(ctY.getText())), 
+									java.lang.Double.parseDouble(vectorAngle.getText()), 
+									java.lang.Double.parseDouble(sectorAngle.getText()), 
+									java.lang.Double.parseDouble(maxDist.getText()), 
+									java.lang.Double.parseDouble(minDist.getText()), 
+									Integer.parseInt(measurements.getText()),
+									Boolean.parseBoolean(hasSignal.getText()),
+									Boolean.parseBoolean(someMeasurementsAreDefect.getText()));
 
-						
-						
-						updateGUI(dc, comp);
-					}
-				};
-				generateCellThread.start();
+							Computation comp = controller.generateComputation(
+									dc, 
+									Integer.parseInt(n.getText()), 
+									java.lang.Double.parseDouble(d.getText()));
+
+
+
+
+
+							updateGUI(dc, comp);
+						}
+//					}
+//				};
+//				generateCellThread.start();
 			}
 		});
 		
@@ -136,14 +188,18 @@ public class SystemFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JTextField testSubjectsString = new JTextField("1000", 5);
-				JTextField MString = new JTextField("1000",9);
-				JTextField nString = new JTextField(30);
-				JTextField sectorAngleString = new JTextField("10,45,90,120",12);
+				JTextField MString = new JTextField("100");
+				JTextField nString = new JTextField("10,20,40,80", 23);
+				JTextField sectorAngleString = new JTextField("120.0");
+				JTextField dString = new JTextField("1.0,2.0,4.0,8.0,16.0,32.0,64.0");
 				JTextField maxDistString = new JTextField("113.0", 5);
 				JTextField minDistString = new JTextField("0.0", 5);
-				JTextField writeToFileString = new JTextField("false", 5);
+				JTextField hasSignal = new JTextField("true");
+				JTextField someMeasurementsAreDefect = new JTextField("true");
+				JTextField writeToFileString = new JTextField("false");
 				
 				JPanel inputPanel = new JPanel();
+				inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
 				inputPanel.add(new JLabel("Test subjects: "));
 				inputPanel.add(testSubjectsString);
 				inputPanel.add(new JLabel("Sector angle: "));
@@ -152,10 +208,16 @@ public class SystemFrame extends JFrame {
 				inputPanel.add(MString);
 				inputPanel.add(new JLabel("n: "));
 				inputPanel.add(nString);
+				inputPanel.add(new JLabel("d: "));
+				inputPanel.add(dString);
 				inputPanel.add(new JLabel("Max distance: "));
 				inputPanel.add(maxDistString);
 				inputPanel.add(new JLabel("Min distance: "));
 				inputPanel.add(minDistString);
+				inputPanel.add(new JLabel("Has Signal"));
+				inputPanel.add(hasSignal);
+				inputPanel.add(new JLabel("Some measurements are defect"));
+				inputPanel.add(someMeasurementsAreDefect);
 				inputPanel.add(new JLabel("Write to file: "));
 				inputPanel.add(writeToFileString);
 				
@@ -179,9 +241,12 @@ public class SystemFrame extends JFrame {
 							Integer.parseInt(testSubjectsString.getText()), 
 							Integer.parseInt(MString.getText()), 
 							nString.getText().split(","), 
-							sectorAngleString.getText().split(","), 
+							sectorAngleString.getText().split(","),
+							dString.getText().split(","),
 							java.lang.Double.parseDouble(maxDistString.getText()), 
 							java.lang.Double.parseDouble(minDistString.getText()), 
+							Boolean.parseBoolean(hasSignal.getText()),
+							Boolean.parseBoolean(someMeasurementsAreDefect.getText()),
 							Boolean.parseBoolean(writeToFileString.getText()));
 					
 					
@@ -194,6 +259,8 @@ public class SystemFrame extends JFrame {
 			}
 		});
 
+//		buttonPane.add(generateCellButton);
+		
 		panel.add(generateCellButton);
 		panel.add(showHideMeasurementsButton);
 		panel.add(showHideLongestVectorButton);
@@ -226,7 +293,7 @@ public class SystemFrame extends JFrame {
 	public void showUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Cell System");
-		setSize(1000, 700);
+		setSize(1000, 725);
 		setVisible(true);
 	}
 }

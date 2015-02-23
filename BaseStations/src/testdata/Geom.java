@@ -2,6 +2,7 @@ package testdata;
 
 import infrastructure.DynamicCell;
 import infrastructure.Measurement;
+import infrastructure.SimpleMeasurement;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -182,61 +183,82 @@ public class Geom {
 
 		return new Line2D.Double(pointA, pointB);
 	}
-
+	
 //	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
-//		//		boolean[] used = new boolean[measurements.size()];
-//		//		int nUsed = 0;
-//
-//		Measurement m1 = measurements.get(0);
-//		Measurement m2 = measurements.get(1);
-//		double d = m1.getCoordinates().distance(m2.getCoordinates());
-//
-//		int i = 2;
-//
-//		while(threshold-i > 1) {
-//			Measurement currM1 = measurements.get(i++);
-//			Measurement currM2 = measurements.get(i++);
-//			double tempD = currM1.getCoordinates().distance(currM2.getCoordinates());
-//			if(tempD > d) {
-//				m1 = currM1;
-//				m2 = currM2;
-//				d = tempD;
-//			}
+//		List<Measurement> linkedList = new LinkedList<Measurement>(measurements);
+//		
+//		Random r1 = new Random();
+//		
+//		int min = 0;
+//		int max = linkedList.size()-1;
+//		
+//		Measurement m1 = null;
+//		Measurement m2 = null;
+//		double d = 0.0;
+//		
+//		for(int i = 0; i < threshold; i++) {
+//			
+//			int e1 = r1.nextInt(linkedList.size());
+//			Measurement item1 = linkedList.get(e1);
+//			
+//			Random r2 = new Random();
+//			
+//			for(int j = 0; j < threshold; j++) {
+//				int e2 = r2.nextInt(linkedList.size());
+//				if(e2 == e1) {
+//					j--;
+//					continue;
+//				}
+//				Measurement item2 = linkedList.get(e2);
+//				double currd = item1.getCoordinates().distance(item2.getCoordinates());
+//				if(currd > d) {
+//					m1 = item1;
+//					m2 = item2;
+//					d = currd;
+//				}
+//			}	
 //		}
 //		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
 //	}
 	
 	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
-		List<Measurement> linkedList = new LinkedList<Measurement>(measurements);
 		
 		Random r1 = new Random();
 		
-		int min = 0;
-		int max = linkedList.size()-1;
-		
 		Measurement m1 = null;
 		Measurement m2 = null;
-		double d = 0.0;
+		double diff = 0.0;
 		
 		for(int i = 0; i < threshold; i++) {
 			
-//			int e1 = min + r1.nextInt((max-min)+1);
-			int e1 = r1.nextInt(linkedList.size());
-//			Measurement item1 = linkedList.remove(e1);
-			Measurement item1 = linkedList.get(e1);
-//			linkedList.add(min++, item1);
+			int e1 = r1.nextInt(measurements.size());
+			Measurement item1 = measurements.get(e1);
 			
 			Random r2 = new Random();
 			
 			for(int j = 0; j < threshold; j++) {
-//				int e2 = min + r2.nextInt((max-min)+1);
-				int e2 = r2.nextInt(linkedList.size());
-				Measurement item2 = linkedList.get(e2);
-				double currd = item1.getCoordinates().distance(item2.getCoordinates());
-				if(currd > d) {
-					m1 = item1;
-					m2 = item2;
-					d = currd;
+				int e2 = r2.nextInt(measurements.size());
+				if(e2 == e1) {
+					j--;
+					continue;
+				}
+				Measurement item2 = measurements.get(e2);
+				
+				if(item1 instanceof SimpleMeasurement && item2 instanceof SimpleMeasurement) {
+					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
+					if(currDiff > diff) {
+						m1 = item1;
+						m2 = item2;
+						diff = currDiff;
+					}
+				}
+				else {
+					double currDiff = item1.getCoordinates().distance(item2.getCoordinates());
+					if(currDiff > diff) {
+						m1 = item1;
+						m2 = item2;
+						diff = currDiff;
+					}
 				}
 			}	
 		}
@@ -310,17 +332,17 @@ public class Geom {
 			return heuristicCell;
 		}
 		
-		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell) {
+		public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, double d) {
 			DynamicCell heuristicSector = computeSector(heuristicVector, originalCell);
 			List<Measurement> subset = originalCell.getMeasurements();
 			Line2D.Double newHeuristicVector = heuristicVector;
-			double distToAdd = 10.0;
+//			double distToAdd = 10.0;
 			while(!pointsFitInsideSectorAngle(subset, heuristicSector)) {
 				// modifisere subset slik at jeg utelukker de målingene jeg vet passer
 				
 				newHeuristicVector = changeVectorLengthByP1(
 						newHeuristicVector, 
-						newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+distToAdd);
+						newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+d);
 				heuristicSector = computeSector(newHeuristicVector, originalCell);
 			}
 			return heuristicSector;
@@ -369,20 +391,6 @@ public class Geom {
 //
 //		return newHeuristicVector;
 //	}
-
-
-
-
-
-	public static Line2D.Double adjustEndpoints(Line2D.Double originalVector, Point2D.Double pointClosestToOrigo) {
-		if(pointClosestToOrigo.equals(originalVector.getP2())) {
-			return new Line2D.Double(originalVector.getP2(), originalVector.getP1());
-		}
-		return originalVector;
-	}
-
-
-
 
 
 	public static void main(String[] args) {

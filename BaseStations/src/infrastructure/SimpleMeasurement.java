@@ -8,9 +8,9 @@ public class SimpleMeasurement extends DefaultMeasurement {
 	private int signalStrength;
 	
 	
-	public SimpleMeasurement(Point2D.Double coordinates) {
+	public SimpleMeasurement(Point2D.Double coordinates, int signalStrength) {
 		super(coordinates);
-		this.signalStrength = 99;
+		this.signalStrength = signalStrength;
 	}
 	
 	public int getSignalStrength() {
@@ -21,25 +21,24 @@ public class SimpleMeasurement extends DefaultMeasurement {
 		this.signalStrength = signalStrength;
 	}
 
-//	public int getWeight() {
-//		return weight;
-//	}
-
-//	public void setWeight(int weight) {
-//		this.weight = weight;
-//	}
-
 	@Override
 	public String toString() {
-		String s = String.format("Coordinates: [%.1f,%.1f] - Signal Strength: %d dBm", 
-				super.getCoordinates().getX(), super.getCoordinates().getY(), this.signalStrength);
+		String s = super.toString();
+		s += String.format(", Signalstrength: %d", getSignalStrength());
 		return s;
 	}
-
-//	public static Measurement generateRandomMeasurement(int maxX, int maxY) {
-//		double x = (double) new Random().nextInt(maxX+1);
-//		double y = (double) new Random().nextInt(maxY+1);
+	
+//	public static void main(String[] args) {
+//		Measurement sm = new SimpleMeasurement(new Point2D.Double(0.0, 0.0));
 //		
-//		return new Measurement(x, y);
+//		Measurement dm = new DefaultMeasurement(new Point2D.Double(0.0, 0.0));
+//		
+//		if(sm instanceof SimpleMeasurement) {
+//			System.out.println("true");
+//			SimpleMeasurement smnew = (SimpleMeasurement) sm;
+//			smnew.setSignalStrength(80);
+//			System.out.println(smnew.getSignalStrength());
+//		}
+//		
 //	}
 }
