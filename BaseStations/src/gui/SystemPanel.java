@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 
 import javax.swing.JPanel;
 
-import testdata.Geom;
+import logic.Geom;
 
 public class SystemPanel extends JPanel {
 	// x-axis coord constants

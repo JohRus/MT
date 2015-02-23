@@ -4,7 +4,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 
-import testdata.Geom;
+import logic.Geom;
 
 public class DynamicCell extends DefaultCell {
 	

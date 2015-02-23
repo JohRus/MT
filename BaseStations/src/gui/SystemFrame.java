@@ -27,10 +27,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import testdata.Controller;
-import testdata.Generate;
-import testdata.Geom;
-import testdata.Stopwatch;
+import logic.Controller;
+import logic.Generate;
+import logic.Geom;
+import logic.Stopwatch;
 
 
 public class SystemFrame extends JFrame {
