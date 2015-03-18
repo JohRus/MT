@@ -3,9 +3,7 @@ package logic;
 import infrastructure.Cell;
 import infrastructure.Measurement;
 
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Line2D.Double;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

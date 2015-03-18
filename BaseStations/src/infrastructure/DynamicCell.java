@@ -1,8 +1,11 @@
 package infrastructure;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Line2D.Double;
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import logic.Geom;
 
@@ -19,6 +22,10 @@ public class DynamicCell extends DefaultCell {
 	
 	// The max and min distance from the cell tower for the measurements
 	private double maxDistance, minDistance;
+	
+//	private List<Line2D.Double> obstructions;
+	
+//	private boolean[] inDeadZone;
 
 	public DynamicCell(Point2D.Double cellTowerCoordinates, double vectorAngle, double sectorAngle, 
 			double maxDistance, double minDistance) {
@@ -27,6 +34,7 @@ public class DynamicCell extends DefaultCell {
 		this.sectorAngle = sectorAngle;	
 		this.maxDistance = maxDistance;
 		this.minDistance = minDistance;
+//		this.obstructions = new ArrayList<Line2D.Double>();
 	}
 
 	public double getVectorAngle() {
@@ -81,6 +89,50 @@ public class DynamicCell extends DefaultCell {
 	public void setMinDistance(double minDistance) {
 		this.minDistance = minDistance;
 	}
+	
+	
+	
+//	public void addObstruction(Line2D.Double obs) {
+//		this.obstructions.add(obs);
+//	}
+//
+//	public List<Line2D.Double> getObstructions() {
+//		return obstructions;
+//	}
+//
+//	public void setObstructions(List<Line2D.Double> obstructions) {
+//		this.obstructions = obstructions;
+//	}
+	
+	public void applyDeadZone(Point2D.Double origo, double radius) {
+		LinkedList<Measurement> tempList = new LinkedList<>(getMeasurements());
+		for(int i = 0; i < tempList.size(); i++) {
+			double dist = origo.distance(tempList.get(i).getCoordinates());
+			if(dist <= radius) {
+				tempList.remove(i);
+				i--;
+			}
+		}
+		setMeasurements(new ArrayList<Measurement>(tempList));
+	}
+
+//	public boolean[] getInDeadZone() {
+//		return inDeadZone;
+//	}
+//
+//	public void setInDeadZone(boolean[] inDeadZone) {
+//		this.inDeadZone = inDeadZone;
+//	}
+	
+//	public List<Measurement> getActuallMeasurements() {
+//		List<Measurement> actuallMeasurements = new ArrayList<Measurement>();
+//		for(int i = 0; i < getMeasurements().size(); i++) {
+//			if(inDeadZone[i] == false) {
+//				actuallMeasurements.add(getMeasurements().get(i));
+//			}
+//		}
+//		return actuallMeasurements;
+//	}
 
 	@Override
 	public String toString() {

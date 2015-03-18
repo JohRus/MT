@@ -1,10 +1,5 @@
 package logic;
 
-import java.awt.geom.Point2D;
-
-import infrastructure.Computation;
-import infrastructure.DynamicCell;
-
 public class Stopwatch {
 	
 	private long startTime;

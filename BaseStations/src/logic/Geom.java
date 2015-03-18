@@ -1,11 +1,16 @@
 package logic;
 
+import infrastructure.Computation;
 import infrastructure.DynamicCell;
 import infrastructure.Measurement;
 import infrastructure.SimpleMeasurement;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -13,7 +18,7 @@ import java.util.Random;
 public class Geom {
 
 	public static Line2D.Double rotateVector(Line2D.Double toBeRotated, double degrees) {
-		Point2D.Double adjustedP1 = new Point2D.Double(toBeRotated.getX1()-toBeRotated.getX1(), toBeRotated.getY1()-toBeRotated.getY1());
+//		Point2D.Double adjustedP1 = new Point2D.Double(toBeRotated.getX1()-toBeRotated.getX1(), toBeRotated.getY1()-toBeRotated.getY1());
 		Point2D.Double adjustedP2 = new Point2D.Double(toBeRotated.getX2()-toBeRotated.getX1(), toBeRotated.getY2()-toBeRotated.getY1());
 		double radians = Math.toRadians(degrees);
 		double x = (adjustedP2.getX()*Math.cos(radians))-(adjustedP2.getY()*Math.sin(radians));
@@ -184,42 +189,6 @@ public class Geom {
 		return new Line2D.Double(pointA, pointB);
 	}
 	
-//	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
-//		List<Measurement> linkedList = new LinkedList<Measurement>(measurements);
-//		
-//		Random r1 = new Random();
-//		
-//		int min = 0;
-//		int max = linkedList.size()-1;
-//		
-//		Measurement m1 = null;
-//		Measurement m2 = null;
-//		double d = 0.0;
-//		
-//		for(int i = 0; i < threshold; i++) {
-//			
-//			int e1 = r1.nextInt(linkedList.size());
-//			Measurement item1 = linkedList.get(e1);
-//			
-//			Random r2 = new Random();
-//			
-//			for(int j = 0; j < threshold; j++) {
-//				int e2 = r2.nextInt(linkedList.size());
-//				if(e2 == e1) {
-//					j--;
-//					continue;
-//				}
-//				Measurement item2 = linkedList.get(e2);
-//				double currd = item1.getCoordinates().distance(item2.getCoordinates());
-//				if(currd > d) {
-//					m1 = item1;
-//					m2 = item2;
-//					d = currd;
-//				}
-//			}	
-//		}
-//		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
-//	}
 	
 	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
 		
@@ -230,7 +199,7 @@ public class Geom {
 		double diff = 0.0;
 		
 		for(int i = 0; i < threshold; i++) {
-			
+//			System.out.println(measurements.size());
 			int e1 = r1.nextInt(measurements.size());
 			Measurement item1 = measurements.get(e1);
 			
@@ -253,6 +222,7 @@ public class Geom {
 					}
 				}
 				else {
+//					System.out.println("blæææ");
 					double currDiff = item1.getCoordinates().distance(item2.getCoordinates());
 					if(currDiff > diff) {
 						m1 = item1;
@@ -264,54 +234,148 @@ public class Geom {
 		}
 		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
 	}
-
-	public static Point2D.Double distanceFromSurroundingPointsToVector(Line2D.Double vector, List<Measurement> measurements, int threshold) {
-		double sumP1 = 0.0;
-		int countP1 = 0;
-		double sumP2 = 0.0;
-		int countP2 = 0;
-
-		int testMeasurementsCount = 0;
-		int i = 0;
-		while(testMeasurementsCount < threshold) {
-			Measurement currMeasurement = measurements.get(i++);
-
-			// TODO trenger bedre objektreferanser for å sjekke for likhet
-			if(vector.getP1().equals(currMeasurement.getCoordinates()) || vector.getP2().equals(currMeasurement.getCoordinates())) {
+	
+	public static Line2D.Double longestVectorWithSignalStrength(List<Measurement> measurements, int threshold) {
+//		Measurement strongest = new SimpleMeasurement(new Point2D.Double(0.0,0.0), -500);
+		int strongestPos = -1;
+		HashSet<Integer> items = randomInts(threshold, measurements.size(), null);
+		
+		for(int i : items) {
+			if(strongestPos < 0) {
+				strongestPos = i;
 				continue;
 			}
-			double distToP1 = vector.getP1().distance(currMeasurement.getCoordinates());
-			double distToP2 = vector.getP2().distance(currMeasurement.getCoordinates());
-			if(distToP1 < distToP2) {
-				sumP1 += vector.ptLineDist(currMeasurement.getCoordinates());
-				countP1++;
+			if(measurements.get(i).getSignalStrength() > measurements.get(strongestPos).getSignalStrength()) {
+				strongestPos = i;
 			}
-			else if(distToP1 > distToP2) {
-				sumP2 += vector.ptLineDist(currMeasurement.getCoordinates());
-				countP2++;
+		}
+		System.out.println("funnet strongest");
+		
+		items = randomInts(threshold, measurements.size(), strongestPos);
+		System.out.printf("strongestPos=%d, RSS=%d\n", strongestPos, measurements.get(strongestPos).getSignalStrength());
+		for(int i : items) {
+			System.out.println(i);
+		}
+		LinkedList<Integer> weakest = new LinkedList<Integer>();
+		for(Integer i : items) {
+			if(weakest.size() < 5) {
+				weakest.add(i);
+				continue;
+			}
+			for(int j = 0; j < weakest.size(); j++) {
+				if(measurements.get(i).getSignalStrength() < measurements.get(weakest.get(j)).getSignalStrength()) {
+					weakest.remove(j);
+					weakest.add(j, i);
+					break;
+				}
+			}
+		}
+		System.out.println("funnet de svakeste");
+		double angleSum = 0.0;
+		for(Integer i : weakest) {
+			angleSum += Math.toDegrees(angle(new Line2D.Double(
+					measurements.get(strongestPos).getCoordinates(), 
+					measurements.get(i).getCoordinates())));
+		}
+		double longestVectorAngle = angleSum / weakest.size();
+		double longestVectorLength = measurements.get(strongestPos).getCoordinates().distance(
+				measurements.get(weakest.peekFirst()).getCoordinates());
+		System.out.println("funnet lv");
+		
+		return toCartesian(longestVectorAngle, longestVectorLength, measurements.get(strongestPos).getCoordinates());
+	}
+	
+	public static HashSet<Integer> randomInts(int size, int range, int ... notThese) {
+		Random r = new Random();
+		HashSet<Integer> hs = new HashSet<Integer>(size);
+		while(hs.size() < size) {
+//			while(hs.add(r.nextInt(range)) != true)
+//				;
+			while(true) {
+				int x = r.nextInt(range);
+				boolean cont = false;
+				if(notThese != null) {
+					for(int i = 0; i < notThese.length; i++) {
+						if(x == notThese[i]) {
+							cont = true;
+							break;
+						}
+					}
+				}
+				if(cont) continue;
+//				if(notThese >= 0 && x == notThese)
+//					continue;
+				if(hs.add(x) == true)
+					break;
+			}
+		}
+		return hs;
+	}
+	
+
+	public static void distanceFromSurroundingPointsToVector(Computation comp, List<Measurement> measurements, int threshold) {
+		double sum1 = 0.0;
+		int count1 = 0;
+		double sum2 = 0.0;
+		int count2 = 0;
+		
+		HashSet<Integer> indices = randomInts(threshold, measurements.size(), null);
+//		int testMeasurementsCount = 0;
+//		int i = 0;
+//		while(testMeasurementsCount < threshold) {
+		for(int i :  indices) {
+			Measurement curr = measurements.get(i++);
+
+			// TODO trenger bedre objektreferanser for å sjekke for likhet
+//			if(vector.getP1().equals(curr.getCoordinates()) || vector.getP2().equals(curr.getCoordinates())) {
+//				continue;
+//			}
+			double dist1 = comp.getLongestVector().getP1().distance(curr.getCoordinates());
+			double dist2 = comp.getLongestVector().getP2().distance(curr.getCoordinates());
+			if(dist1 <= dist2) {
+				sum1 += comp.getLongestVector().ptLineDist(curr.getCoordinates());
+				count1++;
 			}
 			else {
-				// TODO very unlikely
+				sum2 += comp.getLongestVector().ptLineDist(curr.getCoordinates());
+				count2++;
 			}
-			testMeasurementsCount++;
+//			else {
+//				// TODO very unlikely
+//			}
+//			testMeasurementsCount++;
 		}
 		//		int sumCount = countP1+countP2;
 		//		System.out.println("Threshold="+threshold+" -- countP1+countP2="+sumCount);
-		double meanP1 = sumP1/countP1;
-		double meanP2 = sumP2/countP2;
+		double average1 = sum1/count1;
+		double average2 = sum2/count2;
 
-		if(meanP1 < meanP2) {
-			return new Point2D.Double(vector.getP1().getX(), vector.getP1().getY());
-		}
-		else if(meanP1 > meanP2) {
-			return new Point2D.Double(vector.getP2().getX(), vector.getP2().getY());
+		if(average1 <= average2) {
+//			return new Point2D.Double(vector.getP1().getX(), vector.getP1().getY());
+			double dist1 = comp.getLongestVector().getP1().distance(comp.getHeuristicDynamicCell1().getCellTowerCoordinates());
+			double dist2 = comp.getLongestVector().getP1().distance(comp.getHeuristicDynamicCell2().getCellTowerCoordinates());
+			if(dist2 < dist1) {
+				DynamicCell temp = comp.getHeuristicDynamicCell1();
+				comp.setHeuristicDynamicCell1(comp.getHeuristicDynamicCell2());
+				comp.setHeuristicDynamicCell2(temp);
+			}
 		}
 		else {
-			// TODO Ved liten threshold kan vi få at alle punkter er nærmere det ene endepunktet enn det andre
-			System.out.println("meanP1="+meanP1);
-			System.out.println("meanP2="+meanP2);
-			return new Point2D.Double(0.0, 0.0);
+//			return new Point2D.Double(vector.getP2().getX(), vector.getP2().getY());
+			double dist1 = comp.getLongestVector().getP2().distance(comp.getHeuristicDynamicCell1().getCellTowerCoordinates());
+			double dist2 = comp.getLongestVector().getP2().distance(comp.getHeuristicDynamicCell2().getCellTowerCoordinates());
+			if(dist2 < dist1) {
+				DynamicCell temp = comp.getHeuristicDynamicCell1();
+				comp.setHeuristicDynamicCell1(comp.getHeuristicDynamicCell2());
+				comp.setHeuristicDynamicCell2(temp);
+			}
 		}
+//		else {
+//			// TODO Ved liten threshold kan vi få at alle punkter er nærmere det ene endepunktet enn det andre
+//			System.out.println("meanP1="+average1);
+//			System.out.println("meanP2="+average2);
+//			return new Point2D.Double(0.0, 0.0);
+//		}
 	}
 
 		public static DynamicCell computeSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
@@ -358,6 +422,53 @@ public class Geom {
 			}
 			return true;
 		}
+		
+		public static void chooseHeuristicDynamicCell(DynamicCell dc, Computation comp, int threshold) {
+			if(dc.getMeasurements().get(0) instanceof SimpleMeasurement) {
+				HashSet<Integer> indices = randomInts(threshold, dc.getMeasurements().size(), null);
+				int sum1 = 0;
+				int sum2 = 0;
+				int count1 = 0;
+				int count2 = 0;
+				for(int i : indices) {
+					Measurement curr = dc.getMeasurements().get(i);
+					double dist1 = comp.getLongestVector().getP1().distance(curr.getCoordinates());
+					double dist2 = comp.getLongestVector().getP2().distance(curr.getCoordinates());
+					if(dist1 <= dist2) {
+						sum1 += curr.getSignalStrength();
+						count1++;
+					}
+					else {
+						sum2 += curr.getSignalStrength();
+						count2++;
+					}
+				}
+				double average1 = sum1/(double)count1;
+				double average2 = sum2/(double)count2;
+				
+				if(average1 >= average2) {
+					double dist1 = comp.getLongestVector().getP1().distance(comp.getHeuristicDynamicCell1().getCellTowerCoordinates());
+					double dist2 = comp.getLongestVector().getP1().distance(comp.getHeuristicDynamicCell2().getCellTowerCoordinates());
+					if(dist2 < dist1) {
+						DynamicCell temp = comp.getHeuristicDynamicCell1();
+						comp.setHeuristicDynamicCell1(comp.getHeuristicDynamicCell2());
+						comp.setHeuristicDynamicCell2(temp);
+					}
+				}
+				else {
+					double dist1 = comp.getLongestVector().getP2().distance(comp.getHeuristicDynamicCell1().getCellTowerCoordinates());
+					double dist2 = comp.getLongestVector().getP2().distance(comp.getHeuristicDynamicCell2().getCellTowerCoordinates());
+					if(dist2 < dist1) {
+						DynamicCell temp = comp.getHeuristicDynamicCell1();
+						comp.setHeuristicDynamicCell1(comp.getHeuristicDynamicCell2());
+						comp.setHeuristicDynamicCell2(temp);
+					}
+				}
+			}
+			else {
+				distanceFromSurroundingPointsToVector(comp, dc.getMeasurements(), threshold);
+			}
+		}
 
 
 //	public static Line2D.Double moveSectorOrigoBackwards(Line2D.Double heuristicVector, Point2D.Double p, double sectorAngle) {
@@ -394,22 +505,16 @@ public class Geom {
 
 
 	public static void main(String[] args) {
-		Line2D.Double v = new Line2D.Double(0.0, 0.0, 9.0, 9.0);
-		double angle = Math.toDegrees(Geom.angle(v));
-		double angleToRotate = 10.0;
-		double newAngle = angle+angleToRotate;
-		Line2D.Double vectorRotated = Geom.rotateVector(v, angleToRotate);
-		double angleOfVRotated = Math.toDegrees(Geom.angle(vectorRotated));
-		Line2D.Double vectorComputed = Geom.toCartesian(newAngle, v.getP1().distance(v.getP2()), new Point2D.Double(0.0, 0.0));
-		double angleOfVComputed = Math.toDegrees(Geom.angle(vectorComputed));
-		double angleBetweenThem = Math.toDegrees(Geom.angle(vectorComputed, vectorRotated));
-		
-		System.out.printf("Original vector angle = %.2f\n", angle);
-		System.out.printf("Angle of vector rotated = %.2f\n", angleOfVRotated);
-		System.out.printf("Vector rotated = %s,%s\n", vectorRotated.getP1(), vectorRotated.getP2());
-		System.out.printf("Angle of vector computed = %.2f\n", angleOfVComputed);
-		System.out.printf("Vector computed = %s,%s\n", vectorComputed.getP1(), vectorComputed.getP2());
-		System.out.printf("Angle between = %.2f\n", angleBetweenThem);
+		List<Measurement> m = new ArrayList<Measurement>();
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(10.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -100));
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(80.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -100));
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(20.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -100));
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(70.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -100));
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(30.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -100));
+		m.add(new SimpleMeasurement((Point2D.Double)toCartesian(60.0, 100.0, new Point2D.Double(0.0, 0.0)).getP2(), -10));
+
+		Line2D.Double v = longestVectorWithSignalStrength(m, 5);
+		System.out.println(Math.toDegrees(angle(v)));
 	}
 
 }

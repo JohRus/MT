@@ -635,6 +635,64 @@ $n \\backslash d_\{backwards\}$ & 1 & 2 & 4 & 8 & 16 & 32 & 64 \\\\ \\hline\
 \\end\{tabular\}\
 \\end\{table\}\
 \
+\\newpage\
+\\subsection\{Deadzones\}\
+To properly simulate a cell we need to consider that there may be areas within the cell sector where there are no measurements, so called deadzones. Examples are tall buildings that completely blocks the signal, or lakes. Do our procedure work even though small or large deadzones exist? What makes this difficult to simulate is the variation in size, shape and location of potential deadzones. Practically it is not possible to test for different shapes, so we keep this variable constant.\
+\
+\\begin\{figure\}[h!]\
+%\\label\{fig:10deg20m\}\
+\\centering\
+\\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=0.7]\{pictures/cell_dz1.png\}\
+    \\caption\{$r_\{dz\}=30$\}\
+  \\end\{subfigure\}\
+  \\hspace\{.03\\textwidth\}\
+  \\begin\{subfigure\}[t]\{0.45\\textwidth\}\
+    \\centering\
+    \\includegraphics[scale=0.7]\{pictures/cell_dz2.png\}\
+    \\caption\{$r_\{dz\}=40$\}\
+  \\end\{subfigure\}\
+\\caption\{2 cells, each with a deaszone\}\
+\\end\{figure\}\
+\
+To create a deadzone we take a random point within the cell sector and a radius $r_\{dz\}$. Every measurement within the circle this point and radius forms are removed. This strategy also stimulates the fact that for example only 40\\% of a lake may be within the sell sector.\
+\
+In the following tables we show errors as a function of $M$, $n$ and $r_\{dz\}$. $\\alpha=120$ and $d_\{backwards\}=1$ for every computation.\
+\
+\\bigskip\
+\\begin\{table\}[h!]\
+\\centering\
+\\caption\{$\\alpha = 120$, $d_\{backwards\}=1$, $M=100$\}\
+%\\label\{tab:10m\}\
+\\begin\{tabular\}\{|c|c|c|c|c|c|\}\
+\\hline\
+$n \\backslash r_\{dz\}$ & 20 & 30 & 40 & 50 & 60 \\\\ \\hline\
+10 & 51,00 & 51,07 & 54,55 & 55,22 & 53,02 \\\\ \\hline\
+20 & 49,27 & 51,30 & 52,29 & 54,50 & 54,92 \\\\ \\hline\
+40 & 49,95 & 50,32 & 54,35 & 54,07 & 55,53 \\\\ \\hline\
+80 & 50,15 & 51,29 & 51,47 & 53,49 & 54,07 \\\\ \\hline\
+\\end\{tabular\}\
+\\end\{table\}\
+\
+\\bigskip\
+\\begin\{table\}[h!]\
+\\centering\
+\\caption\{$\\alpha = 120$, $d_\{backwards\}=1$ $M=1000$\}\
+%\\label\{tab:10m\}\
+\\begin\{tabular\}\{|c|c|c|c|c|c|\}\
+\\hline\
+$n \\backslash r_\{cz\}$ & 20 & 30 & 40 & 50 & 60 \\\\ \\hline\
+30 & 59,84 & 61,13 & 61,74 & 61,37 & 62,52 \\\\ \\hline\
+50 & 59,11 & 59,48 & 61,44 & 62,30 & 63,12 \\\\ \\hline\
+100 & 60,52 & 58,56 & 59,00 & 63,19 & 62,49 \\\\ \\hline\
+200 & 58,62 & 59,65 & 60,92 & 60,63 & 61,98 \\\\ \\hline\
+400 & 58,50 & 59,43 & 60,72 & 62,53 & 62,80 \\\\ \\hline\
+800 & 60,65 & 60,84 & 60,90 & 59,68 & 63,02 \\\\ \\hline\
+\\end\{tabular\}\
+\\end\{table\}\
+\
+\\newpage\
 \\subsection\{Several cells\}\
 \
 \\newpage\
