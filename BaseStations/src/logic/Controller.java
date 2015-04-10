@@ -33,7 +33,31 @@ public class Controller {
 	}
 	
 	public Computation generateComputation(DynamicCell originalCell, int n, double d) {
-		return Generate.computation(originalCell, n, d);
+		Computation comp = Generate.computation(originalCell, n, d);
+		
+		DynamicCell heuristicDynamicCell1 = new DynamicCell(
+				comp.getHeuristicCell1().getCellTowerCoordinates(), 
+				comp.getHeuristicCell1().getVectorAngle(), 
+				comp.getHeuristicCell1().getSectorAngle(), 
+				originalCell.getMaxDistance(), 
+				originalCell.getMinDistance());
+		
+		heuristicDynamicCell1.setVectors();
+		
+		DynamicCell heuristicDynamicCell2 = new DynamicCell(
+				comp.getHeuristicCell2().getCellTowerCoordinates(), 
+				comp.getHeuristicCell2().getVectorAngle(), 
+				comp.getHeuristicCell2().getSectorAngle(), 
+				originalCell.getMaxDistance(), 
+				originalCell.getMinDistance());
+		
+		heuristicDynamicCell2.setVectors();
+		
+		comp.setHeuristicCell1(heuristicDynamicCell1);
+		comp.setHeuristicCell2(heuristicDynamicCell2);
+		
+		return comp;
+//		return Generate.computation(originalCell, n, d);
 	}
 	
 	

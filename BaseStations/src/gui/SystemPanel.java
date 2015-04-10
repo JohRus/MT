@@ -129,13 +129,13 @@ public class SystemPanel extends JPanel {
 		}
 
 		if(showHideHeuristicDCs) {
-			drawCell(entry.getValue().getHeuristicDynamicCell1(), 4, g2d, Color.pink);
+			drawCell((DynamicCell) entry.getValue().getHeuristicCell1(), 4, g2d, Color.pink);
 
-			drawCell(entry.getValue().getHeuristicDynamicCell2(), 4, g2d, Color.cyan);
+			drawCell((DynamicCell) entry.getValue().getHeuristicCell2(), 4, g2d, Color.cyan);
 		}
 		
 		if(showHideChosenHeuristicDC) {
-			drawCell(entry.getValue().getHeuristicDynamicCell1(), 4, g2d, Color.pink);
+			drawCell((DynamicCell) entry.getValue().getHeuristicCell1(), 4, g2d, Color.pink);
 		}
 	}
 	

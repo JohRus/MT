@@ -6,9 +6,8 @@ import java.awt.geom.Point2D;
 public class Computation {
 	
 	private Line2D.Double longestVector;
-	private Point2D.Double heuristicCellTowerPoint;
-	private DynamicCell heuristicDynamicCell1;
-	private DynamicCell heuristicDynamicCell2;
+	private DefaultCell heuristicCell1;
+	private DefaultCell heuristicCell2;
 	
 //	public Computation(Line2D.Double heuristicDirectionVector,
 //			Point2D.Double heuristicCellTowerPoint,
@@ -27,28 +26,20 @@ public class Computation {
 		this.longestVector = longestVector;
 	}
 
-	public Point2D.Double getHeuristicCellTowerPoint() {
-		return heuristicCellTowerPoint;
+	public DefaultCell getHeuristicCell1() {
+		return heuristicCell1;
 	}
 
-	public void setHeuristicCellTowerPoint(Point2D.Double heuristicCellTowerPoint) {
-		this.heuristicCellTowerPoint = heuristicCellTowerPoint;
+	public void setHeuristicCell1(DefaultCell heuristicCell1) {
+		this.heuristicCell1 = heuristicCell1;
 	}
 
-	public DynamicCell getHeuristicDynamicCell1() {
-		return heuristicDynamicCell1;
+	public DefaultCell getHeuristicCell2() {
+		return heuristicCell2;
 	}
 
-	public void setHeuristicDynamicCell1(DynamicCell heuristicDynamicCell1) {
-		this.heuristicDynamicCell1 = heuristicDynamicCell1;
-	}
-
-	public DynamicCell getHeuristicDynamicCell2() {
-		return heuristicDynamicCell2;
-	}
-
-	public void setHeuristicDynamicCell2(DynamicCell heuristicDynamicCell2) {
-		this.heuristicDynamicCell2 = heuristicDynamicCell2;
+	public void setHeuristicCell2(DefaultCell heuristicCell2) {
+		this.heuristicCell2 = heuristicCell2;
 	}
 
 

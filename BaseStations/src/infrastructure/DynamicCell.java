@@ -11,47 +11,40 @@ import logic.Geom;
 
 public class DynamicCell extends DefaultCell {
 	
-	// The angle from the x-axis to the virtual vector that forms the first part of the cell sector
-	private double vectorAngle;
+//	// The angle from the x-axis to the virtual vector that forms the first part of the cell sector
+//	private double vectorAngle;
 	
-	// The angle from the first vector (vectorAngle) to the second vector
-	private double sectorAngle;
+//	// The angle from the first vector (vectorAngle) to the second vector
+//	private double sectorAngle;
 	
-	// The two vectors forming the cell sector
+	// The two vectors forming the edges of the cell sector
 	private Line2D.Double vector1, vector2;
 	
 	// The max and min distance from the cell tower for the measurements
 	private double maxDistance, minDistance;
-	
-//	private List<Line2D.Double> obstructions;
-	
-//	private boolean[] inDeadZone;
 
 	public DynamicCell(Point2D.Double cellTowerCoordinates, double vectorAngle, double sectorAngle, 
 			double maxDistance, double minDistance) {
-		super(cellTowerCoordinates);
-		this.vectorAngle = vectorAngle;
-		this.sectorAngle = sectorAngle;	
+		super(cellTowerCoordinates, vectorAngle, sectorAngle);
 		this.maxDistance = maxDistance;
 		this.minDistance = minDistance;
-//		this.obstructions = new ArrayList<Line2D.Double>();
 	}
 
-	public double getVectorAngle() {
-		return vectorAngle;
-	}
+//	public double getVectorAngle() {
+//		return vectorAngle;
+//	}
+//
+//	public void setVectorAngle(double vectorAngle) {
+//		this.vectorAngle = vectorAngle;
+//	}
 
-	public void setVectorAngle(double vectorAngle) {
-		this.vectorAngle = vectorAngle;
-	}
-
-	public double getSectorAngle() {
-		return sectorAngle;
-	}
-
-	public void setSectorAngle(double sectorAngle) {
-		this.sectorAngle = sectorAngle;
-	}
+//	public double getSectorAngle() {
+//		return sectorAngle;
+//	}
+//
+//	public void setSectorAngle(double sectorAngle) {
+//		this.sectorAngle = sectorAngle;
+//	}
 	
 	public Line2D.Double getVector1() {
 		return vector1;
@@ -90,20 +83,6 @@ public class DynamicCell extends DefaultCell {
 		this.minDistance = minDistance;
 	}
 	
-	
-	
-//	public void addObstruction(Line2D.Double obs) {
-//		this.obstructions.add(obs);
-//	}
-//
-//	public List<Line2D.Double> getObstructions() {
-//		return obstructions;
-//	}
-//
-//	public void setObstructions(List<Line2D.Double> obstructions) {
-//		this.obstructions = obstructions;
-//	}
-	
 	public void applyDeadZone(Point2D.Double origo, double radius) {
 		LinkedList<Measurement> tempList = new LinkedList<>(getMeasurements());
 		for(int i = 0; i < tempList.size(); i++) {
@@ -116,28 +95,10 @@ public class DynamicCell extends DefaultCell {
 		setMeasurements(new ArrayList<Measurement>(tempList));
 	}
 
-//	public boolean[] getInDeadZone() {
-//		return inDeadZone;
-//	}
-//
-//	public void setInDeadZone(boolean[] inDeadZone) {
-//		this.inDeadZone = inDeadZone;
-//	}
-	
-//	public List<Measurement> getActuallMeasurements() {
-//		List<Measurement> actuallMeasurements = new ArrayList<Measurement>();
-//		for(int i = 0; i < getMeasurements().size(); i++) {
-//			if(inDeadZone[i] == false) {
-//				actuallMeasurements.add(getMeasurements().get(i));
-//			}
-//		}
-//		return actuallMeasurements;
-//	}
-
 	@Override
 	public String toString() {
 		String s = String.format("Cell Tower Coordinates = (%.1f , %.1f)\n", super.getCellTowerCoordinates().getX(), super.getCellTowerCoordinates().getY());
-		s += String.format("Vector Angle = %.1f degrees\nSector Angle = %.1f degrees\n", this.vectorAngle, this.sectorAngle);
+		s += String.format("Vector Angle = %.1f degrees\nSector Angle = %.1f degrees\n", super.getVectorAngle(), super.getSectorAngle());
 		s += String.format("Measurements: %d\n", super.getMeasurements().size());
 		if(super.getMeasurements().size() <= 20) {
 			for(int i = 0; i < super.getMeasurements().size(); i++) {
