@@ -4,10 +4,11 @@
 \paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 
-\f0\fs24 \cf0 \\documentclass[a4paper, 10pt]\{article\}\
+\f0\fs24 \cf0 \\documentclass[a4paper, 10pt]\{report\}\
 \
 \\usepackage\{listings\}\
 \\usepackage\{color\}\
+\\usepackage[table]\{xcolor\}\
 \\usepackage\{algorithm\}\
 \\usepackage\{algpseudocode\}\
 %\\usepackage\{algorithm2e\}\
@@ -17,12 +18,17 @@
 \\usepackage\{textcomp\}\
 \\usepackage\{microtype\}\
 \\usepackage\{caption,subcaption\}\
+\\usepackage\{tabularx\}\
 %\\usepackage\{tikz\}\
 \
 \\addbibresource\{references.bib\}\
 \
-\\setlength\{\\parskip\}\{\\baselineskip\}%\
-\\setlength\{\\parindent\}\{0pt\}%\
+%\\setlength\{\\parskip\}\{\\baselineskip\}%\
+%\\setlength\{\\parindent\}\{0pt\}%\
+\
+\\linespread\{1.3\}\
+\
+\\newcommand\{\\tabitem\}\{~~\\llap\{\\textbullet\}~~\}\
 \
 \\definecolor\{dkgreen\}\{rgb\}\{0,0.6,0\}\
 \\definecolor\{gray\}\{rgb\}\{0.5,0.5,0.5\}\
@@ -78,165 +84,74 @@
 \\listofalgorithms\
 \
 \\newpage\
-\\section\{Introduction\}\
+\\chapter\{Introduction\}\
 \
-\\subsection\{Terminology\}\
-\\paragraph\{Cell\} Cells are geographic coverage areas where each cell is covered by one or three \\textit\{Base Transceiver Stations\} (BTS), also called \\textit\{cell towers\} \\cite[p.~548]\{computernetworking\}. The cell tower transmits to and receives signals from the mobile stations or hosts within the cell. We can think of cells as a system of hexagons. When the technology was new only one cell tower was used per cell, and it was positioned in the middle to cover the area belonging to that cell. Today, cell towers is positioned where three cells intersect, as shown in figure \\ref\{fig:ctThreeSectors\}. This means a cell tower's circumference is divided into three sectors of approximately 120 degrees each, one sector for each cell the cell tower covers. This gives the advantage that a cell is covered by tree cell towers and thereby prevents a \\textit\{Single Point of Failure\} (SPOF) scenario within a cell.  Throughout the thesis we assume and use the latter positioning strategy. \
+\\section\{Motivation and background\}\
+Noone can reject that instant communication and push messages through smart phones are becoming more and more a part of our society. The number of devices connected to the cellular network is increasing and the demand for good reception is growing. In urban areas the general citizen might get frustrated if she is only disconnected from the network unwillingly for just a second. It is even expected to be able to surf the internet inside car tunnels made of concrete, or make phone calls below the ground while riding the subway. But how is this possible? To communicate with the outside world through the cell phone requires the phone to be connected to the cellular network, which means it needs to receive a signal from somewhere. These signals originates from antennas that are placed all over the world. How many antennas are there and where are they located?\
 \
-\\begin\{figure\}[h!]\
-\\label\{fig:ctThreeSectors\}\
+There are several internet sites that attempts to answer this question. For example \\textit\{opensignal.com\}, \\textit\{cellmapper.net\} and \\textit\{opencellid.org\}. Their goal is to show exactly where the antennas that broadcasts cell signals are located. They provide quite accurate location of antennas but not exact, at least in most cases. What makes this goal difficult to accomplish is that the cellular network providers in most countries are not obliged to provide data about the location of the antennas. So how can these sites know where the antennas are located? The answer is crowdsourcing. The sites provide smart phone applications the users can download that gathers data about the antenna the phone is connected to, and transmits the data to a database. Based on this data the sites attempt to position the antennas.\
+\
+OpenCellID \\cite\{opencellid\} is the worlds largest collaborative community project for collecting GPS positions of cellular network antennas. As of August 2014, their database contained more than 6 million unique antennas and 1 Billion crowdsourced measurements. The algorithm used by opencellid to calcule the positions of antennas is very simple. Based on the measurements belonging to an antenna, the position of the antenna is set to be the mean of those measurements' longitude and latitude. This is not a good approach since antennas broadcast their signals in the shape of a pizza slize, usually $120^\{\\circ\}$ horizontally, and not $360^\{\\circ\}$. This means most antennas will be put somewhere in the middle among its measurements, when it should be put somewhere so that every measurement lies to some direction of the antenna.\
+\
+When we look at the map this error in antenna position might not be that significant. We can still get a good idea of how many antennas are in a certain area, and approximately where they are located. But out on the street, in a more practical sense, it is more significant. If a person is interested in knowing how many antennas are close to his appartement, work place or regular drinking hole, an error of 100 meters is a significant distance. She might only be interested in the antennas that are within a radius of 50 meters. But 100 meters, 1,000 meters, or even 5,000 meters might look like nothing on a map, especially when low scaling is possible.\
+\
+Why do a person want to know where antennas are located? The answer is radiation. To compensate for high buildings and other types of infrastructure in urban areas there has to be loads of antennas broadcasting signals. In addition, the coverage areas of antennas has to overlap so our calls are not suddenly interrupted or streaming of videos are not cut of. This means there are a lot of signals flying around town. Researchers claim that these signals are harmless, but should not everyone be able to decide for themselves if they want to work or live nearby these antennas? Many peoply die of reasons that can not be explained. Infants are born with deseases or with a hand with only four fingers on it. Drugs and alcohol are not always to blame, so can the reason be the different kinds of radiation we are exposed to every day?\
+\
+%Erstatning for GPS?\
+\
+\\section\{Research questions\}\
+With this thesis we want to briefly identify the work that has previously been done when it comes to positioning cellular network antennas. We want to find out if it possible to implement, test and possibly improve existing solutions with regard to the problem OpenCellID is faced with, namely their simple algorithm for positioning antennas. If not, we want to develop our own process for positioning the antennas. We want to base our conclusions on generated theoretical testdata, and real data provided by OpenCellID.\
+\
+\\section\{Fundamental terminology\}\
+We now define some fundamental terminology. Other nontrivial terminolgy will be explained throughout the thesis.\
+\
+\\subsection\{Cell\} A \\textit\{cell\} is a geographic area that is covered by a cellular network antenna. The signal originating from this antenna can potentially reach every mobile host within the area covered by the cell \\cite[p.~548]\{computernetworking\}. The antenna is placed on a \\textit\{cell tower\}, or more generally a base station. From now on we will refer to a cellular network antenna as a cell tower. We will refer to the coverage area of a cell as the \\textit\{cell sector\}, the angle of the cell sector as the \\textit\{sector angle\}, and the edges of the cell sector as the \\textit\{cell edges\}.\
+\
+The sector angle is with few exceptions always approximately $120^\{\\circ\}$. Some cellular network operators use cells where the sector angle is smaller, for example approximately $60^\{\\circ\}$, in areas where it is more practical, for example in urban areas. It is normal that three or more cells share a cell tower to cover everything in a $360^\{\\circ\}$ angle around the cell tower. The cell tower will then have several antennas pointing in different directions.\
+\
+To avoid disconnection and support high demand, the cells and cell towers are in theory orginized as shown in figure \\ref\{cell_network\}. We can think of it as a system of hexagons where each hexagon is covered by at least three different cells. Depending on the power of the antenna it may cover more than its own hexagon. This ensures efficient overlapping and constant connection to the cellular network for the users.\
+\
+We will also consider a cell as collection of data fields. These data fields will include information about the cell and will be defined later.\
+\
+\\begin\{figure\}[t]\
 \\centering\
 \\includegraphics[scale=0.5]\{pictures/cellTowersThreeSectors.png\}\
 \\caption\{Cells as a system of hexagons \\cite\{frenkiel1979cellular\}\}\
+\\label\{cell_network\}\
 \\end\{figure\}\
 \
-\\paragraph\{Base Station\}\
-\\paragraph\{Cell Tower\}\
-\\paragraph\{Measurement\}\
+\\subsection\{Measurement\}\
+A \\textit\{measurement\} represents a smart phones registration of data about the cell it is currently connected to. This data is obtained with the help of smart phone applications and crowdsourcing. In addition to data about the cell the measurement will also include the phones current coordinates. The data fields of a measurement will be defined later. In this thesis we will say that measurements within the same cell belongs to that cell.\
 \
-\\subsection\{OpenCellID\}\
-OpenCellID \\cite\{opencellid\} is the worlds largest collaborative community project for collecting GPS positions of cell towers. The GPS positions of the cell towers are calculated by looking at data collected with crowdsourcing. Everyone with a smartphone can download an application free of charge which registers, relative to the connected cell tower, signal strength, mobile country code, mobile network code, along with other parameters. It also registers the current GPS position of the smartphone. All of these parameters makes a measurement, and all measurements are collected by a server and stored in a database. As of August 2014, the database contained more than 6 million unique Cell IDs and 1 Billion measurements.\
-\
-OpenCellID provides a visual service that consists of a world map where you can zoom in and out, and move around the globe. The service plots every measurement along with the calculated position of cell towers within the map's current scale. The algorithm for calculating a cell tower position is very simple. It looks at every measurement connected to a given cell tower and calculates the mean of the longitudes and latitudes of the GPS position of the smartphones, and gives this mean as the cell tower position.\
-\
-\\section\{Cellular Networks\}\
-\
-\\section\{Existing Algorithms\}\
-Chen et al. \\cite\{Chen\} used the Centroid and Weighted Centroid algorithms, amongst others, to examine the positioning accuracy of a GSM beacon-based location system in a metropolitan environment. Yang et al. \\cite\{Yang\} studied the Weighted Centroid and Strongest Received Signal Strength algorithms for cell tower localization.\
-\
-\\subsection\{Centroid\}\
-The Centroid algorithm estimates a cell tower's position to be the geometric center of the measurements for that cell. It is the mean of the measurements' longitudes and latitudes.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements.\
-\\begin\{gather*\}\
-longitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(longitude_i\\right)\\\\%, \\textnormal\{and\}\\\\\
-latitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(latitude_i\\right)\
-\\end\{gather*\}\
+\\section\{Thesis structure and outline\}\
 \
 \\newpage\
-\\begin\{algorithm\}\
-\\caption\{Centroid\}\
-\\label\{alg:centroid\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{Centroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State sumOfLongitudes $\\gets 0.0$\
-\\State sumOfLatitudes $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State sumOfLongitudes $\\gets$ sumOfLongitudes + m.longitude\
-\\State sumOfLatitudes $\\gets$ sumOfLatitudes + m.latitude\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ sumOfLongitudes $\\div$ measurements.size\
-\\State cellTowerLatitude $\\gets$ sumOfLatitudes $\\div$ measurements.size\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\subsection\{Weighted Centroid\}\
-The Weighted Centroid algorithm is an extension of the Centroid algorithm. Here, the measurements are given weights based on the \\textit\{received signal strength\} (RSS) at each measurement. The measurements with strong signals are likely to be closer to the cell tower's real position than those with weaker signals, so we want to emphasize these measurements when calculating the cell tower's position. The unit of measurement for these kind of signals are \\textit\{Decibel-milliwatts\} (dBm) and they range from approximately -30 dBm and lower. Due to the negative values we want to translate them into weights with positive values to make them viable to use for calculations.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
-\\begin\{gather*\}\
-longitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(longitude_i \\times w_i\\right)\\\\%, \\textnormal\{and\}\\\\\
-latitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(latitude_i \\times w_i\\right)\
-\\end\{gather*\}\
-\
-\\begin\{algorithm\}\
-\\caption\{Weighted Centroid\}\
-\\label\{alg:weightedcentroid\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{WeightedCentroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State sumOfWeights $\\gets 0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State sumOfWeights $\\gets$ sumOfWeights$+$m.signal \
-\\EndFor\
-\\State x $\\gets 0.0$\
-\\State y $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State x $\\gets$ x$+($m.longitude$\\times$m.signal$)$\
-\\State y $\\gets$ y$+($m.latitude$\\times$m.signal$)$\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ x $\\div$ sumOfWeights\
-\\State cellTowerLatitude $\\gets$ y $\\div$ sumOfWeights\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\subsection\{Strongest Received Signal Strength\}\
-The Strongest RSS algorithm estimates a cell tower's position as the position of the measurement with the strongest observed RSS from that cell tower. If multiple measurements qualify, we apply algorithm \\ref\{alg:centroid\} on these.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
-%\\begin\{equation\}\
-%\\begin\{align*\}\
-\\begin\{gather*\}\
-longitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(longitude_i\\right), \\textnormal\{ and\}\\\\ \
-latitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(latitude_i\\right), \\textnormal\{ where\}\\\\ \
-%w_j = max(w_1,w_2,...,w_n), \\textnormal\{ and\}\\\\ \
-m = |W|, \\textnormal\{ and\}\\\\\
-W = \\\{w:w\\in max(w_1,w_2,...,w_n)\\\}\
-\\end\{gather*\}\
-%\\textnormal\{ is the cardinality of the set \}\
-%\\end\{align*\}\
-%\\end\{equation\}\
-\\begin\{algorithm\}\
-\\caption\{Strongest Received Signal Strength\}\
-\\label\{alg:strongestrss\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{StrongestRSS\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State strongestSignalMeasurements $\\gets$ a list to store the measurements with the strongest signal\
-\\State currentStrongestSignal $\\gets -1$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\If\{m.signal $>$ currentStrongestSignal\}\
-\\State \\textbf\{clear\} strongestSignalMeasurements\
-\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
-\\State currentStrongestSignal $\\gets$ m.signal\
-\\ElsIf\{m.signal $=$ currentStrongestSignal\}\
-\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
-\\EndIf\
-\\EndFor\
-\\State x $\\gets 0.0$\
-\\State y $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ strongestSignalMeasurements\}\
-\\State x $\\gets$ x + m.longitude\
-\\State y $\\gets$ y + m.latitude\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ x $\\div$ strongestSignalMeasurements.size\
-\\State cellTowerLatitude $\\gets$ y $\\div$ strongestSignalMeasurements.size\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\section\{Initial runnning of algorithms\}\
-Yang et al. \\cite\{Yang\} applied algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} to data obtained through wardriving \\cite\{Chen\}. In this thesis we apply the same algorithms to data from \\cite\{opencellid\}. To be able to justify our results we must first generate test data to confirm that our algorithms are correctly implemented. We created a java program for generating cells, cell towers and measurements.\
-\\subsection\{Centroid\}\
-\\subsection\{Weighted Centroid\}\
-\\subsection\{Strongest Received Signal Strength\}\
-\\section\{Running the algorithms whith bounding technique applied\}\
-\\subsection\{Centroid\}\
-\\subsection\{Weighted Centroid\}\
-\\subsection\{Strongest Received Signal Strength\}\
+\\chapter\{Related work\}\
+\\section\{2010: First large scale study\}\
+%triangulation++\
 \
 \\newpage\
-\\subsection\{Testdata\}\
-We wrote a small Java program for generating testdata. Below follow three example screenshots where we apply algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} on three random generated cells with 10, 20 and 40 measurements, respectively. The cell tower is placed in the middle and the measurements are generated randomly around it.\
-\\begin\{itemize\}\
-\\item \\text\{Black circles:\} Measurements\
-\\item \\text\{Black square:\} Real position of cell tower\
-\\item \\text\{Blue square:\} Position of cell tower calculated by Centroid\
-\\item \\text\{Green square:\} Position of cell tower calculated by Weighted Centroid\
-\\item \\text\{Red square:\} Position of cell tower calculated by Strongest RSS\
-\\end\{itemize\}\
+\\chapter\{Developing the process\}\
+\\section\{Generating test data\}\
+When developing the process for positioning cell towers, we need to be able to generate theoretical test data to test on. When developing the algorithms we want to implement and test it every step of the way to make sure it behaves as desired and required. \
 \
-\\newpage\
-\\section\{Positioning Cell Towers Heuristically\}\
+It is widely known in the software development community that continious testing is more time efficient than only testing when the piece of software is finished. Seldom testing tends to discover flaws that runs deep into the program and takes a long time to fix. Continious testing helps us to discover flaws early, thus preventing those complex flaws.\
+\
+We can apply this concept to our algorithms. We are developing a process or chain of algorithms where each is dependent of the ones that come before. That is why we want to make sure each algorithm works as desired before starting on the next. Generated theoretical test data will help us see how the algorithms work. Since we are generating it ourselves we can decide its characteristics to simulate different scenarios to see how they affect the algorithms. This also lets us calculate the theoretical result in advance to compare with what the algorithms actually computes.\
+\
+Our test data needs to represent cells and measurements. When we generate a cell and its measurements we include the position of the cell tower. This is the most optimal value our algorithms can compute. Real data would not be able to provide the exact position, with some exceptions, but it is important that we generate complete cells so we can compare results from our algorithms to the optimal values. \
+\
+We use a Cartesian coordinate system for positioning. Measurements and cell towers will then be given positions in the form of x and y coordinates. A Cartesian coordinate system will almost perfectly simulate the real world. To simulate it perfectly would require an environment that matches the earths circular shape. We choose to use a Cartesian environment for simplicity because the cell sectors are too small for the earth's shape to make a significant difference.\
+\
+We also need to set a maximum distance from the cell tower the measurements are allowed to be positioned. In the real world, cells have different distance capabilities and cell phones have different reception capabilities. In addition to this the measurements collected for different cells can appear in a lot of different styles. Sometimes the measurements are really close to the cell tower and sometimes they are really far away from the cell tower. This makes the theoretical maximum distance difficult to set. We will just have to pick a distance that looks ok.\
+\
+The actual generation of test data happens as follows. The cell is generated including cell tower position and sector boundries. We then generate measurements with random positions within the cell sector.\
+\
+\\section\{Positioning Cell Towers Theoretically\}\
 To predict the positon of a cell tower as effective as possible in real time, we need to develop heuristic algorithms that works on a random subset of the measurements available $M$. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower we start by computing a linear vector $\\vec\{v\}_\{direction\}$ from the measurements in $M$. This will give us a good impression of which direction the cell tower is pointing, but only works well on small sector angles. This is done with the Longest Vector method. After the computation of $\\vec\{v\}_\{direction\}$ we propose two possible cell tower positions, one for each endpoint of $\\vec\{v\}_\{direction\}$. The criteria for a valid cell is that every $m \\in M$ fits inside it. We use the Find Sector method for this. \
 \
-To generate $M$ we need to decide how far from the cell tower position the measurements are allowed to be. This range should be as realistic as possible relative to the real world, but this is difficult to accomplish. A lot of factors play a part when a cell phone receives a signal from a cell tower. The main factor is the type of area the cell phone and cell tower are located. In urban areas the cell towers used often have ranges up to 3 km. In areas where the landscape does not contain high buildings or other obstacles, the cell towers can have ranges up to 35 km. Another factor is cell phones ability to receive signals. Some phones may be able to receive a signal from a cell tower where others are not, when the phones are at the same position.\
-\
 \\newpage\
-\\subsection\{Longest Vector\}\
+\\section\{Longest Vector\}\
 \\begin\{figure\}[h!]\
 \\label\{fig:10deg20m\}\
 \\centering\
@@ -318,7 +233,7 @@ Longest Vector takes as input $M$ and $n$. First it declares the variables $ep_1
 \
 \
 \\newpage\
-\\subsection\{Find Sector\}\
+\\section\{Find Sector\}\
 After retrieving $\\vec\{v\}_\{direction\}$ we have two suggested solutions for which direction the cell tower is pointing. It is either from $ep_1$ to $ep_2$, or from $ep_2$ to $ep_1$. We compute solution cells for both directions. To describe the process we look at the solution where the direction of the cell tower points from $ep_1$ to $ep_2$.\
 \
 To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M$ fits inside the sector. We start by computing a heuristic sector $C_\{heuristic\}$ with the same angle as the original cell sector, with the origin at $ep_1$, such that $\\vec\{v\}_\{direction\}$ lies in the middle of the sector. That is, the distance from a point on $\\vec\{v\}_\{direction\}$ to both boundries of $C_\{heuristic\}$ is equal for every point on $\\vec\{v\}_\{direction\}$. The computation of $C_\{heuristic\}$ is done with the Compute Sector method. After this first computation of $C_\{heuristic\}$ we do several iterations. For each iteration, if every $m$ does not fit inside we move $ep_1$ backwards along $\\vec\{v\}_\{direction\}$ by a constant factor $d_\{backwards\}$, and compute $C_\{heuristic\}$ with the new origin. The iterations stop when every $m$ fits inside $C_\{heuristic\}$.\
@@ -424,7 +339,7 @@ As described above we apply this process on both directions of $\\vec\{v\}_\{dir
 %\\end\{algorithm\}\
 \
 \\newpage\
-\\subsection\{Greater angles\}\
+\\section\{Greater angles\}\
 This approach gets less and less reliable when we increase the sector angle $\\alpha$ of the cell. For $\\alpha = 10$, we can be quite sure that we will get usable results as long as we have a properly large set of measurements to work with. When increasing $\\alpha$ the area of the sector grows. This will increase the probability of computing a poor vector if we are unlucky with the subset of measurements used and the combination of pairs of measurements. \
 \
 We now present several tables where we show the error of the heuristic cells. The error is the average distance between the actuall position of the cell tower and the one of the two heurisic cell towers closest to it. We base each error on 1000 test subjects. That is, 1000 generated cells. Each error is a function of $\\alpha$, $M$ and $n$. We use $d_\{backwards\} = 10$ for these computations.\
@@ -507,7 +422,7 @@ As we can see from the tables the error increases between $45^\{\\circ\}$ and $9
 \
 Here we clearly see that $d_\{corners\}$ is smaller than $d_\{correct\}$ for a sector angle of $30^\{\\circ\}$, and $d_\{corners\}$ is larger than $d_\{correct\}$ for a sector angle of $90^\{\\circ\}$. For large angles and many datapoints considered, $\\vec\{v\}_\{direction\}$ will most likely be similar to $d_\{corners\}$.\
 \
-\\subsection\{Sector angle of $120^\{\\circ\}$\}\
+\\section\{Sector angle of $120^\{\\circ\}$\}\
 We now turn our attention toward cells where the sector angles are $120^\{\\circ\}$. In the real world, a cell tower divides its coverage area into three different cells, each with a cell sector of $120^\{\\circ\}$. The cell tower then covers everything within its range capabilities, in an angle of $360^\{\\circ\}$. For a sector angle of $120^\{\\circ\}$, the Longest Vector method computes a poor $\\vec\{v\}_\{direction\}$, as explained above. And as we have seen, the resulting heuristic cells have a large error. See figure 6. \
 \
 \\begin\{figure\}[h!]\
@@ -520,7 +435,7 @@ We now turn our attention toward cells where the sector angles are $120^\{\\circ
 From now on we will focus on cells with sector angles of $120^\{\\circ\}$.\
 \
 \\newpage\
-\\subsection\{Received Signal strength\}\
+\\section\{Received Signal strength\}\
 We now introduce the parameter received signal strength (RSS) for a measurement. If the measurement is close to the cell tower the RSS is strong, and if it is far from the cell tower the RSS is weak. To make the RSS as realistic as possible it is stored as a negative value since the RSS in the real world is a negative Decibel-milliwatts (dBm) number. For our theoretical purposes, the RSS is calculated by multiplying the distance from the measurement to the cell tower by -1. This means a measurements RRS is strong if it is close to 0, and week if it is far from it.\
 \
 We now have a much stronger variable to base our computations on. To incorporate it, we change the \\textbf\{if\} statement in the Longest Vector method to the following.\
@@ -584,7 +499,7 @@ $n=800$& 63,69 \\\\ \\hline\
 \
 As we can see, the error values are significantly reduced. With RSS $\\vec\{v\}_\{direction\}$ is similar to $d_\{correct\}$ in figure 5a, only it works for angles where $d_\{corners\}$ is larger than $d_\{correct\}$, which was a problem when we based $\\vec\{v\}_\{direction\}$ on the distance between to measurements.\
 \
-\\subsection\{Optimalization of $d_\{backwards\}$\}\
+\\section\{Optimalization of $d_\{backwards\}$\}\
 We need to consider the variable $d_\{backwards\}$ when making these computations. Recall that $d_\{backwards\}$ is the constant that decides how far $ep_1$ will be moved backwards for each iteration in the Find Sector method. If we use a small $d_\{backwards\}$, Find Sector will need more iterations to find a cell where every measurement fit than if we use a large $d_\{backwards\}$, and thus take longer time to complete. On the other hand, using a small $d_\{backwards\}$ gives more accurate results.\
 \
 We must also take into consideration the time it takes to compute a solution cell. This process should be able to give results in real time, so we do not have unlimited time. For a computation with $\\alpha = 120$, $M=1000$, $n=800$ and $d=1$, the average time it takes to compute a solution cell is 0,01 seconds. This means we are within our time constraints with a good margin, so we will not include it in our tables yet.\
@@ -636,7 +551,7 @@ $n \\backslash d_\{backwards\}$ & 1 & 2 & 4 & 8 & 16 & 32 & 64 \\\\ \\hline\
 \\end\{table\}\
 \
 \\newpage\
-\\subsection\{Deadzones\}\
+\\section\{Deadzones\}\
 To properly simulate a cell we need to consider that there may be areas within the cell sector where there are no measurements, so called deadzones. Examples are tall buildings that completely blocks the signal, or lakes. Do our procedure work even though small or large deadzones exist? What makes this difficult to simulate is the variation in size, shape and location of potential deadzones. Practically it is not possible to test for different shapes, so we keep this variable constant.\
 \
 \\begin\{figure\}[h!]\
@@ -693,24 +608,233 @@ $n \\backslash r_\{cz\}$ & 20 & 30 & 40 & 50 & 60 \\\\ \\hline\
 \\end\{table\}\
 \
 \\newpage\
-\\subsection\{Several cells\}\
+\\section\{Chose a heuristic cell\}\
+We have now come to the point where we have to pick one of the two heuristic cells we have proposed. We look at the case where the measurements are equipped with RSS and the case where they are not, though the methods are very similar. \
+\
+We first look at the case where the measurements are not equipped with RSS. In a cell sector, the further away from the cell tower we get, the distance between the two vectors forming the edges of the cell sector, $v_1$ and $v_2$, increases. The perfect vector $v$ to give an impression of which direction the cell tower is pointing would intersect with the cell tower and go between $v_1$ and $v_2$ such that the distance from $v$ to $v_1$ and the distance from $v$ to $v_2$ always are equal. This means that measurements further away from the cell tower may be further away from $v$, than those close to it. Now consider the two endpoints of $v$, $ep_1$ and $ep_2$, and our randomly distributed measurements. Let $ep_1$ be the endpoint on top of the cell tower, $m_1$ be those measurements closer to $ep_1$ than $ep_2$, and $m_2$ be those measurements closer to $ep_2$ than $ep_1$. The mean of the least possible distances from the points in $m_1$ to $v$ are very likely to be smaller than the mean of the least possible distances from the points in $m_2$ to $v$, which means we can presume that $ep_1$ is the endpoint of $v$ that is on top of the cell tower.\
+\
+We do not have such a perfect direction vector $v$, but we use $\\vec\{v\}_\{direction\}$ instead. This will not provide us with the exact location of the cell tower, but some point relatively close to it, depending on the sector angle. When we have calculated which endpoint of $\\vec\{v\}_\{direction\}$ that is most likely to be closest to the cell tower we simply pick the heuristic cell whos cell tower position is closest to this endpoint.\
+\
+Algorithm 5 takes as input $M$, $\\vec\{v\}_\{direction\}$, the two precomputed heuristic cells $C_\{heuristic1\}$ and $C_\{heuristic2\}$, and $n$. We start by iterating over $n$ random measurements $S \\in M$. We divide $S$ into two subsets; the measurements that are closer to the first endpoint $ep_1$ than the second endpoint $ep_2$ of $\\vec\{v\}_\{direction\}$, and the measurements that are closer to $ep_2$ than $ep_1$. We then calculate the average least possible distance from the measurements in the two subsets of $S$ to $\\vec\{v\}_\{direction\}$, respectively. For the subset of $S$ with the smallest average distance we pick the heuristic cell whos cell towers position is closest to the related endpoint of $\\vec\{v\}_\{direction\}$.\
 \
 \\newpage\
-\\subsection\{Distance From Surrounding Points To Vector\}\
-This is a method to decide which endpoint of the vector retreived from algorithms \\ref\{alg:LV\} and \\ref\{alg:LS\}, are closest to the cell tower. In a cell sector, the further away from the cell tower we get, the distance between the two vectors forming the sector, $v_1$ and $v_2$, increases. The perfect vector $v$ to give an impression of which direction the cell tower is pointing would intersect with the cell tower and go between $v_1$ and $v_2$ such that the distance from $v$ to $v_1$ and the distance from $v$ to $v_2$ always are equal. This means that measurements further away from the cell tower than those close to it, may be further away from $v$. Now consider the two endpoints of $v$, $ep_1$ and $ep_2$, and our randomly distributed measurements. If $ep_1$ is the endpoint on top of the cell tower, $m_1$ are those measurements closer to $ep_1$ than $ep_2$ and $m_2$ are those measurements closer to $ep_2$ than $ep_1$, then the mean of the least possible distances from each point in $m_1$ to $v$ are very likely to be smaller than the mean of the least possible distances from each point in $m_2$ to $v$.\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 5:\} Choose heuristic cell when RSS is not present\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>$M$, $n$, $\\vec\{v\}_\{direction\}$, $C_\{heuristic1\}$ and $C_\{heuristic2\}$\\\\ \
+        \\>\\textbf\{output:\}\\>$C_\{heuristic1\}$ or $C_\{heuristic2\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      pick $n$ random measurements $S \\in M$\\\\\
+      \\textbf\{for\} all measurements $\\in S$, calculate the average least possible distance from\\\\\
+      \\hspace\{18pt\}the measurements that are closer to $ep_1$ than $ep_2$, to $\\vec\{v\}_\{direction\}$, and the \\\\\
+      \\hspace\{18pt\}average least possible distance from the measurements that are closer to\\\\\
+      \\hspace\{18pt\}$ep_2$ than $ep_1$, to $\\vec\{v\}_\{direction\}$\\\\\
+      %\\=\\textbf\{output:\} \\=\\kill\
+      \\textbf\{if\} the subset $\\in S$ related to $ep_1$ has a smaller average least possible distance\\\\\
+      \\hspace\{12pt\}to $\\vec\{v\}_\{direction\}$ than the subset $\\in S$ related to $ep_2$, return $C_\{heuristic1\}$ if its\\\\\
+      \\hspace\{12pt\}cell tower position is closer to $ep_1$ than the cell tower position of $C_\{heuristic2\}$\\\\\
+      \\hspace\{12pt\}or return $C_\{heuristic2\}$ if its cell tower position is closer to $ep_1$ than the cell\\\\\
+      \\hspace\{12pt\}tower position of $C_\{heuristic1\}$\\\\\
+      \\textbf\{if\} the subset $\\in S$ related to $ep_2$ has a smaller average least possible distance\\\\\
+      \\hspace\{12pt\}to $\\vec\{v\}_\{direction\}$ than the subset $\\in S$ related to $ep_1$, return $C_\{heuristic1\}$ if its\\\\\
+      \\hspace\{12pt\}cell tower position is closer to $ep_2$ than the cell tower position of $C_\{heuristic2\}$\\\\\
+      \\hspace\{12pt\}or return $C_\{heuristic2\}$ if its cell tower position is closer to $ep_2$ than the cell\\\\\
+      \\hspace\{12pt\}tower position of $C_\{heuristic1\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
 \
-We do not have such a perfect vector, but when we apply this theory to our heuristic vectors retreived from algorithm \\ref\{alg:LV\} or \\ref\{alg:LS\}, we compute an endpoint that is likely to be close to the cell tower.\
+As discussed earlier in section 6.3 and 6.4, when the measurements are not equipped with RSS and we compute $\\vec\{v\}_\{direction\}$ based on distance between the measurements, we may end up with a very poor $\\vec\{v\}_\{direction\}$, and hence very poor heuristic cells. There are two paremeters that decide if $\\vec\{v\}_\{direction\}$ will look more like $d_\{corners\}$ or look more like $d_\{correct\}$. The first one, which we have discussed earlier, is the angle of the sector. If the angle is small $\\vec\{v\}_\{direction\}$ will more likely look like $d_\{correct\}$, and if it is large it will more likely look like $d_\{corners\}$.\
+\
+The second parameter is the distance between the measurement closest to the cell tower and the one furthest away. If this distance is larger than the largest distance across the cell between two other measurements, we may still get a good $\\vec\{v\}_\{direction\}$, even when our sector angle is $120^\{\\circ\}$. Of course, if there are few of these measurements that provide such a distance, to choose from, we need to be lucky with the random pairing of measurements in the Longest Vector algorithm.\
+\
+For cells where the measurements are equiped with RSS, we use the same concept as for when the measurements are not equipped with RSS. We take advantage of the fact that measurements closer to the cell tower most likely have a stronger RSS than those further away from it. Instead of using the mean of the least possible distances we use the mean of the RSS for the points in $m_1$ and $m_2$. If the mean of the RSS for $m_1$ is higher than the mean of the RSS for $m_2$, then $ep_1$ is on top of the cell tower. We again use $\\vec\{v\}_\{direction\}$ and pick the heuristic cell whos cell tower position is closest to the endpoint closest to the cell tower.\
+\
+\\begin\{figure\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|\}\
+    \\hline\
+    \\textbf\{Algorithm 6:\} Choose heuristic cell when RSS is present\\\\\
+    \\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\begin\{tabbing\}\
+        \\=\\textbf\{output:\} \\=\\kill\
+        \\>\\textbf\{input:\}\\>$M$, $n$, $\\vec\{v\}_\{direction\}$, $C_\{heuristic1\}$ and $C_\{heuristic2\}$\\\\ \
+        \\>\\textbf\{output:\}\\>$C_\{heuristic1\}$ or $C_\{heuristic2\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\\hline \\hline\
+    \\begin\{minipage\}\{1.0\\linewidth\}\
+      \\vspace\{2pt\}\
+      \\begin\{tabbing\}\
+      pick $n$ random measurements $S \\in M$\\\\\
+      \\textbf\{for\} all measurements $\\in S$, calculate the average RSS for the measurements\\\\\
+      \\hspace\{18pt\}that are closer to $ep_1$ than $ep_2$, and the average RSS for the measurements\\\\\
+      \\hspace\{18pt\}that are closer to $ep_2$ than $ep_1$\\\\\
+      %\\=\\textbf\{output:\} \\=\\kill\
+      \\textbf\{if\} the subset $\\in S$ related to $ep_1$ has a higher average RSS than the subset $\\in S$\\\\\
+      \\hspace\{12pt\}related to $ep_2$, return $C_\{heuristic1\}$ if its cell tower position is closer to $ep_1$\\\\\
+      \\hspace\{12pt\}than the cell tower position of $C_\{heuristic2\}$ or return $C_\{heuristic2\}$ if its cell\\\\\
+      \\hspace\{12pt\}tower position is closer to $ep_1$ than the cell tower position of $C_\{heuristic1\}$\\\\\
+      \\textbf\{if\} the subset $\\in S$ related to $ep_2$ has a higher average RSS than the subset $\\in S$\\\\\
+      \\hspace\{12pt\}related to $ep_1$, return $C_\{heuristic1\}$ if its cell tower position is closer to $ep_2$\\\\\
+      \\hspace\{12pt\}than the cell tower position of $C_\{heuristic2\}$ or return $C_\{heuristic2\}$ if its cell\\\\\
+      \\hspace\{12pt\}tower position is closer to $ep_2$ than the cell tower position of $C_\{heuristic1\}$\
+      \\end\{tabbing\}\
+    \\end\{minipage\}\\\\\
+    \\hline\
+  \\end\{tabular\}\
+\\end\{figure\}\
 \
 \\newpage\
-\\section\{Conclusion\}\
-\\subsection\{Challenges along the road\}\
+\\section\{Several cells\}\
+Hvis samme cell tower men ulik ID. Skal de st\'e5 p\'e5 hverandre?\
+\
+\\newpage\
+\\chapter\{Experimenting on real data\}\
+We will now experiment on real data obtained from OpenCellID. The first step is getting access to it. We explain two different approaches. The second step is handling the large amounts of data. We will discuss the format and structure of it, and how to select subsets to test on. To completely understand the results it is important to have a visual representation of the outcomes. OpenCellID use Leaflet, which is an open-source JavaScript library for interactive maps. In order to compare our visual results directly with OpenCellID's visual service, we implement a simple version of Leaflet.\
+\\section\{Accessing the data\}\
+First, we need an API-key. This key needs to be included every time we want access to data on OpenCellID.org. Obtaining the key is very simple. We only need to register on the site with our name and email.\
+\
+When we have the API-key there are two ways to access the data. The first way is to download a copy of the entire database to a computer. The only restriction on this approach is a specific number of times a day we are allowed to download different parts of the database for free. The number of times vary for the different datasets, but the ones we are allowed to download most for free, we can download three times a day. If we need more downloads a day, we have to pay for it.\
+\
+The second approach is doing HTTP GET or POST requests to OpenCellID's servers. This approach lets us ask for very specific parts of the data by adding parameters to the request. Those contributing to OpenCellID can do this as much as they want. Others need to pay for it.\
+\
+We take advantage of both approached. The first approach is handy when we want to compute statistics and get an overview of the data. For example finding out how many cells have been registered in Norway, or how many cells there exists of the network type GSM. The second approach is more useful when we want to target small subsets of data because then we do not whish to traverse through the entire database every time. We use this approach when testing our process.\
+\
+\\section\{Coping with the data\}\
+\\subsection\{The data objects\}\
+The data provided at OpenCellID is structured as follows. There are cells and measurements objects. The data fields for a measurement contains information the smart phone applications registers. The data fields for a cell contains information based on it's measurements data fields.\
+\
+Table \\ref\{table:cell\} and \\ref\{table:measurement\} describes the data fields of cells and measurements, respectively.\
+\
+%urelevante felter\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabularx\}\{\\textwidth\}\{|l|X|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}Data field&\\cellcolor[gray]\{0.9\}Description\\\\\\hline\
+    radio & Network type. Either GSM, UMTS, LTE or CDMA. \\\\\\hline\
+    mcc & Mobile Country Code. \\\\\\hline\
+    net & Mobile Network code (MNC) for GSM, UMTS and LTE.\\newline System IDentification number (SID) for CDMA. \\\\\\hline\
+    area & Location Area Code (LAC) for GSM and UMTS.\\newline Tracking Area Code (TAC) for LTE.\\newline Network IDentification number (NID) for CDMA. \\\\\\hline\
+    cell & Cell ID (CID) for GSM and LTE.\\newline UTRAN Cell ID/LCID for UMTS.\\newline Base station IDentifier number (BID) for CDMA. \\\\\\hline\
+    unit & Primary Scrambling Code (PSC) for UMTS.\\newline Physichal Cell ID (PCI) for LTE.\\newline Empty for GSM and CDMA. \\\\\\hline\
+    lon & Longitude in degrees between -180.0 and 180.0. \\\\\\hline\
+    lat & Latitude in degrees between -90.0 and 90.0. \\\\\\hline\
+    range & Estimated cell range, in meters. \\\\\\hline\
+    samples & Total number of the cell's measurements. \\\\\\hline\
+    changeable & If 1: The lon,lat values has been calculated from available measurements.\\newline If 0: The lon,lat values are exact - no measurements have been used to calculate it. \\\\\\hline\
+    created & The first time the cell was seen and added to the database. \\\\\\hline\
+    updated & The last time the cell was seen, and thus updated. \\\\\\hline\
+    averageSignal & Average signal strength from all the cell's measurements. \\\\\\hline\
+  \\end\{tabularx\}\
+  \\caption\{OpenCellID Cell object\}\
+  \\label\{table:cell\}\
+\\end\{table\}\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabularx\}\{\\textwidth\}\{|l|X|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}Data field&\\cellcolor[gray]\{0.9\}Description\\\\\\hline\
+    mcc & Mobile Country Code. \\\\\\hline\
+    net & Mobile Network code (MNC) for GSM, UMTS and LTE.\\newline System IDentification number (SID) for CDMA. \\\\\\hline\
+    area & Location Area Code (LAC) for GSM and UMTS.\\newline Tracking Area Code (TAC) for LTE.\\newline Network IDentification number (NID) for CDMA. \\\\\\hline\
+    cell & Cell ID (CID) for GSM and LTE.\\newline UTRAN Cell ID/LCID for UMTS.\\newline Base station IDentifier number (BID) for CDMA. \\\\\\hline\
+    lon & Longitude in degrees between -180.0 and 180.0. \\\\\\hline\
+    lat & Latitude in degrees between -90.0 and 90.0. \\\\\\hline\
+    signal & Signal level in dBm or as defined in \\cite[section 8.5]\{TS127007\}. \\\\\\hline\
+    measured & When the measurement was measured. \\\\\\hline\
+    created & When the measurement was added to the database. \\\\\\hline\
+    rating & GPS quality/accuracy information in metres. \\\\\\hline\
+    speed & Speed of the phone when the measurement was measured. \\\\\\hline\
+    direction & Heading direction of the phone when the measurement was measured. \\\\\\hline\
+    radio & Network type. Either GSM, UMTS, LTE or CDMA. \\\\\\hline\
+    ta & Timing advance; only for GSM and LTE. \\\\\\hline\
+    rnc & Radio Network Controller; only for UMTS. \\\\\\hline\
+    cid & Cell ID (short); only for UMTS. \\\\\\hline\
+    psc & Primary Scrambling Code; only for UMTS. \\\\\\hline\
+    tac & Tracking Area Code; only for LTE. \\\\\\hline\
+    pci & Physical Cell ID; only for LTE. \\\\\\hline\
+    sid & System Identifier; only for CDMA. \\\\\\hline\
+    nid & Network Identifier; only for CDMA. \\\\\\hline\
+    bid & Base station ID; only for CDMA. \\\\\\hline\
+  \\end\{tabularx\}\
+  \\caption\{OpenCellID Measurement object\}\
+  \\label\{table:measurement\}\
+\\end\{table\}\
+\
+\\subsection\{Filtering the data\}\
+As we can see in table \\ref\{table:cell\} and \\ref\{table:measurement\} there are several data fields, but some of them are irrelevant to us. For both cells and measurements we need four different values to identify a cell; mcc, net, area and cell. These tells us which country, which network, the area within that country and which ID belongs to the cell, respectively. We also need to know the longitude and latitude of the cells and measurements, and the samples field in the cell object will come in handy when we want to compare our process on few and many measurements.\
+\
+As mentioned earlier every cell position is calculated from the cell's measurements. But there are some exceptions. The changeble datafield tells us whether the cell position has been calculated using available measurements or not. If the changeable value is 0 the position is exact. OpenCellID has gotten access to data about exact cell tower positions from certain cellular network operators in certain countries. The countries this concerns is Russia, Germany and Poland. We learned this by writing a small piece of code that traverses through the dataset containing the cells and registers the mcc values of the rows where the changeable value is 0. To know that certain cells contain the exact location of the cell tower will be very valuable to us when testing our process. This lets us compare our results to the exact values so we can know to which degree our process works.\
+\
+When testing our process we need to choose a subset from the database to test it on. Considering the radio data field is a good first step. This field tells us if the cell uses either the GSM, UMTS, LTE or CDMA technology to broadcast it's signal. Table \\ref\{table:radio_distribution\} shows how the entire dataset of available cells is distributed with regard to the radio data field. We learned these numbers by writing a piece of code that counts all the cells using GSM technology, counts all the cells using UMTS technology, and so on.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|l|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}radio&\\cellcolor[gray]\{0.9\}Number of cells\\\\\\hline\
+    GSM & 4,098,870 \\\\\\hline\
+    UMTS & 3,342,507 \\\\\\hline\
+    LTE & 32,782 \\\\\\hline\
+    CDMA & 30,016 \\\\\\hline \\hline\
+    \\textbf\{Total\} & \\textbf\{7,504,176\} \\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Distribution of cells over broadcasting technology\}\
+  \\label\{table:radio_distribution\}\
+\\end\{table\}\
+\
+As we can see from table \\ref\{table:radio_distribution\}, the OpenCellID database contains most cells that uses GSM technology. Since we have no deep knowledge about the data, we conclude that this type of cell is the most favorable type to do experiments on. We are also interested in the cells where the data field changeable has the value 0. Table \\ref\{table:exact_GSM_distribution\} shows how the GSM cells, where the changeable value is 0, is distributed over the countries Russia, Germany and Poland. We learned these numbers by writing a piece of code that counts the cells in question for each of the three countries.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|l|l|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}Country&\\cellcolor[gray]\{0.9\}Number of cells\\\\\\hline\
+    Russia & 48,444 \\\\\\hline\
+    Germany & 41,374 \\\\\\hline\
+    Poland & 235,121 \\\\\\hline \\hline\
+    \\textbf\{Total\} & \\textbf\{324,939\} \\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Distribution per country of GSM cells where the changeable value is 0\}\
+  \\label\{table:exact_GSM_distribution\}\
+\\end\{table\}\
+\
+As we can see from table \\ref\{table:exact_GSM_distribution\}, Poland contains the most number of GSM cells where the cell tower position is exact. We conclude that this subset of cells contains the best selection for us to test on.\
+\
+\\section\{Visualizing with Leaflet\}\
+\
+\\section\{Results\}\
+\
+\
+\\newpage\
+\\chapter\{Conclusion\}\
+\\section\{Future work\}\
+\\subsection\{Comparing test results from GSM to those of UMTS, LTE and CDMA\}\
+\\section\{Challenges along the road\}\
 I have met several challenges while working on this master thesis. Some where easy to fix, and some were not.\
-\\subsubsection\{Doing computations on a vector that do not have one of its endpoints at origo\}\
+\\subsection\{Leaflet\}\
+\\subsection\{Doing computations on a vector that do not have one of its endpoints at origo\}\
 When I started computing heuristic cell sectors I did not think about the fact that the heuristic cell tower position was at some point relative to the real cell tower position, at one of the endpoints of the heuristic vector that gives an impression of which direction the cell tower is pointing. This became a problem when I began computing the vectors forming the boundries of the heuristic cell sector. As I have described earlier, these vectors are generated from the heuristic direction vector, by rotating it in both directions by the sector angle divided by two. My initial thought was to just perform a simple rotation with the endpoint on the heuristic direction vector that do not lie on top of the heuristic cell tower position, thinking it would rotate around the heuristic cell tower position. But in reality the rotation performed was around the real cell tower position. I had to really dig into the code and theory to locate this mistake. The solution was to do the rotation with a virtual vector parallel to the heuristic direction vector, where the new x-values and y-values were computed by subtracting the x-value and y-value at the endpoint on top of the heuristic cell tower, from the x-value and y-value at both endpoints. After the rotation the values that were subtracted are added back to the values forming the new vector to compute the correct vector.\
 \
 I had the same problem when computing a vectors angle, but when I had already figured out the problem with the rotation, it was an easy fix.\
 \
-\\subsubsection\{Least Square\}\
+\\subsection\{Least Square\}\
 The Least Square method is a simple linear regression method for computing a straight line $l_\{LS\}$ through a set of points, making the sum of the squared vertical distances from each point to $l_\{LS\}$, as small as possible. This algorithm is for our problem more accurate than Longest Vector, but outputs a linear line in the form of $y=ax+b$, where $a$ and $b$ are computed and $x$ is for us to choose. This is where the Longest Vector algorithm comes to use. After computing the equation $y=ax+b$ from $S$, we pick the x-values from $m_1$ and $m_2$ and input them into the equation, thus creating the endpoints $ep_1$ and $ep_2$ for $\\vec\{v\}_\{direction\}$.\
 \
 To compute $a$ and $b$ we first need to compute several other variables from $S$:\
@@ -766,25 +890,127 @@ We now have our equation $y=ax+b$ for the line $l_\{LS\}$.\
 \
 \\subsubsection\{Visualizing the data\}\
 I was not very familiar with the Swing library before I started working on this thesis.\
-% Problemet med at origo er \'f8verst til h\'f8yre\
 \
-%\\newpage\
-%\\section\{Work\}\
+\\section\{Existing Algorithms\}\
+Chen et al. \\cite\{Chen\} used the Centroid and Weighted Centroid algorithms, amongst others, to examine the positioning accuracy of a GSM beacon-based location system in a metropolitan environment. Yang et al. \\cite\{Yang\} studied the Weighted Centroid and Strongest Received Signal Strength algorithms for cell tower localization.\
 \
-%\\subsection\{Centroid\}\
+\\subsection\{Centroid\}\
+The Centroid algorithm estimates a cell tower's position to be the geometric center of the measurements for that cell. It is the mean of the measurements' longitudes and latitudes.\
 \
+Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements.\
+\\begin\{gather*\}\
+longitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(longitude_i\\right)\\\\%, \\textnormal\{and\}\\\\\
+latitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(latitude_i\\right)\
+\\end\{gather*\}\
 \
-%\\newpage\
-%\\subsection\{Weighted Centroid\}\
+\\newpage\
+\\begin\{algorithm\}\
+\\caption\{Centroid\}\
+\\label\{alg:centroid\}\
+\\begin\{algorithmic\}[1]\
+\\Procedure\{Centroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
+\\State sumOfLongitudes $\\gets 0.0$\
+\\State sumOfLatitudes $\\gets 0.0$\
+\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
+\\State sumOfLongitudes $\\gets$ sumOfLongitudes + m.longitude\
+\\State sumOfLatitudes $\\gets$ sumOfLatitudes + m.latitude\
+\\EndFor\
+\\State cellTowerLongitude $\\gets$ sumOfLongitudes $\\div$ measurements.size\
+\\State cellTowerLatitude $\\gets$ sumOfLatitudes $\\div$ measurements.size\
+\\State \\Return cellTowerLongitude, cellTowerLatitude\
+\\EndProcedure\
+\\end\{algorithmic\}\
+\\end\{algorithm\}\
 \
+\\subsection\{Weighted Centroid\}\
+The Weighted Centroid algorithm is an extension of the Centroid algorithm. Here, the measurements are given weights based on the \\textit\{received signal strength\} (RSS) at each measurement. The measurements with strong signals are likely to be closer to the cell tower's real position than those with weaker signals, so we want to emphasize these measurements when calculating the cell tower's position. The unit of measurement for these kind of signals are \\textit\{Decibel-milliwatts\} (dBm) and they range from approximately -30 dBm and lower. Due to the negative values we want to translate them into weights with positive values to make them viable to use for calculations.\
 \
+Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
+\\begin\{gather*\}\
+longitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(longitude_i \\times w_i\\right)\\\\%, \\textnormal\{and\}\\\\\
+latitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(latitude_i \\times w_i\\right)\
+\\end\{gather*\}\
 \
-%\\newpage\
-%\\subsection\{Strongest Received Signal Strength\}\
+\\begin\{algorithm\}\
+\\caption\{Weighted Centroid\}\
+\\label\{alg:weightedcentroid\}\
+\\begin\{algorithmic\}[1]\
+\\Procedure\{WeightedCentroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
+\\State sumOfWeights $\\gets 0$\
+\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
+\\State sumOfWeights $\\gets$ sumOfWeights$+$m.signal \
+\\EndFor\
+\\State x $\\gets 0.0$\
+\\State y $\\gets 0.0$\
+\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
+\\State x $\\gets$ x$+($m.longitude$\\times$m.signal$)$\
+\\State y $\\gets$ y$+($m.latitude$\\times$m.signal$)$\
+\\EndFor\
+\\State cellTowerLongitude $\\gets$ x $\\div$ sumOfWeights\
+\\State cellTowerLatitude $\\gets$ y $\\div$ sumOfWeights\
+\\State \\Return cellTowerLongitude, cellTowerLatitude\
+\\EndProcedure\
+\\end\{algorithmic\}\
+\\end\{algorithm\}\
 \
+\\subsection\{Strongest Received Signal Strength\}\
+The Strongest RSS algorithm estimates a cell tower's position as the position of the measurement with the strongest observed RSS from that cell tower. If multiple measurements qualify, we apply algorithm \\ref\{alg:centroid\} on these.\
 \
+Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
+%\\begin\{equation\}\
+%\\begin\{align*\}\
+\\begin\{gather*\}\
+longitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(longitude_i\\right), \\textnormal\{ and\}\\\\ \
+latitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(latitude_i\\right), \\textnormal\{ where\}\\\\ \
+%w_j = max(w_1,w_2,...,w_n), \\textnormal\{ and\}\\\\ \
+m = |W|, \\textnormal\{ and\}\\\\\
+W = \\\{w:w\\in max(w_1,w_2,...,w_n)\\\}\
+\\end\{gather*\}\
+%\\textnormal\{ is the cardinality of the set \}\
+%\\end\{align*\}\
+%\\end\{equation\}\
 \
-%\\section\{Conclusion\}\
+\\begin\{algorithm\}\
+\\caption\{Strongest Received Signal Strength\}\
+\\label\{alg:strongestrss\}\
+\\begin\{algorithmic\}[1]\
+\\Procedure\{StrongestRSS\}\{measurements $\\gets$ a list of measurements for a cell\}\
+\\State strongestSignalMeasurements $\\gets$ a list to store the measurements with the strongest signal\
+\\State currentStrongestSignal $\\gets -1$\
+\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
+\\If\{m.signal $>$ currentStrongestSignal\}\
+\\State \\textbf\{clear\} strongestSignalMeasurements\
+\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
+\\State currentStrongestSignal $\\gets$ m.signal\
+\\ElsIf\{m.signal $=$ currentStrongestSignal\}\
+\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
+\\EndIf\
+\\EndFor\
+\\State x $\\gets 0.0$\
+\\State y $\\gets 0.0$\
+\\For\{$\\textbf\{each\}$ m $\\in$ strongestSignalMeasurements\}\
+\\State x $\\gets$ x + m.longitude\
+\\State y $\\gets$ y + m.latitude\
+\\EndFor\
+\\State cellTowerLongitude $\\gets$ x $\\div$ strongestSignalMeasurements.size\
+\\State cellTowerLatitude $\\gets$ y $\\div$ strongestSignalMeasurements.size\
+\\State \\Return cellTowerLongitude, cellTowerLatitude\
+\\EndProcedure\
+\\end\{algorithmic\}\
+\\end\{algorithm\}\
+\
+\\section\{Initial runnning of algorithms\}\
+Yang et al. \\cite\{Yang\} applied algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} to data obtained through wardriving \\cite\{Chen\}. In this thesis we apply the same algorithms to data from \\cite\{opencellid\}. To be able to justify our results we must first generate test data to confirm that our algorithms are correctly implemented. We created a java program for generating cells, cell towers and measurements.\
+\
+\\subsection\{Testdata\}\
+We wrote a small Java program for generating testdata. Below follow three example screenshots where we apply algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} on three random generated cells with 10, 20 and 40 measurements, respectively. The cell tower is placed in the middle and the measurements are generated randomly around it.\
+\\begin\{itemize\}\
+\\item \\text\{Black circles:\} Measurements\
+\\item \\text\{Black square:\} Real position of cell tower\
+\\item \\text\{Blue square:\} Position of cell tower calculated by Centroid\
+\\item \\text\{Green square:\} Position of cell tower calculated by Weighted Centroid\
+\\item \\text\{Red square:\} Position of cell tower calculated by Strongest RSS\
+\\end\{itemize\}\
 \
 \
 \\newpage\
@@ -855,459 +1081,6 @@ public class Measurement \{\
 		double y = (double) new Random().nextInt(maxY+1);\
 		\
 		return new Measurement(x, y);\
-	\}\
-\}\
-\
-package testdata;\
-\
-import java.awt.geom.Point2D;\
-import java.util.ArrayList;\
-import java.util.List;\
-\
-public class Cell \{\
-	\
-	protected static final String MEASUREMENTS_ALL = "all measurements";\
-	protected static final String MEASUREMENTS_THRESHOLD = "measurements filtered";\
-	\
-	protected static final int CELL_X_Y_VALUE = 113;\
-	protected static final int MEASUREMENT_X_Y_LIMIT = 226;\
-	\
-	private Point2D.Double cellTowerCoordinates;\
-	\
-	// Pointer\
-	private List<Measurement> measurements;\
-	\
-	// List for storing all measurements\
-	private List<Measurement> measurementsAll;\
-	\
-	// List for storing measurements above a certain weight threshold\
-	private List<Measurement> measurementsWithThreshold;\
-	\
-	public Cell() \{\
-		this.cellTowerCoordinates = new Point2D.Double((double) CELL_X_Y_VALUE, (double) CELL_X_Y_VALUE);\
-		this.measurementsAll = new ArrayList<Measurement>();\
-		this.measurementsWithThreshold = new ArrayList<Measurement>();\
-	\}\
-\
-	public Point2D.Double getCellTowerCoordinates() \{\
-		return cellTowerCoordinates;\
-	\}\
-\
-	public void setCellTowerCoordinates(Point2D.Double cellTowerCoordinates) \{\
-		this.cellTowerCoordinates = cellTowerCoordinates;\
-	\}\
-\
-	public List<Measurement> getMeasurements() \{\
-		return measurements;\
-	\}\
-\
-	public void setMeasurements(List<Measurement> measurements) \{\
-		this.measurements = measurements;\
-	\}\
-\
-	public void addRandomMeasurements(int measurements, int maxX, int maxY) \{\
-		\
-		for(int i = 0; i < measurements; i++) \{\
-\
-			Measurement measurement;\
-			double d;\
-			do \{\
-				measurement = Measurement.generateRandomMeasurement(maxX, maxY);\
-				d = this.cellTowerCoordinates.distance(measurement.getCoordinates());\
-				\
-			\} while(d > 113.0);\
-			\
-			int dBm = Surface.doubleToInt(d)*-1;\
-			measurement.setSignalStrength(dBm);\
-			\
-			int weight = 113 - (-1*measurement.getSignalStrength());\
-			measurement.setWeight(weight);\
-		\
-			this.measurementsAll.add(measurement);\
-			\
-			this.useMeasurements(MEASUREMENTS_ALL);\
-		\}\
-		return;\
-	\}\
-	\
-	protected Cell applyWeightThreshold(int minimumWeight) \{\
-		this.measurementsWithThreshold.clear();\
-		for(Measurement measurement : this.measurementsAll) \{\
-			if(measurement.getWeight() >= minimumWeight) \{\
-				this.measurementsWithThreshold.add(measurement);\
-			\}\
-		\}\
-		return this;\
-	\}\
-	\
-	protected Cell useMeasurements(String measurementsList) \{\
-		if(measurementsList.equals(MEASUREMENTS_ALL)) \{\
-			this.measurements = this.measurementsAll;\
-		\}\
-		else if(measurementsList.equals(MEASUREMENTS_THRESHOLD)) \{\
-			this.measurements = this.measurementsWithThreshold;\
-		\}\
-		else \{\
-			throw new IllegalArgumentException("There is no such list");\
-		\}\
-		return this;\
-	\}\
-	\
-	@Override\
-	public String toString() \{\
-		String s = String.format("Cell Tower Coordinates: [%.1f,%.1f]\\n\\tMeasurements: %d", \
-				this.cellTowerCoordinates.x, this.cellTowerCoordinates.y, this.measurements.size());\
-		for(Measurement measurement : this.measurements) \{\
-			s += "\\n\\t"+measurement.toString();\
-		\}\
-		s += "\\n";\
-		return s;\
-	\}\
-\
-	public static Cell generateCellWithRandomMeasurements(int measurements) \{\
-		\
-		Cell cell = new Cell();\
-		\
-		if(measurements > 0) \{\
-			cell.addRandomMeasurements(measurements, MEASUREMENT_X_Y_LIMIT, MEASUREMENT_X_Y_LIMIT);\
-		\}\
-				\
-		return cell;\
-	\}\
-\}\
-\
-package testdata;\
-\
-import java.awt.geom.Point2D;\
-import java.util.ArrayList;\
-import java.util.List;\
-\
-public class Statistics \{\
-	\
-	private Cell cell;\
-	\
-	private Point2D.Double centroidCoordinates;\
-	private Point2D.Double weightedCentroidCoordinates;\
-	private Point2D.Double strongestRSSCoordinates;\
-	\
-	private Point2D.Double centroidWithThresholdCoordinates;\
-	private Point2D.Double weightedCentroidWithThresholdCoordinates;\
-	private Point2D.Double strongestRSSWithThresholdCoordinates;\
-	\
-	\
-	public Statistics(int measurements) \{\
-		this.cell = Cell.generateCellWithRandomMeasurements(measurements);\
-		this.centroidCoordinates = centroid(this.cell);\
-		this.weightedCentroidCoordinates = weightedCentroid(this.cell);\
-		this.strongestRSSCoordinates = strongestRSS(this.cell);\
-		\
-		int threshold = 50;\
-		\
-		this.centroidWithThresholdCoordinates = centroid(this.cell.applyWeightThreshold(threshold).useMeasurements(Cell.MEASUREMENTS_THRESHOLD));\
-		this.weightedCentroidWithThresholdCoordinates = weightedCentroid(this.cell);\
-		this.strongestRSSWithThresholdCoordinates = strongestRSS(this.cell);	\
-		\
-		System.out.println(this.toString());\
-	\}\
-\
-	public static void main(String[] args) \{\
-		\
-		Statistics statistics = new Statistics(5);\
-\
-		System.out.println("\\nEND OF PROGRAM");\
-	\}\
-	\
-	public Cell getCell() \{\
-		return cell;\
-	\}\
-\
-	public void setCell(Cell cell) \{\
-		this.cell = cell;\
-	\}\
-\
-	public Point2D.Double getCentroidCoordinates() \{\
-		return centroidCoordinates;\
-	\}\
-\
-	public void setCentroidCoordinates(Point2D.Double centroidCoordinates) \{\
-		this.centroidCoordinates = centroidCoordinates;\
-	\}\
-\
-	public Point2D.Double getWeightedCentroidCoordinates() \{\
-		return weightedCentroidCoordinates;\
-	\}\
-\
-	public void setWeightedCentroidCoordinates(\
-			Point2D.Double weightedCentroidCoordinates) \{\
-		this.weightedCentroidCoordinates = weightedCentroidCoordinates;\
-	\}\
-\
-	public Point2D.Double getStrongestRSSCoordinates() \{\
-		return strongestRSSCoordinates;\
-	\}\
-\
-	public void setStrongestRSSCoordinates(Point2D.Double strongestRSSCoordinates) \{\
-		this.strongestRSSCoordinates = strongestRSSCoordinates;\
-	\}\
-	\
-	\
-	public Point2D.Double getCentroidWithThresholdCoordinates() \{\
-		return centroidWithThresholdCoordinates;\
-	\}\
-\
-	public void setCentroidWithThresholdCoordinates(\
-			Point2D.Double centroidWithThresholdCoordinates) \{\
-		this.centroidWithThresholdCoordinates = centroidWithThresholdCoordinates;\
-	\}\
-\
-	public Point2D.Double getWeightedCentroidWithThresholdCoordinates() \{\
-		return weightedCentroidWithThresholdCoordinates;\
-	\}\
-\
-	public void setWeightedCentroidWithThresholdCoordinates(\
-			Point2D.Double weightedCentroidWithThresholdCoordinates) \{\
-		this.weightedCentroidWithThresholdCoordinates = weightedCentroidWithThresholdCoordinates;\
-	\}\
-\
-	public Point2D.Double getStrongestRSSWithThresholdCoordinates() \{\
-		return strongestRSSWithThresholdCoordinates;\
-	\}\
-\
-	public void setStrongestRSSWithThresholdCoordinates(\
-			Point2D.Double strongestRSSWithThresholdCoordinates) \{\
-		this.strongestRSSWithThresholdCoordinates = strongestRSSWithThresholdCoordinates;\
-	\}\
-\
-	@Override\
-	public String toString() \{\
-		String s = "";\
-		if(this.cell.useMeasurements(Cell.MEASUREMENTS_ALL).getMeasurements().size() <= 5) \{\
-			s += this.cell.useMeasurements(Cell.MEASUREMENTS_ALL).toString();\
-			s += "\\n";\
-		\}\
-		\
-		s += "\\t\\t\\tCell Tower Longitude\\tCell Tower Latitude\\tError\\n";\
-		s += String.format("Real\\t\\t\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n", this.cell.getCellTowerCoordinates().getX(), this.cell.getCellTowerCoordinates().getY(), this.cell.getCellTowerCoordinates().distance(this.cell.getCellTowerCoordinates()));\
-		s += String.format("Centroid\\t\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n", this.centroidCoordinates.getX(), this.centroidCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getCentroidCoordinates()));\
-		s += String.format("Centroid >= 50\\t\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n",this.centroidWithThresholdCoordinates.getX(), this.centroidWithThresholdCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getCentroidWithThresholdCoordinates()));\
-		s += String.format("Weighted Centroid\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n", this.weightedCentroidCoordinates.getX(), this.weightedCentroidCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getWeightedCentroidCoordinates()));\
-		s += String.format("Weighted Centroid >= 50\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n",this.weightedCentroidWithThresholdCoordinates.getX(), this.weightedCentroidWithThresholdCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getWeightedCentroidWithThresholdCoordinates()));\
-		s += String.format("Strongest RSS\\t\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n", strongestRSSCoordinates.getX(), strongestRSSCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getStrongestRSSCoordinates()));\
-		s += String.format("Strongest RSS >= 50\\t%.1f\\t\\t\\t%.1f\\t\\t\\t%.1f\\n",this.strongestRSSWithThresholdCoordinates.getX(), this.strongestRSSWithThresholdCoordinates.getY(), this.cell.getCellTowerCoordinates().distance(this.getStrongestRSSWithThresholdCoordinates()));\
-\
-		return s;\
-	\}\
-	\
-	private static Point2D.Double weightedCentroid(Cell cell) \{\
-		\
-		int sumOfWeights = 0;\
-		for(Measurement measurement : cell.getMeasurements()) \{\
-			sumOfWeights += measurement.getWeight();\
-		\}\
-				\
-		double cellTowerLongitude = 0.0;\
-		double cellTowerLatitude = 0.0;\
-		for(Measurement measurement : cell.getMeasurements()) \{\
-			double weightRatio = measurement.getWeight()/(double)sumOfWeights;\
-\
-			cellTowerLongitude += (measurement.getCoordinates().getX()*weightRatio);\
-			cellTowerLatitude += (measurement.getCoordinates().getY()*weightRatio);\
-		\}\
-		return new Point2D.Double(cellTowerLongitude, cellTowerLatitude);\
-	\}\
-	\
-	private static Point2D.Double centroid(Cell cell) \{\
-		double sumOfLongitudes = 0;\
-		double sumOfLatitudes = 0;\
-		for(Measurement measurement : cell.getMeasurements()) \{\
-			sumOfLongitudes += measurement.getCoordinates().getX();\
-			sumOfLatitudes += measurement.getCoordinates().getY();\
-		\}\
-		double cellTowerLongitude = sumOfLongitudes/cell.getMeasurements().size();\
-		double cellTowerLatitude = sumOfLatitudes/cell.getMeasurements().size();\
-		\
-		return new Point2D.Double(cellTowerLongitude, cellTowerLatitude);\
-	\}\
-	\
-	private static Point2D.Double strongestRSS(Cell cell) \{\
-		int currentStrongestWeight = -1;\
-		List<Measurement> strongestWeightMeasurements = new ArrayList<Measurement>();\
-		for(Measurement measurement : cell.getMeasurements()) \{\
-			if(measurement.getWeight() > currentStrongestWeight) \{\
-				strongestWeightMeasurements.clear();\
-				strongestWeightMeasurements.add(measurement);\
-				currentStrongestWeight = measurement.getWeight();\
-			\}\
-			else if(measurement.getWeight() == currentStrongestWeight) \{\
-				strongestWeightMeasurements.add(measurement);\
-			\}\
-		\}\
-		double sumOfLongitudes = 0.0;\
-		double sumOfLatitudes = 0.0;\
-		for(Measurement measurement : strongestWeightMeasurements) \{\
-			sumOfLongitudes += measurement.getCoordinates().getX();\
-			sumOfLatitudes += measurement.getCoordinates().getY();\
-		\}\
-		double cellTowerLongitude = sumOfLongitudes/strongestWeightMeasurements.size();\
-		double cellTowerLatitude = sumOfLatitudes/strongestWeightMeasurements.size();\
-		return new Point2D.Double(cellTowerLongitude, cellTowerLatitude);\
-	\}\
-\}\
-\
-package testdata;\
-\
-import java.awt.Color;\
-import java.awt.Dimension;\
-import java.awt.EventQueue;\
-import java.awt.Graphics;\
-import java.awt.Graphics2D;\
-import java.awt.Insets;\
-import java.awt.RenderingHints;\
-import java.awt.geom.AffineTransform;\
-import java.awt.geom.Point2D;\
-import java.util.List;\
-\
-import javax.swing.JFrame;\
-import javax.swing.JPanel;\
-\
-class Surface extends JPanel \{\
-	\
-	Statistics statistics;\
-	\
-	public Surface() \{\
-		this.statistics = new Statistics(40);\
-	\}\
-	\
-	private void doDrawing(Graphics g) \{\
-		Graphics2D g2d = (Graphics2D) g;\
-		\
-//		AffineTransform transform = AffineTransform.getTranslateInstance(0, 700);\
-//		transform.scale(700, -700);\
-//		g2d.setTransform(transform);\
-		\
-		g2d.setColor(Color.black);\
-		\
-		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,\
-				RenderingHints.VALUE_ANTIALIAS_ON);\
-		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);\
-		g2d.setRenderingHints(rh);\
-		\
-		Dimension size = getSize();\
-		Insets insets = getInsets();\
-		int w = size.width - insets.left - insets.right;\
-		int h = size.height - insets.top - insets.bottom;\
-		\
-		// Cell Tower real coords\
-		Point2D.Double cellTower = this.statistics.getCell().getCellTowerCoordinates();\
-		int x = doubleToInt(enlarge(cellTower.getX()));\
-		int y = invertLatitude(h, enlarge(cellTower.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Measurements coords\
-		List<Measurement> measurements = this.statistics.getCell().getMeasurements();\
-		for(Measurement measurement : measurements) \{\
-			x = doubleToInt(enlarge(measurement.getCoordinates().getX()));\
-			y = invertLatitude(h, enlarge(measurement.getCoordinates().getY()));\
-			g2d.fillOval(x, y, 5, 5);\
-		\}\
-		\
-		// Cell Tower Centroid coords\
-		g2d.setColor(Color.blue);\
-		Point2D.Double centroidCoordinates = this.statistics.getCentroidCoordinates();\
-		x = doubleToInt(enlarge(centroidCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(centroidCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Cell Tower Weighted Centroid coords\
-		g2d.setColor(Color.green);\
-		Point2D.Double weightedCentroidCoordinates = this.statistics.getWeightedCentroidCoordinates();\
-		x = doubleToInt(enlarge(weightedCentroidCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(weightedCentroidCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Cell Tower Strongest RSS coords\
-		g2d.setColor(Color.red);\
-		Point2D.Double strongestRSSCoordinates = this.statistics.getStrongestRSSCoordinates();\
-		x = doubleToInt(enlarge(strongestRSSCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(strongestRSSCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Cell Tower Centroid with threshold coords\
-		g2d.setColor(Color.cyan);\
-		Point2D.Double centroidWithThresholdCoordinates = this.statistics.getCentroidWithThresholdCoordinates();\
-		x = doubleToInt(enlarge(centroidWithThresholdCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(centroidWithThresholdCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Cell Tower Weighted Centroid with threshold coords\
-		g2d.setColor(Color.orange);\
-		Point2D.Double weightedCentroidWithThresholdCoordinates = this.statistics.getWeightedCentroidWithThresholdCoordinates();\
-		x = doubleToInt(enlarge(weightedCentroidWithThresholdCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(weightedCentroidWithThresholdCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-		\
-		// Cell Tower Strongest RSS with threshold coords\
-		g2d.setColor(Color.pink);\
-		Point2D.Double strongestRSSWithThresholdCoordinates = this.statistics.getStrongestRSSWithThresholdCoordinates();\
-		x = doubleToInt(enlarge(strongestRSSWithThresholdCoordinates.getX()));\
-		y = invertLatitude(h, enlarge(strongestRSSWithThresholdCoordinates.getY()));\
-		g2d.fillRect(x, y, 5, 5);\
-	\}\
-	\
-	protected static int invertLatitude(int height, double latitude) \{\
-		double newY = ((double)height - latitude);\
-		return doubleToInt(newY);\
-	\}\
-	\
-	protected static int doubleToInt(double d) \{\
-		int toInt = (int)d;\
-		if(d-(double)toInt >= 0.5) \{\
-			return toInt+1;\
-		\}\
-		else\
-			return toInt;\
-	\}\
-	\
-	private double enlarge(double d) \{\
-		return d*2;\
-	\}\
-	\
-	@Override\
-	public void paintComponent(Graphics g) \{\
-		super.paintComponent(g);\
-		doDrawing(g);\
-	\}\
-\}\
-\
-public class Map extends JFrame \{\
-	\
-	final static int WIDTH = 700;\
-	final static int HEIGHT = 700;\
-	\
-	public Map() \{\
-		initUI();\
-	\}\
-\
-	private void initUI() \{\
-		setTitle("Map");\
-		\
-		add(new Surface());\
-		\
-		setSize(WIDTH, HEIGHT);\
-		setLocationRelativeTo(null);\
-		setDefaultCloseOperation(EXIT_ON_CLOSE);\
-		\
-	\}\
-\
-	public static void main(String[] args) \{\
-		\
-		EventQueue.invokeLater(new Runnable() \{\
-			@Override\
-			public void run() \{\
-				Map map = new Map();\
-				map.setVisible(true);\
-			\}\
-		\});\
 	\}\
 \}\
 \\end\{lstlisting\}\
