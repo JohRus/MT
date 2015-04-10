@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+		<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+		<script type="text/javascript" src="src/opencellid/map.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	</head>
+	<body>
+		<div id="map" style="height:700px;width:700px"></div>
+		<script type="text/javascript">initmap();</script>
+
+		<!--<form name="cellLocation">
+			<label for "mcc">MCC:</label>
+			<input type="text" id="mcc" name="mcc"/>
+			<label for "mnc">MNC</label>
+			<input type="text" id="mnc" name="mnc"/>
+			<label for "lac">LAC</label>
+			<input type="text" id="lac" name="lac"/>
+			<label for "cellid">CellID</label>
+			<input type="text" id="cellid" name="cellid">
+			<input type="button" value="Search" onClick="processSearch()"/>
+			<input type="button" value="Search" onClick="httpGet()"/>
+		</form>
+
+		<div id="op"></div>-->
+
+		<div id="container">    
+        	<input type="file" onchange='readText(this)' />
+        	<br/>
+        	<hr/>   
+        	<h3>Contents of the Text file:</h3>
+        	<div id="main"></div>
+    	</div>
+
+	</body>
+</html>
