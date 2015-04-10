@@ -1,3 +1,9 @@
 /BaseStations/bin
+/BaseStation/bin/*
 /BaseStations/target
+/BaseStations/target/*
+/BaseStations/lib
+/BaseStations/lib/*
+/BaseStations/resources
+/BaseStations/resources/*
 /tmp
