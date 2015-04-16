@@ -1,4 +1,4 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1344\cocoasubrtf720
+{\rtf1\ansi\ansicpg1252\cocoartf1347\cocoasubrtf570
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
 {\colortbl;\red255\green255\blue255;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
@@ -9,7 +9,7 @@
 \\usepackage\{listings\}\
 \\usepackage\{color\}\
 \\usepackage[table]\{xcolor\}\
-\\usepackage\{algorithm\}\
+\\usepackage[plain]\{algorithm\}\
 \\usepackage\{algpseudocode\}\
 %\\usepackage\{algorithm2e\}\
 \\usepackage\{amssymb,amsmath,amsthm\}\
@@ -20,6 +20,13 @@
 \\usepackage\{caption,subcaption\}\
 \\usepackage\{tabularx\}\
 %\\usepackage\{tikz\}\
+\\usepackage\{hyperref\}\
+\\hypersetup\{\
+    %colorlinks=black, % make the links colored\
+    %linkcolor=black, % color TOC links in black\
+    %urlcolor=black, % color URLs in black\
+    linktoc=all % 'all' will create links for everything in the TOC\
+\}\
 \
 \\addbibresource\{references.bib\}\
 \
@@ -99,6 +106,8 @@ Why do a person want to know where antennas are located? The answer is radiation
 \
 %Erstatning for GPS?\
 \
+\\textit\{Enten her eller under Related Work vil jeg skrive mer om hva eksakte cell tower posisjoner kan brukes til. Jeg tenker paa posisjonering av mobile enheter som et alternativ til GPS. Fordelene er energisparing, samt funksjonalitet naar GPS ikke er tilgjengelig. I tillegg kan man finne den beste nettverksleverandoeren der man oppholder seg mye.\}\
+\
 \\section\{Research questions\}\
 With this thesis we want to briefly identify the work that has previously been done when it comes to positioning cellular network antennas. We want to find out if it possible to implement, test and possibly improve existing solutions with regard to the problem OpenCellID is faced with, namely their simple algorithm for positioning antennas. If not, we want to develop our own process for positioning the antennas. We want to base our conclusions on generated theoretical testdata, and real data provided by OpenCellID.\
 \
@@ -127,11 +136,17 @@ A \\textit\{measurement\} represents a smart phones registration of data about t
 \
 \\newpage\
 \\chapter\{Related work\}\
+\\textit\{Satser paa aa bli ferdig med dette rundt 10. mai.\}\
 \\section\{2010: First large scale study\}\
-%triangulation++\
+\\textit\{Her vil jeg beskrive den ene artikkelen jeg fant. Jeg har ikke funnet flere artikler som tar for seg dette\}\
+\
+\\section\{Positioning through Cell ID\}\
 \
 \\newpage\
 \\chapter\{Developing the process\}\
+\
+\\textit\{Her maa jeg gaa gjennom det jeg har skrevet og strukturere seksjoner bedre. Jeg tenker at jeg maa gaa mer i dybden (forklare ting bedre) og finne bedre navn til noen av variablene som forblir gjennom hele prosessen.\}\
+\
 \\section\{Generating test data\}\
 When developing the process for positioning cell towers, we need to be able to generate theoretical test data to test on. When developing the algorithms we want to implement and test it every step of the way to make sure it behaves as desired and required. \
 \
@@ -152,6 +167,7 @@ To predict the positon of a cell tower as effective as possible in real time, we
 \
 \\newpage\
 \\section\{Longest Vector\}\
+\
 \\begin\{figure\}[h!]\
 \\label\{fig:10deg20m\}\
 \\centering\
@@ -175,7 +191,9 @@ The purpose of this algorithm is to find two measurements that are far apart fro
 Longest Vector takes as input $M$ and $n$. First it declares the variables $ep_1$, $ep_2$ and $d_\{difference\}$ for storing the two measurements with the current largest distance between them, and that distance. For each of the following $n$ iterations it randomly picks a measurement from $M$, compares the distance between it to $n$ other randomly picked measurements from $M$, and stores the largest distance and the pair of measurements representing it in $ep_1$, $ep_2$ and $d_\{difference\}$. The algorithm outputs the vector $\\vec\{v\}_\{direction\}$ with $ep_1$ and $ep_2$ as endpoints.\
 \
 \\bigskip\
-\\begin\{figure\}[h!]\
+%\\begin\{figure\}[h!]\
+\\begin\{algorithm\}[h!]\
+\\label\{alg:Longest Vector\}\
   \\center\
   \\begin\{tabular\}\{|l|\}\
     \\hline\
@@ -204,7 +222,9 @@ Longest Vector takes as input $M$ and $n$. First it declares the variables $ep_1
     \\end\{minipage\}\\\\\
     \\hline\
   \\end\{tabular\}\
-\\end\{figure\}\
+%\\end\{figure\}\
+\
+\\end\{algorithm\}\
 \
 %\\begin\{algorithm\}\
 %\\caption\{Longest Vector\}\
@@ -699,7 +719,7 @@ For cells where the measurements are equiped with RSS, we use the same concept a
 \
 \\newpage\
 \\section\{Several cells\}\
-Hvis samme cell tower men ulik ID. Skal de st\'e5 p\'e5 hverandre?\
+\\textit\{Basert paa informasjon jeg har funnet om cell id er det mulig aa si hvilke celler som sammen dekker et 360 graders omraade. Hvis man har disse tre cellene som dekker 120 grader hver vil jeg bruke dette til aa finne posisjonen til cell tower. Jeg mistenker at dette kan bli tidkrevende, saa jeg er usikker paa hvor grundig jeg faar gjort dette.\}\
 \
 \\newpage\
 \\chapter\{Experimenting on real data\}\
@@ -777,7 +797,7 @@ Table \\ref\{table:cell\} and \\ref\{table:measurement\} describes the data fiel
   \\label\{table:measurement\}\
 \\end\{table\}\
 \
-\\subsection\{Filtering the data\}\
+\\subsection\{Getting an overview\}\
 As we can see in table \\ref\{table:cell\} and \\ref\{table:measurement\} there are several data fields, but some of them are irrelevant to us. For both cells and measurements we need four different values to identify a cell; mcc, net, area and cell. These tells us which country, which network, the area within that country and which ID belongs to the cell, respectively. We also need to know the longitude and latitude of the cells and measurements, and the samples field in the cell object will come in handy when we want to compare our process on few and many measurements.\
 \
 As mentioned earlier every cell position is calculated from the cell's measurements. But there are some exceptions. The changeble datafield tells us whether the cell position has been calculated using available measurements or not. If the changeable value is 0 the position is exact. OpenCellID has gotten access to data about exact cell tower positions from certain cellular network operators in certain countries. The countries this concerns is Russia, Germany and Poland. We learned this by writing a small piece of code that traverses through the dataset containing the cells and registers the mcc values of the rows where the changeable value is 0. To know that certain cells contain the exact location of the cell tower will be very valuable to us when testing our process. This lets us compare our results to the exact values so we can know to which degree our process works.\
@@ -815,213 +835,89 @@ As we can see from table \\ref\{table:radio_distribution\}, the OpenCellID datab
   \\label\{table:exact_GSM_distribution\}\
 \\end\{table\}\
 \
-As we can see from table \\ref\{table:exact_GSM_distribution\}, Poland contains the most number of GSM cells where the cell tower position is exact. We conclude that this subset of cells contains the best selection for us to test on.\
+\\subsection\{Fetching the testdata\}\
+When choosing the subsets to test our process on we keep a similar tactic as when testing it on theoretical data. We want to see how it behaves when different amounts of measurements are available per cell. One problem arised when downloading data by performing HTTP GET requests. The sample values of the cells in the downloadable database is in many cases not equal to the actual number of measurements available when performing HTTP GET requests. For example, if a cell in the downloadable database has the sample value 100, the actual amount of measurements we get for that cell when requesting it through HTTP may be 500. This means it is difficult to request cells with the intended amount of measurements. In addition to this, the maximum number of measurements that can be retrieved for a cell thrugh HTTP is 1000.\
+\
+Before we use the data we need to clean it up. The OpenCellID database contain a lot of bad measurements. First, we look at the location of where the measurement was measured. A cell can not broadcast infinitely far, and some measurements are too far away from the cell tower it belongs to for it to be valid.  See for an example figure \\ref\{fig:badMeasurementLocation\}. Macro-cell is the type of cell with the strongest broadcasting capabilities. The standard range of the macro-cell is 35km \\cite\{maxRange\} so we use this range as a threshold when validating a measurement's distance to the cell tower.\
+\
+\\begin\{figure\}[h!]\
+\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/realCell_badMeasLocation.png\}\
+\\caption\{A cell in Poland with one measurement in Libya\}\
+\\label\{fig:badMeasurementLocation\}\
+\\end\{figure\}\
+\
+Secondly, we need to validate each measurement's signal strength. This is only necessary when we are using RSS to compute $\\vec\{v\}_\{direction\}$. As described in table \\ref\{table:measurement\} the signal strength of a measurement is in either dBm or as defined in \\cite[section 8.5]\{TS127007\}. The dBm value of cell signals is always negative. \\cite[section 8.5]\{TS127007\} defines a mapping from the negative dBm values to positive numbers. See table \\ref\{table:signalStrengthMapping\}.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}\\cite[section 8.5]\{TS127007\}&\\cellcolor[gray]\{0.9\}dBm\\\\\\hline\
+    0 & -113 dBm or less \\\\\\hline\
+    1 & -111 dBm \\\\\\hline\
+    2...30 & -109...-53 dBm \\\\\\hline\
+    31 & -51 dBm or greater \\\\\\hline\
+    99 & not known or not detectable \\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Signal strength mapping from negative dBm values to positive numbers\}\
+  \\label\{table:signalStrengthMapping\}\
+\\end\{table\}\
+\
+As we can see from table \\ref\{table:signalStrengthMapping\}, signal strength can have the positive values 0 to 31 in addition to negative values. Measurements with signal strength values larger than 31 will not be considered valid. When running our process on data that includes measurements with signal strength values from 0 to 31, we translate these to dBm values. The formula is simple. If $x$ is a positive signal strength value not smaller than 0 and not larger than 31, the dBm value of $x$ can be calculated like this: $(2\\times x)-113$.\
+\
+We also need to consider the total number of different RSS values among every measurement belonging to a cell. If we are using RSS to compute $\\vec\{v\}_\{direction\}$ we need at least two different RSS values among the measurements. Since the pairing of measurements in algorithm 1 is done randomly we may need more than two different RSS values, especially when $n$ is small. That is why we use 3 as a threshold when validationg the different signal strength values among a cell's measurements.\
+\
+\\subsection\{Testdata of Exact Cells\}\
+We ended up with a subset containing 2036 random cells with exact cell tower positions. The amount of measurements among the cells ranges from approximately 50 to 1000.\
+\
+\\subsection\{Testdata of Non-Exact Cells\}\
+\
+\
 \
 \\section\{Visualizing with Leaflet\}\
 \
 \\section\{Results\}\
+\\textit\{Her vil jeg liste resultater paa samme maate som under Developing the Process, men paa ekte data. Her tenker jeg og aa inkorporere en del diskusjon. Satser paa aa vaere ferdig med dette i slutten av april.\}\
+\
+We will now start listing the initial results from running our process on real data with exact cell tower positions. We will run the process with both RSS and distance as parameters when generating $\\vec\{v\}_\{direction\}$. For comparison purposes we will also show the error when computing the cell tower position by calculating the average longitude and latitude from the cells' measurements. Recall that this is method currently used by OpenCellId.\
+\
+\\subsection\{The Haversin Formula\}\
+%bruker n\'e5r vi genererer error og for \'e5 utelukke measurements\
+\
+\
+\
+\
+\
+\
+\
+\\chapter\{Improving the Process\}\
+\\textit\{Her vil jeg beskrive forbedringer etter aa ha testet paa ekte data. Her vil det ogsaa bli en del diskusjon. Dette kommer jeg til aa jobbe med i mai, men se an hvordan der ligger an hele veien aa dermed finne et passende sted aa runde av.\}\
 \
 \
 \\newpage\
 \\chapter\{Conclusion\}\
+\
+\\textit\{Dette vil bli noe av det siste jeg skriver ettersom det blir vanskelig aa si helt sikkert hva som skal inn her paa dette tidspunktet\}\
+\
+\\section\{Status Summary\}\
+\\textit\{Kjapp oppsummering\}\
+\
+\
 \\section\{Future work\}\
-\\subsection\{Comparing test results from GSM to those of UMTS, LTE and CDMA\}\
-\\section\{Challenges along the road\}\
-I have met several challenges while working on this master thesis. Some where easy to fix, and some were not.\
-\\subsection\{Leaflet\}\
-\\subsection\{Doing computations on a vector that do not have one of its endpoints at origo\}\
-When I started computing heuristic cell sectors I did not think about the fact that the heuristic cell tower position was at some point relative to the real cell tower position, at one of the endpoints of the heuristic vector that gives an impression of which direction the cell tower is pointing. This became a problem when I began computing the vectors forming the boundries of the heuristic cell sector. As I have described earlier, these vectors are generated from the heuristic direction vector, by rotating it in both directions by the sector angle divided by two. My initial thought was to just perform a simple rotation with the endpoint on the heuristic direction vector that do not lie on top of the heuristic cell tower position, thinking it would rotate around the heuristic cell tower position. But in reality the rotation performed was around the real cell tower position. I had to really dig into the code and theory to locate this mistake. The solution was to do the rotation with a virtual vector parallel to the heuristic direction vector, where the new x-values and y-values were computed by subtracting the x-value and y-value at the endpoint on top of the heuristic cell tower, from the x-value and y-value at both endpoints. After the rotation the values that were subtracted are added back to the values forming the new vector to compute the correct vector.\
-\
-I had the same problem when computing a vectors angle, but when I had already figured out the problem with the rotation, it was an easy fix.\
-\
-\\subsection\{Least Square\}\
-The Least Square method is a simple linear regression method for computing a straight line $l_\{LS\}$ through a set of points, making the sum of the squared vertical distances from each point to $l_\{LS\}$, as small as possible. This algorithm is for our problem more accurate than Longest Vector, but outputs a linear line in the form of $y=ax+b$, where $a$ and $b$ are computed and $x$ is for us to choose. This is where the Longest Vector algorithm comes to use. After computing the equation $y=ax+b$ from $S$, we pick the x-values from $m_1$ and $m_2$ and input them into the equation, thus creating the endpoints $ep_1$ and $ep_2$ for $\\vec\{v\}_\{direction\}$.\
-\
-To compute $a$ and $b$ we first need to compute several other variables from $S$:\
-\\begin\{itemize\}\
-\\item The mean of all x-values, $x_\{mean\}$ \
-\\item The mean of all y-values, $y_\{mean\}$\
-\\item The mean of all x$\\times$y-values, $xy_\{mean\}$\
-\\item The mean of all x$^2$-values, $x_\{squared-mean\}$\
-\\item $x_\{mean\}$ squared, $x_\{mean-squared\}$\
-\\end\{itemize\}\
-We then compute $a$ and $b$ in the following way.\
-\\begin\{center\}\
-$a = \\frac\{x_\{mean\}\\times y_\{mean\} - xy_\{mean\}\}\{x_\{mean-squared\}-x_\{squared-mean\}\}$\\\\\\vspace\{7pt\}and\\\\\
-\\vspace\{3pt\}$b = y_\{mean\}-a\\times x_\{mean\}$\
-\\end\{center\}\
-We now have our equation $y=ax+b$ for the line $l_\{LS\}$.\
-\
-\
-\\begin\{figure\}[h!]\
-  \\center\
-  \\begin\{tabular\}\{|l|\}\
-    \\hline\
-    \\textbf\{Algorithm 2:\} Least Square\\\\\
-    \\hline \\hline\
-    \\begin\{minipage\}\{1.0\\linewidth\}\
-      \\begin\{tabbing\}\
-        \\=\\textbf\{output:\} \\=\\kill\
-        \\>\\textbf\{input:\}\\>subset $S$ $\\in$ $M$, the integer $n$ $=$ $|S|$, and the vector $\\vec\{v\}_\{LV\}$\\\\ \
-        %\\> \\>in branch decomposition \\\\\
-        \\>\\textbf\{output:\}\\>$\\vec\{v\}_\{direction\}$\
-      \\end\{tabbing\}\
-    \\end\{minipage\}\\\\\\hline \\hline\
-    \\begin\{minipage\}\{1.0\\linewidth\}\
-      \\vspace\{2pt\}\
-      \\begin\{tabbing\}\
-      declare variables $x_\{mean\}$, $y_\{mean\}$, $xy_\{mean\}$, $x_\{squared-mean\}$, $x_\{mean-squared\}$\\\\\
-      \\textbf\{for each\} measurement $m$ $\\in$ $S$\\\\\
-      %\\=\\textbf\{output:\} \\=\\kill\
-      \\hspace\{10pt\}add the x-value of $m$ to $x_\{mean\}$\\\\\
-      \\hspace\{10pt\}add the y-value of $m$ to $y_\{mean\}$\\\\\
-      \\hspace\{10pt\}add the x$\\times$y-value of $m$ to $xy_\{mean\}$\\\\\
-      \\hspace\{10pt\}add the x$^2$-value of $m$ to $x_\{squared-mean\}$\\\\\
-      divide $x_\{mean\}$, $y_\{mean\}$, $xy_\{mean\}$ and $x_\{squared-mean\}$ by $n$\\\\ \
-      compute $x_\{mean-squared\}$ by squaring $x_\{mean\}$\\\\\
-      compute $a$ and $b$\\\\\
-      create $ep_1$ and $ep_2$ by inputing the x-values from the endpoints of $\\vec\{v\}_\{LV\}$\\\\ into the equation $y=ax+b$\\\\\
-      \\textbf\{return\} $\\vec\{v\}_\{direction\}$ created from $ep_1$ and $ep_2$\
-      \\end\{tabbing\}\
-    \\end\{minipage\}\\\\\
-    \\hline\
-  \\end\{tabular\}\
-\\end\{figure\}\
-\
-\\subsubsection\{Visualizing the data\}\
-I was not very familiar with the Swing library before I started working on this thesis.\
-\
-\\section\{Existing Algorithms\}\
-Chen et al. \\cite\{Chen\} used the Centroid and Weighted Centroid algorithms, amongst others, to examine the positioning accuracy of a GSM beacon-based location system in a metropolitan environment. Yang et al. \\cite\{Yang\} studied the Weighted Centroid and Strongest Received Signal Strength algorithms for cell tower localization.\
-\
-\\subsection\{Centroid\}\
-The Centroid algorithm estimates a cell tower's position to be the geometric center of the measurements for that cell. It is the mean of the measurements' longitudes and latitudes.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements.\
-\\begin\{gather*\}\
-longitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(longitude_i\\right)\\\\%, \\textnormal\{and\}\\\\\
-latitude_\{celltower\} = \\frac\{1\}\{n\}\\sum^\{n\}_\{i=1\}\\left(latitude_i\\right)\
-\\end\{gather*\}\
-\
-\\newpage\
-\\begin\{algorithm\}\
-\\caption\{Centroid\}\
-\\label\{alg:centroid\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{Centroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State sumOfLongitudes $\\gets 0.0$\
-\\State sumOfLatitudes $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State sumOfLongitudes $\\gets$ sumOfLongitudes + m.longitude\
-\\State sumOfLatitudes $\\gets$ sumOfLatitudes + m.latitude\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ sumOfLongitudes $\\div$ measurements.size\
-\\State cellTowerLatitude $\\gets$ sumOfLatitudes $\\div$ measurements.size\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\subsection\{Weighted Centroid\}\
-The Weighted Centroid algorithm is an extension of the Centroid algorithm. Here, the measurements are given weights based on the \\textit\{received signal strength\} (RSS) at each measurement. The measurements with strong signals are likely to be closer to the cell tower's real position than those with weaker signals, so we want to emphasize these measurements when calculating the cell tower's position. The unit of measurement for these kind of signals are \\textit\{Decibel-milliwatts\} (dBm) and they range from approximately -30 dBm and lower. Due to the negative values we want to translate them into weights with positive values to make them viable to use for calculations.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
-\\begin\{gather*\}\
-longitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(longitude_i \\times w_i\\right)\\\\%, \\textnormal\{and\}\\\\\
-latitude_\{celltower\} = \\frac\{1\}\{\\sum^\{n\}_\{j=1\}w_j\}\\sum^\{n\}_\{i=1\}\\left(latitude_i \\times w_i\\right)\
-\\end\{gather*\}\
-\
-\\begin\{algorithm\}\
-\\caption\{Weighted Centroid\}\
-\\label\{alg:weightedcentroid\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{WeightedCentroid\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State sumOfWeights $\\gets 0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State sumOfWeights $\\gets$ sumOfWeights$+$m.signal \
-\\EndFor\
-\\State x $\\gets 0.0$\
-\\State y $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\State x $\\gets$ x$+($m.longitude$\\times$m.signal$)$\
-\\State y $\\gets$ y$+($m.latitude$\\times$m.signal$)$\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ x $\\div$ sumOfWeights\
-\\State cellTowerLatitude $\\gets$ y $\\div$ sumOfWeights\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\subsection\{Strongest Received Signal Strength\}\
-The Strongest RSS algorithm estimates a cell tower's position as the position of the measurement with the strongest observed RSS from that cell tower. If multiple measurements qualify, we apply algorithm \\ref\{alg:centroid\} on these.\
-\
-Below follows the mathematical expression for a cell tower's longitude and latitude, where $n$ is the number of measurements and $w_i$ is measurement $i$'s weight based on its RSS.\
-%\\begin\{equation\}\
-%\\begin\{align*\}\
-\\begin\{gather*\}\
-longitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(longitude_i\\right), \\textnormal\{ and\}\\\\ \
-latitude_\{celltower\}=\\frac\{1\}\{m\}\\sum^\{m\}_\{i=1\}\\left(latitude_i\\right), \\textnormal\{ where\}\\\\ \
-%w_j = max(w_1,w_2,...,w_n), \\textnormal\{ and\}\\\\ \
-m = |W|, \\textnormal\{ and\}\\\\\
-W = \\\{w:w\\in max(w_1,w_2,...,w_n)\\\}\
-\\end\{gather*\}\
-%\\textnormal\{ is the cardinality of the set \}\
-%\\end\{align*\}\
-%\\end\{equation\}\
-\
-\\begin\{algorithm\}\
-\\caption\{Strongest Received Signal Strength\}\
-\\label\{alg:strongestrss\}\
-\\begin\{algorithmic\}[1]\
-\\Procedure\{StrongestRSS\}\{measurements $\\gets$ a list of measurements for a cell\}\
-\\State strongestSignalMeasurements $\\gets$ a list to store the measurements with the strongest signal\
-\\State currentStrongestSignal $\\gets -1$\
-\\For\{$\\textbf\{each\}$ m $\\in$ measurements\}\
-\\If\{m.signal $>$ currentStrongestSignal\}\
-\\State \\textbf\{clear\} strongestSignalMeasurements\
-\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
-\\State currentStrongestSignal $\\gets$ m.signal\
-\\ElsIf\{m.signal $=$ currentStrongestSignal\}\
-\\State \\textbf\{add\} m \\textbf\{to\} strongestSignalMeasurements\
-\\EndIf\
-\\EndFor\
-\\State x $\\gets 0.0$\
-\\State y $\\gets 0.0$\
-\\For\{$\\textbf\{each\}$ m $\\in$ strongestSignalMeasurements\}\
-\\State x $\\gets$ x + m.longitude\
-\\State y $\\gets$ y + m.latitude\
-\\EndFor\
-\\State cellTowerLongitude $\\gets$ x $\\div$ strongestSignalMeasurements.size\
-\\State cellTowerLatitude $\\gets$ y $\\div$ strongestSignalMeasurements.size\
-\\State \\Return cellTowerLongitude, cellTowerLatitude\
-\\EndProcedure\
-\\end\{algorithmic\}\
-\\end\{algorithm\}\
-\
-\\section\{Initial runnning of algorithms\}\
-Yang et al. \\cite\{Yang\} applied algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} to data obtained through wardriving \\cite\{Chen\}. In this thesis we apply the same algorithms to data from \\cite\{opencellid\}. To be able to justify our results we must first generate test data to confirm that our algorithms are correctly implemented. We created a java program for generating cells, cell towers and measurements.\
-\
-\\subsection\{Testdata\}\
-We wrote a small Java program for generating testdata. Below follow three example screenshots where we apply algorithm \\ref\{alg:centroid\}, \\ref\{alg:weightedcentroid\} and \\ref\{alg:strongestrss\} on three random generated cells with 10, 20 and 40 measurements, respectively. The cell tower is placed in the middle and the measurements are generated randomly around it.\
-\\begin\{itemize\}\
-\\item \\text\{Black circles:\} Measurements\
-\\item \\text\{Black square:\} Real position of cell tower\
-\\item \\text\{Blue square:\} Position of cell tower calculated by Centroid\
-\\item \\text\{Green square:\} Position of cell tower calculated by Weighted Centroid\
-\\item \\text\{Red square:\} Position of cell tower calculated by Strongest RSS\
-\\end\{itemize\}\
-\
+\\textit\{Her vil jeg skrive om ytterligere forbedringer som kan gj\'f8res\}\
 \
 \\newpage\
 %\\bibliographystyle\{abbrv\}\
 %\\bibliography\{references\}\
-\\addcontentsline\{toc\}\{section\}\{References\}\
+\\addcontentsline\{toc\}\{chapter\}\{Bibliography\}\
 \\printbibliography\
 \
 \\newpage\
 \\appendix\
-\\section\{Code\}\
+\\chapter\{Code\}\
+\\textit\{Jeg tviler paa at jeg kommer til aa legge ved kode, men inkluderer likevel denne slik at vi ser hvordan det evt. vil se ut\}\
 \\label\{app:code\}\
 \\begin\{lstlisting\}\
 package testdata;\

@@ -22,7 +22,7 @@ public class Request {
 
 	JsonParser jp;
 	
-	DefaultCell cell;
+	OpenCellIdCell cell;
 
 	public Request(String httpRequestURL) {
 		jsonParser(httpRequestURL);
@@ -44,7 +44,7 @@ public class Request {
 		return s;
 	}
 	
-	public DefaultCell getData() {
+	public OpenCellIdCell getData() {
 		return cell;
 	}
 
@@ -75,19 +75,19 @@ public class Request {
 			// jumping to START_ARRAY
 			jp.nextToken();
 			
-			OpenCellIdCell openCellIdCell = (OpenCellIdCell) cell;
-			List<Measurement> measurements = new ArrayList<Measurement>(openCellIdCell.getSamples());
-			int measurementsCounter = 0;
+//			OpenCellIdCell openCellIdCell = (OpenCellIdCell) cell;
+			List<Measurement> measurements = new ArrayList<Measurement>(cell.getSamples());
+//			int measurementsCounter = 0;
 			
 			// jumping to either the next START_OBJECT or END_ARRAY
 			while(jp.nextToken() != JsonToken.END_ARRAY) {
 				n = jp.readValueAsTree();
 				measurements.add(createMeasurement(n));
-				measurementsCounter++;
+//				measurementsCounter++;
 			}
 			cell.setMeasurements(measurements);
 			
-			if(measurementsCounter != openCellIdCell.getSamples()) {
+			if(cell.getMeasurements().size() != cell.getSamples()) {
 				System.out.println("The number of measurements in file is not equal to the number of samples");
 			}
 						
@@ -100,7 +100,7 @@ public class Request {
 		}
 	}
 
-	private DefaultCell createCell(JsonNode n) {
+	private OpenCellIdCell createCell(JsonNode n) {
 		double lon = n.get("lon").asDouble();
 		double lat = n.get("lat").asDouble();
 		Point2D.Double coords = new Point2D.Double(lon, lat);
@@ -132,25 +132,26 @@ public class Request {
 		double lat = n.get("lat").asDouble();
 		Point2D.Double coords = new Point2D.Double(lon, lat);
 		int signalStrength = n.get("signal").asInt();
-		int mcc = n.get("mcc").asInt();
-		int net = n.get("mnc").asInt();
-		int area = n.get("lac").asInt();
-		long cell = n.get("cellid").asLong();
-		
-		return new OpenCellIdMeasurement(
-				coords, 
-				signalStrength, 
-				mcc, 
-				net, 
-				area, 
-				cell);
+		return new OpenCellIdMeasurement(coords, signalStrength);
+//		int mcc = n.get("mcc").asInt();
+//		int net = n.get("mnc").asInt();
+//		int area = n.get("lac").asInt();
+//		long cell = n.get("cellid").asLong();
+//		
+//		return new OpenCellIdMeasurement(
+//				coords, 
+//				signalStrength, 
+//				mcc, 
+//				net, 
+//				area, 
+//				cell);
 	}
 
 	private void jsonParser(String inputString) {
 		try {
 			URL url = new URL(inputString);
-			JsonFactory f = new MappingJsonFactory();
-			jp = f.createJsonParser(url);
+			JsonFactory jf = new MappingJsonFactory();
+			jp = jf.createJsonParser(url);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (JsonParseException e) {

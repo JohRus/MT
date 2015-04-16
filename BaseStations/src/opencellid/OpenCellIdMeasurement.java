@@ -19,6 +19,10 @@ public class OpenCellIdMeasurement extends SimpleMeasurement {
 		this.area = area;
 		this.cell = cell;
 	}
+	
+	public OpenCellIdMeasurement(Point2D.Double coordinates, int signalStrength) {
+		super(coordinates, signalStrength);
+	}
 
 	public int getMcc() {
 		return mcc;

@@ -80,9 +80,9 @@ public class Generate {
 		return dynamicCell;
 	}
 
-	public static Computation computation(DefaultCell originalCell, int n, double d) {
+	public static Computation computation(DefaultCell originalCell, int n, double d, boolean useRSS) {
 		//		System.out.println("Attempting to create Computation in Generate");
-		Line2D.Double longestVector = Process.longestVector(originalCell.getMeasurements(), n);
+		Line2D.Double longestVector = Process.longestVector(originalCell.getMeasurements(), n, useRSS);
 		//		System.out.println(longestVector.getP1());
 		//		System.out.println(longestVector.getP2());
 		//		Line2D.Double longestVector = Geom.longestVectorWithSignalStrength(originalCell.getMeasurements(), n);
@@ -123,19 +123,19 @@ public class Generate {
 			return dist1;
 		else
 			return dist2;
-
-
-		//		if(writeToFile) {
-		//			String path = "/Users/Johan/Desktop/";
-		//			String fileName = String.format("Computation.txt");
-		//			try(BufferedWriter bw = new BufferedWriter(new FileWriter(path+fileName, true));){
-		//				bw.write("Test subjects\tAngle\tM\tn\td\tMax dist\tMin dist\tTime to compute\tError\n");
-		//				bw.write(String.format("%d\t\t%.1f\t%d\t%d\t%.1f\t%.1f\t\t%.1f\t%.1f\t\t%.2f\n", testSubjects, sectorAngle, M, n, d, maxDist, minDist, averageTime, error));
-		//			} catch (IOException e) {
-		//				// TODO Auto-generated catch block
-		//				e.printStackTrace();
-		//			}
-		//		}
+	}
+	
+	public static double sphericalError(DefaultCell originalCell, DefaultCell chosenHeuristicCell) {
+		
+		double lon1 = originalCell.getCellTowerCoordinates().getX();
+		double lat1 = originalCell.getCellTowerCoordinates().getY();
+		
+		double lon2 = chosenHeuristicCell.getCellTowerCoordinates().getX();
+		double lat2 = chosenHeuristicCell.getCellTowerCoordinates().getY();
+		
+		double dist = Geom.sphericalDistance(lon1, lat1, lon2, lat2);
+			
+		return dist;
 	}
 
 	public static HashSet<Integer> randomInts(int size, int range, int ... notThese) {

@@ -32,8 +32,8 @@ public class Controller {
 				deadZoneRadius);		
 	}
 	
-	public Computation generateComputation(DynamicCell originalCell, int n, double d) {
-		Computation comp = Generate.computation(originalCell, n, d);
+	public Computation generateComputation(DynamicCell originalCell, int n, double d, boolean useRSS) {
+		Computation comp = Generate.computation(originalCell, n, d, useRSS);
 		
 		DynamicCell heuristicDynamicCell1 = new DynamicCell(
 				comp.getHeuristicCell1().getCellTowerCoordinates(), 
@@ -106,7 +106,8 @@ public class Controller {
 							Computation computation = generateComputation(
 									testCell, 
 									n, 
-									d);
+									d,
+									hasSignal);
 							sw.stop();
 							
 							error += Generate.error(testCell, computation);

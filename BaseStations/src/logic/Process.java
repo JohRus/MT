@@ -13,74 +13,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.googlecode.jcsv.annotations.MapToColumn.Default;
+
 import opencellid.OpenCellIdCell;
 import opencellid.OpenCellIdMeasurement;
 
 public class Process {
 
-//	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
-//
-//		Random r1 = new Random();
-//
-//		Measurement m1 = null;
-//		Measurement m2 = null;
-//		double diff = 0.0;
-//
-//		for(int i = 0; i < threshold; i++) {
-//			int e1 = r1.nextInt(measurements.size());
-//			Measurement item1 = measurements.get(e1);
-//
-//			Random r2 = new Random();
-//
-//			for(int j = 0; j < threshold; j++) {
-//				int e2 = r2.nextInt(measurements.size());
-//				if(e2 == e1) {
-//					j--;
-//					continue;
-//				}
-//				Measurement item2 = measurements.get(e2);
-//
-//				if(item1 instanceof SimpleMeasurement && item2 instanceof SimpleMeasurement) {
-//					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
-//					if(currDiff > diff) {
-//						m1 = item1;
-//						m2 = item2;
-//						diff = currDiff;
-//					}
-//				}
-//				else if(item1 instanceof OpenCellIdMeasurement && item2 instanceof OpenCellIdMeasurement) {
-//					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
-//					if(currDiff > diff) {
-//						m1 = item1;
-//						m2 = item2;
-//						diff = currDiff;
-//					}
-//				}
-//				else {
-//					double currDiff = item1.getCoordinates().distance(item2.getCoordinates());
-//					if(currDiff > diff) {
-//						m1 = item1;
-//						m2 = item2;
-//						diff = currDiff;
-//					}
-//				}
-//			}	
-//		}
-//		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
-//	}
-	
-	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
+	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold, boolean useRSS) {
 
-//		Random r1 = new Random();
-		
 		HashSet<Integer> items = Generate.randomInts(threshold, measurements.size(), null);
+
 
 		Measurement m1 = null;
 		Measurement m2 = null;
 		double diff = 0.0;
 
 		for(int i : items) {
-//			int e1 = r1.nextInt(measurements.size());
 			Measurement item1 = measurements.get(i);
 
 			Random r2 = new Random();
@@ -92,16 +41,8 @@ public class Process {
 					continue;
 				}
 				Measurement item2 = measurements.get(r);
-
-				if(item1 instanceof SimpleMeasurement && item2 instanceof SimpleMeasurement) {
-					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
-					if(currDiff > diff) {
-						m1 = item1;
-						m2 = item2;
-						diff = currDiff;
-					}
-				}
-				else if(item1 instanceof OpenCellIdMeasurement && item2 instanceof OpenCellIdMeasurement) {
+				
+				if(useRSS) {
 					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
 					if(currDiff > diff) {
 						m1 = item1;
@@ -119,8 +60,73 @@ public class Process {
 				}
 			}	
 		}
+		
+		if(m1 == null || m2 == null) {
+			System.out.println("m1 or m2 is null");
+			return longestVector(measurements, threshold, useRSS);
+		}
+
 		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
 	}
+
+	//	public static Line2D.Double longestVector(List<Measurement> measurements, int threshold) {
+	//		
+	//		HashSet<Integer> items = Generate.randomInts(threshold, measurements.size(), null);
+	//		
+	//
+	//		Measurement m1 = null;
+	//		Measurement m2 = null;
+	//		double diff = 0.0;
+	//
+	//		for(int i : items) {
+	//			Measurement item1 = measurements.get(i);
+	//
+	//			Random r2 = new Random();
+	//
+	//			for(int j = 0; j < threshold; j++) {
+	//				int r = r2.nextInt(measurements.size());
+	//				if(r == i) {
+	//					j--;
+	//					continue;
+	//				}
+	//				Measurement item2 = measurements.get(r);
+	//				
+	//				if(item1 instanceof OpenCellIdMeasurement && item2 instanceof OpenCellIdMeasurement) {
+	//					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
+	//					if(currDiff > diff) {
+	//						m1 = item1;
+	//						m2 = item2;
+	//						diff = currDiff;
+	//					}
+	//				}
+	//
+	//				else if(item1 instanceof SimpleMeasurement && item2 instanceof SimpleMeasurement) {
+	//					double currDiff = Math.abs(item1.getSignalStrength()-item2.getSignalStrength());
+	//					if(currDiff > diff) {
+	//						m1 = item1;
+	//						m2 = item2;
+	//						diff = currDiff;
+	//					}
+	//				}
+	//				
+	//				else {
+	//					double currDiff = item1.getCoordinates().distance(item2.getCoordinates());
+	//					if(currDiff > diff) {
+	//						m1 = item1;
+	//						m2 = item2;
+	//						diff = currDiff;
+	//					}
+	//				}
+	//			}	
+	//		}
+	////		
+	//		if(m1 == null || m2 == null) {
+	//			System.out.println("m1 or m2 is null");
+	//			return longestVector(measurements, threshold);
+	//		}
+	//		
+	//		return new Line2D.Double(m1.getCoordinates(), m2.getCoordinates());
+	//	}
 
 	public static Line2D.Double longestVectorWithSignalStrength(List<Measurement> measurements, int threshold) {
 		//		Measurement strongest = new SimpleMeasurement(new Point2D.Double(0.0,0.0), -500);
@@ -171,50 +177,51 @@ public class Process {
 
 		return Geom.toCartesian(longestVectorAngle, longestVectorLength, measurements.get(strongestPos).getCoordinates());
 	}
-	
+
 	public static DefaultCell findSector(Line2D.Double heuristicVector, DefaultCell originalCell, double d) {
 		DefaultCell heuristicSector = computeSector(heuristicVector, originalCell);
-//		System.out.println("Computed initial heuristic sector");
-//		System.out.println(originalCell.getSectorAngle());
-//		System.out.println(heuristicSector.getCellTowerCoordinates());
-//		System.out.println(heuristicSector.getVectorAngle());
-//		System.out.println(heuristicSector.getSectorAngle());
+		//		System.out.println("Computed initial heuristic sector");
+		//		System.out.println(originalCell.getSectorAngle());
+		//		System.out.println(heuristicSector.getCellTowerCoordinates());
+		//		System.out.println(heuristicSector.getVectorAngle());
+		//		System.out.println(heuristicSector.getSectorAngle());
 		List<Measurement> subset = originalCell.getMeasurements();
 		Line2D.Double newHeuristicVector = heuristicVector;
 		//			double distToAdd = 10.0;
 		while(!Geom.pointsFitInsideSectorAngle(subset, heuristicSector.getCellTowerCoordinates(),
 				heuristicSector.getVectorAngle(), heuristicSector.getVectorAngle()+heuristicSector.getSectorAngle())) {
 			// modifisere subset slik at jeg utelukker de målingene jeg vet passer
-//			System.out.println("Trying to fit all measurements");
+			//			System.out.println("Trying to fit all measurements");
 			newHeuristicVector = Geom.changeVectorLengthByP1(
 					newHeuristicVector, 
 					newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+d);
 			heuristicSector = computeSector(newHeuristicVector, originalCell);
-//			System.out.println("hei");
-//			System.out.println(heuristicSector.getCellTowerCoordinates());
-//			System.out.println(heuristicSector.getVectorAngle());
-//			System.out.println(heuristicSector.getSectorAngle());
+			//			System.out.println("hei");
+			//			System.out.println(heuristicSector.getCellTowerCoordinates());
+			//			System.out.println(heuristicSector.getVectorAngle());
+			//			System.out.println(heuristicSector.getSectorAngle());
+			//			System.out.println("here");
 		}
-//		System.out.println("Created heuristic cell");
+		//		System.out.println("Created heuristic cell");
 		return heuristicSector;
 	}
-	
-//	public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, double d) {
-//		DynamicCell heuristicSector = computeSector(heuristicVector, originalCell);
-//		List<Measurement> subset = originalCell.getMeasurements();
-//		Line2D.Double newHeuristicVector = heuristicVector;
-//		//			double distToAdd = 10.0;
-//		while(!Geom.pointsFitInsideSectorAngle(subset, heuristicSector)) {
-//			// modifisere subset slik at jeg utelukker de målingene jeg vet passer
-//
-//			newHeuristicVector = Geom.changeVectorLengthByP1(
-//					newHeuristicVector, 
-//					newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+d);
-//			heuristicSector = computeSector(newHeuristicVector, originalCell);
-//		}
-//		return heuristicSector;
-//	}
-	
+
+	//	public static DynamicCell findSector(Line2D.Double heuristicVector, DynamicCell originalCell, double d) {
+	//		DynamicCell heuristicSector = computeSector(heuristicVector, originalCell);
+	//		List<Measurement> subset = originalCell.getMeasurements();
+	//		Line2D.Double newHeuristicVector = heuristicVector;
+	//		//			double distToAdd = 10.0;
+	//		while(!Geom.pointsFitInsideSectorAngle(subset, heuristicSector)) {
+	//			// modifisere subset slik at jeg utelukker de målingene jeg vet passer
+	//
+	//			newHeuristicVector = Geom.changeVectorLengthByP1(
+	//					newHeuristicVector, 
+	//					newHeuristicVector.getP1().distance(newHeuristicVector.getP2())+d);
+	//			heuristicSector = computeSector(newHeuristicVector, originalCell);
+	//		}
+	//		return heuristicSector;
+	//	}
+
 	public static DefaultCell computeSector(Line2D.Double heuristicVector, DefaultCell originalCell) {		
 
 		double degreesToRotate = originalCell.getSectorAngle()/2;
@@ -225,63 +232,63 @@ public class Process {
 				Math.toDegrees(Geom.angle(heuristicSectorVector1)), 
 				originalCell.getSectorAngle());
 	}
-	
-//	public static DefaultCell computeSector(Line2D.Double heuristicVector, DefaultCell originalCell) {		
-////		System.out.println(heuristicVector.getP1());
-////		System.out.println(heuristicVector.getP2());
-//		double degreesToRotate = originalCell.getSectorAngle()/2;
-//		Line2D.Double heuristicSectorVector1 = Geom.rotateVector(heuristicVector, degreesToRotate*-1);
-//		Line2D.Double heuristicSectorVector2 = Geom.rotateVector(heuristicVector, degreesToRotate);
-//		if(originalCell instanceof DynamicCell) {
-//			DynamicCell dynamicOriginalCell = (DynamicCell) originalCell;
-//			heuristicSectorVector1 = Geom.changeVectorLengthByP2(heuristicSectorVector1, dynamicOriginalCell.getMaxDistance());
-//			heuristicSectorVector2 = Geom.changeVectorLengthByP2(heuristicSectorVector2, dynamicOriginalCell.getMaxDistance());
-//
-//			DynamicCell heuristicCell = new DynamicCell(
-//					(Point2D.Double) heuristicVector.getP1(), 
-//					Math.toDegrees(Geom.angle(heuristicSectorVector1)), 
-//					dynamicOriginalCell.getSectorAngle(), 
-//					dynamicOriginalCell.getMaxDistance(), 
-//					dynamicOriginalCell.getMinDistance());
-//			heuristicCell.setVector1(heuristicSectorVector1);
-//			heuristicCell.setVector2(heuristicSectorVector2);
-//			
-//			return heuristicCell;
-//		}
-//		else {
-//			OpenCellIdCell openCellIdOriginalCell = (OpenCellIdCell) originalCell;
-//			return new OpenCellIdCell(
-//					(Point2D.Double) heuristicVector.getP1(), 
-//					openCellIdOriginalCell.getRadio(), 
-//					openCellIdOriginalCell.getMcc(), 
-//					openCellIdOriginalCell.getNet(), 
-//					openCellIdOriginalCell.getArea(), 
-//					openCellIdOriginalCell.getCell(), 
-//					openCellIdOriginalCell.getRange(), 
-//					openCellIdOriginalCell.getSamples(), 
-//					openCellIdOriginalCell.getChangeable(), 
-//					openCellIdOriginalCell.getAverageSignal());
-//		}
-//	}
-	
-//	public static DynamicCell computeSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
-//
-//		double degreesToRotate = originalCell.getSectorAngle()/2;
-//		Line2D.Double heuristicSectorVector1 = Geom.rotateVector(heuristicVector, degreesToRotate*-1);
-//		heuristicSectorVector1 = Geom.changeVectorLengthByP2(heuristicSectorVector1, originalCell.getMaxDistance());
-//		Line2D.Double heuristicSectorVector2 = Geom.rotateVector(heuristicVector, degreesToRotate);
-//		heuristicSectorVector2 = Geom.changeVectorLengthByP2(heuristicSectorVector2, originalCell.getMaxDistance());
-//		DynamicCell heuristicCell = new DynamicCell(
-//				(Point2D.Double) heuristicVector.getP1(), 
-//				Math.toDegrees(Geom.angle(heuristicSectorVector1)), 
-//				originalCell.getSectorAngle(), 
-//				originalCell.getMaxDistance(), 
-//				originalCell.getMinDistance());
-//		heuristicCell.setVector1(heuristicSectorVector1);
-//		heuristicCell.setVector2(heuristicSectorVector2);
-//		return heuristicCell;
-//	}
-	
+
+	//	public static DefaultCell computeSector(Line2D.Double heuristicVector, DefaultCell originalCell) {		
+	////		System.out.println(heuristicVector.getP1());
+	////		System.out.println(heuristicVector.getP2());
+	//		double degreesToRotate = originalCell.getSectorAngle()/2;
+	//		Line2D.Double heuristicSectorVector1 = Geom.rotateVector(heuristicVector, degreesToRotate*-1);
+	//		Line2D.Double heuristicSectorVector2 = Geom.rotateVector(heuristicVector, degreesToRotate);
+	//		if(originalCell instanceof DynamicCell) {
+	//			DynamicCell dynamicOriginalCell = (DynamicCell) originalCell;
+	//			heuristicSectorVector1 = Geom.changeVectorLengthByP2(heuristicSectorVector1, dynamicOriginalCell.getMaxDistance());
+	//			heuristicSectorVector2 = Geom.changeVectorLengthByP2(heuristicSectorVector2, dynamicOriginalCell.getMaxDistance());
+	//
+	//			DynamicCell heuristicCell = new DynamicCell(
+	//					(Point2D.Double) heuristicVector.getP1(), 
+	//					Math.toDegrees(Geom.angle(heuristicSectorVector1)), 
+	//					dynamicOriginalCell.getSectorAngle(), 
+	//					dynamicOriginalCell.getMaxDistance(), 
+	//					dynamicOriginalCell.getMinDistance());
+	//			heuristicCell.setVector1(heuristicSectorVector1);
+	//			heuristicCell.setVector2(heuristicSectorVector2);
+	//			
+	//			return heuristicCell;
+	//		}
+	//		else {
+	//			OpenCellIdCell openCellIdOriginalCell = (OpenCellIdCell) originalCell;
+	//			return new OpenCellIdCell(
+	//					(Point2D.Double) heuristicVector.getP1(), 
+	//					openCellIdOriginalCell.getRadio(), 
+	//					openCellIdOriginalCell.getMcc(), 
+	//					openCellIdOriginalCell.getNet(), 
+	//					openCellIdOriginalCell.getArea(), 
+	//					openCellIdOriginalCell.getCell(), 
+	//					openCellIdOriginalCell.getRange(), 
+	//					openCellIdOriginalCell.getSamples(), 
+	//					openCellIdOriginalCell.getChangeable(), 
+	//					openCellIdOriginalCell.getAverageSignal());
+	//		}
+	//	}
+
+	//	public static DynamicCell computeSector(Line2D.Double heuristicVector, DynamicCell originalCell) {		
+	//
+	//		double degreesToRotate = originalCell.getSectorAngle()/2;
+	//		Line2D.Double heuristicSectorVector1 = Geom.rotateVector(heuristicVector, degreesToRotate*-1);
+	//		heuristicSectorVector1 = Geom.changeVectorLengthByP2(heuristicSectorVector1, originalCell.getMaxDistance());
+	//		Line2D.Double heuristicSectorVector2 = Geom.rotateVector(heuristicVector, degreesToRotate);
+	//		heuristicSectorVector2 = Geom.changeVectorLengthByP2(heuristicSectorVector2, originalCell.getMaxDistance());
+	//		DynamicCell heuristicCell = new DynamicCell(
+	//				(Point2D.Double) heuristicVector.getP1(), 
+	//				Math.toDegrees(Geom.angle(heuristicSectorVector1)), 
+	//				originalCell.getSectorAngle(), 
+	//				originalCell.getMaxDistance(), 
+	//				originalCell.getMinDistance());
+	//		heuristicCell.setVector1(heuristicSectorVector1);
+	//		heuristicCell.setVector2(heuristicSectorVector2);
+	//		return heuristicCell;
+	//	}
+
 	public static void chooseHeuristicDynamicCell(List<Measurement> measurements, Computation comp, int threshold) {
 		if(measurements.get(0) instanceof SimpleMeasurement) {
 			HashSet<Integer> indices = Generate.randomInts(threshold, measurements.size(), null);
@@ -394,11 +401,11 @@ public class Process {
 		//		}
 	}
 
-	
 
-	
 
-	
+
+
+
 
 	public static Line2D.Double linearRegressionVector(List<Measurement> measurements, int threshold, 
 			Line2D.Double longestVector) {
@@ -459,6 +466,21 @@ public class Process {
 		Point2D.Double pointB = new Point2D.Double(longestVector.getX2(), (m*longestVector.getX2())+b);
 
 		return new Line2D.Double(pointA, pointB);
+	}
+	
+	public static DefaultCell averageCellTowerPosition(List<Measurement> measurements) {
+		double sumLon = 0.0;
+		double sumLat = 0.0;
+		
+		for(Measurement m : measurements) {
+			sumLon += m.getCoordinates().getX();
+			sumLat += m.getCoordinates().getY();
+		}
+		
+		double lon = sumLon/measurements.size();
+		double lat = sumLat/measurements.size();
+		
+		return new DefaultCell(new Point2D.Double(lon, lat), 120.0);
 	}
 
 }

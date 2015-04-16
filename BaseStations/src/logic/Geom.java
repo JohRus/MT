@@ -149,18 +149,40 @@ public class Geom {
 
 	public static double sphericalDistance(double lon1, double lat1, double lon2, double lat2) {
 
-		double earthRadius = 6.371;
-
-		//haversin lat2-lat1
-		double hsLat = Math.pow(Math.sin((lat2-lat1)/2), 2);
-
-		//haversin lon2-lon1
-		double hsLon = Math.pow(Math.sin((lon2-lon1)/2), 2);
-
-		double a = Math.sqrt(hsLat+(Math.cos(lat1)*Math.cos(lat2)*hsLon));
-
-		double d = 2*earthRadius*Math.asin(a);
-
+//		double earthRadius = 6371000;
+//
+//		//haversin lat2-lat1
+//		double hsLat = Math.pow(Math.sin((lat2-lat1)/2), 2);
+//
+//		//haversin lon2-lon1
+//		double hsLon = Math.pow(Math.sin((lon2-lon1)/2), 2);
+//
+//		double a = Math.sqrt(hsLat+(Math.cos(lat1)*Math.cos(lat2)*hsLon));
+//
+//		double d = 2*earthRadius*Math.asin(a);
+//
+//		return d;
+		
+		double earthRadius = 6371000.0;
+		
+		double lat1Radians = Math.toRadians(lat1);
+		double lat2Radians = Math.toRadians(lat2);
+		double deltaLat = Math.toRadians(lat2-lat1);
+		double deltaLon = Math.toRadians(lon2-lon1);
+		
+		double a = Math.sin(deltaLat/2)*Math.sin(deltaLat/2);
+		a += Math.cos(lat1Radians)*Math.cos(lat2Radians)*Math.sin(deltaLon/2)*Math.sin(deltaLon/2);
+		
+		double c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		
+		double d = earthRadius*c;
+		
+		// answer is in meters
 		return d;
+	}
+	
+	public static void main(String[] args) {
+		double d = sphericalDistance(5.314961, 60.388360, 5.330980, 60.381447);
+		System.out.println(d);
 	}
 }

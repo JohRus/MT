@@ -125,7 +125,8 @@ public class SystemFrame extends JFrame {
 							Computation comp = controller.generateComputation(
 									dc, 
 									Integer.parseInt(n.getText()), 
-									java.lang.Double.parseDouble(d.getText()));
+									java.lang.Double.parseDouble(d.getText()),
+									Boolean.parseBoolean(hasSignal.getText()));
 
 							updateGUI(dc, comp);
 						}

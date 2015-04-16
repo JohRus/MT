@@ -50,11 +50,11 @@ function readText(filePath) {
     reader.onload = function (event) {
         var content = event.target.result; // event.target is the FileReader instance
         var json = jQuery.parseJSON(content);
-        displayContents(json.cell.lon+','+json.cell.lat+'<br>');
-        displayContents(json.calculatedCell.lon+','+json.calculatedCell.lat+'<br>');
-        for(i = 0; i < json.measurements.length; i++) {
-        	displayContents(json.measurements[i].lon+','+json.measurements[i].lat+'<br>');
-        }
+        //displayContents(json.cell.lon+','+json.cell.lat+'<br>');
+        //displayContents(json.calculatedCell.lon+','+json.calculatedCell.lat+'<br>');
+        //for(i = 0; i < json.measurements.length; i++) {
+        //	displayContents(json.measurements[i].lon+','+json.measurements[i].lat+'<br>');
+        //}
 
         var ctMarker = L.icon({
 			iconUrl: '/Users/Johan/Workspace/MT/BaseStations/resources/ct.png',
@@ -82,6 +82,8 @@ function readText(filePath) {
 			}).addTo(map);
         }
 
+        displayContents('Error: '+json.calculatedCell.errorDist);
+
         map.setView([json.cell.lat, json.cell.lon], 13);
     };
     reader.onerror = function(event) {
@@ -93,7 +95,7 @@ function readText(filePath) {
 }
 
 function displayContents(txt) {
-        var el = document.getElementById('main').innerHTML += txt; 
+        var el = document.getElementById('main').innerHTML = txt; 
          //display output in DOM
     } 
 
