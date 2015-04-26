@@ -112,7 +112,7 @@ public class OpenCellIdCell extends DefaultCell  {
 
 	@Override
 	public String toString() {
-		String s = "mcc="+mcc+"|net="+net+"|area="+area+"|cell="+cell+"|range="+range+"|samples="+samples+"|changeable="+changeable;
+		String s = "mcc="+mcc+"|net="+net+"|area="+area+"|cell="+cell;//+"|range="+range+"|samples="+samples+"|changeable="+changeable;
 		return s;
 	}
 	

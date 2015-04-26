@@ -81,17 +81,15 @@ public class Generate {
 	}
 
 	public static Computation computation(DefaultCell originalCell, int n, double d, boolean useRSS) {
-		//		System.out.println("Attempting to create Computation in Generate");
 		Line2D.Double longestVector = Process.longestVector(originalCell.getMeasurements(), n, useRSS);
-		//		System.out.println(longestVector.getP1());
-		//		System.out.println(longestVector.getP2());
-		//		Line2D.Double longestVector = Geom.longestVectorWithSignalStrength(originalCell.getMeasurements(), n);
+//		System.out.println("Done with LV");
+
 		DefaultCell heuristicCell1 = Process.findSector(longestVector, originalCell, d);
-		//		System.out.println(heuristicDC1.getCellTowerCoordinates());
-		//		System.out.println(heuristicDC1.getVectorAngle());
-		//		System.out.println(heuristicDC1.getSectorAngle());
+//		System.out.println("Done with HC1");
+
 		DefaultCell heuristicCell2 = Process.findSector(
 				new Line2D.Double(longestVector.getP2(), longestVector.getP1()), originalCell, d);
+//		System.out.println("Done with HC2");
 
 
 		Computation comp = new Computation();
@@ -99,8 +97,8 @@ public class Generate {
 		comp.setHeuristicCell1(heuristicCell1);
 		comp.setHeuristicCell2(heuristicCell2);
 
-		Process.chooseHeuristicDynamicCell(originalCell.getMeasurements(), comp, n);
-		//		System.out.println("Picked a heuristic cell");
+		Process.chooseHeuristicDynamicCell(originalCell.getMeasurements(), comp, n, useRSS);
+//		System.out.println("Chosed a HC");
 
 		return comp;
 	}
@@ -121,8 +119,10 @@ public class Generate {
 
 		if(dist1 <= dist2)
 			return dist1;
-		else
+		else {
+			System.out.println("Generate.error returnerte error for heuristicCell2");
 			return dist2;
+		}
 	}
 	
 	public static double sphericalError(DefaultCell originalCell, DefaultCell chosenHeuristicCell) {

@@ -147,6 +147,8 @@ A \\textit\{measurement\} represents a smart phones registration of data about t
 \
 \\textit\{Her maa jeg gaa gjennom det jeg har skrevet og strukturere seksjoner bedre. Jeg tenker at jeg maa gaa mer i dybden (forklare ting bedre) og finne bedre navn til noen av variablene som forblir gjennom hele prosessen.\}\
 \
+\\section\{Heuristic\}\
+\
 \\section\{Generating test data\}\
 When developing the process for positioning cell towers, we need to be able to generate theoretical test data to test on. When developing the algorithms we want to implement and test it every step of the way to make sure it behaves as desired and required. \
 \
@@ -154,9 +156,9 @@ It is widely known in the software development community that continious testing
 \
 We can apply this concept to our algorithms. We are developing a process or chain of algorithms where each is dependent of the ones that come before. That is why we want to make sure each algorithm works as desired before starting on the next. Generated theoretical test data will help us see how the algorithms work. Since we are generating it ourselves we can decide its characteristics to simulate different scenarios to see how they affect the algorithms. This also lets us calculate the theoretical result in advance to compare with what the algorithms actually computes.\
 \
-Our test data needs to represent cells and measurements. When we generate a cell and its measurements we include the position of the cell tower. This is the most optimal value our algorithms can compute. Real data would not be able to provide the exact position, with some exceptions, but it is important that we generate complete cells so we can compare results from our algorithms to the optimal values. \
+Our test data needs to represent cells and measurements. When we generate a cell and it's measurements we include the position of the cell tower. This is the most optimal value our algorithms can compute. Real data would not be able to provide the exact position, with some exceptions, but it is important that we generate complete cells so we can compare results from our algorithms to the optimal values. \
 \
-We use a Cartesian coordinate system for positioning. Measurements and cell towers will then be given positions in the form of x and y coordinates. A Cartesian coordinate system will almost perfectly simulate the real world. To simulate it perfectly would require an environment that matches the earths circular shape. We choose to use a Cartesian environment for simplicity because the cell sectors are too small for the earth's shape to make a significant difference.\
+We use a two-dimensional Cartesian coordinate system \\cite[page 11]\{calculus\} for positioning. Measurements and cell towers will then be given positions in the form of x and y coordinates. A two-dimensional Cartesian coordinate system will almost perfectly simulate the surface of the real world. To simulate it perfectly would require an environment that matches the earths circular shape. We choose to use a Cartesian environment for simplicity because the cell sectors are too small for the earth's shape to make a significant difference.\
 \
 We also need to set a maximum distance from the cell tower the measurements are allowed to be positioned. In the real world, cells have different distance capabilities and cell phones have different reception capabilities. In addition to this the measurements collected for different cells can appear in a lot of different styles. Sometimes the measurements are really close to the cell tower and sometimes they are really far away from the cell tower. This makes the theoretical maximum distance difficult to set. We will just have to pick a distance that looks ok.\
 \
@@ -263,7 +265,7 @@ To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M
   \\center\
   \\begin\{tabular\}\{|l|\}\
     \\hline\
-    \\textbf\{Algorithm 3:\} Find Sector\\\\\
+    \\textbf\{Algorithm 2:\} Find Sector\\\\\
     \\hline \\hline\
     \\begin\{minipage\}\{1.0\\linewidth\}\
       \\begin\{tabbing\}\
@@ -292,7 +294,7 @@ To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M
   \\center\
   \\begin\{tabular\}\{|l|\}\
     \\hline\
-    \\textbf\{Algorithm 4:\} Compute Sector\\\\\
+    \\textbf\{Algorithm 3:\} Compute Sector\\\\\
     \\hline \\hline\
     \\begin\{minipage\}\{1.0\\linewidth\}\
       \\begin\{tabbing\}\
@@ -642,7 +644,7 @@ Algorithm 5 takes as input $M$, $\\vec\{v\}_\{direction\}$, the two precomputed 
   \\center\
   \\begin\{tabular\}\{|l|\}\
     \\hline\
-    \\textbf\{Algorithm 5:\} Choose heuristic cell when RSS is not present\\\\\
+    \\textbf\{Algorithm 4:\} Choose heuristic cell when RSS is not present\\\\\
     \\hline \\hline\
     \\begin\{minipage\}\{1.0\\linewidth\}\
       \\begin\{tabbing\}\
@@ -686,7 +688,7 @@ For cells where the measurements are equiped with RSS, we use the same concept a
   \\center\
   \\begin\{tabular\}\{|l|\}\
     \\hline\
-    \\textbf\{Algorithm 6:\} Choose heuristic cell when RSS is present\\\\\
+    \\textbf\{Algorithm 5:\} Choose heuristic cell when RSS is present\\\\\
     \\hline \\hline\
     \\begin\{minipage\}\{1.0\\linewidth\}\
       \\begin\{tabbing\}\
@@ -838,17 +840,16 @@ As we can see from table \\ref\{table:radio_distribution\}, the OpenCellID datab
 \\subsection\{Fetching the testdata\}\
 When choosing the subsets to test our process on we keep a similar tactic as when testing it on theoretical data. We want to see how it behaves when different amounts of measurements are available per cell. One problem arised when downloading data by performing HTTP GET requests. The sample values of the cells in the downloadable database is in many cases not equal to the actual number of measurements available when performing HTTP GET requests. For example, if a cell in the downloadable database has the sample value 100, the actual amount of measurements we get for that cell when requesting it through HTTP may be 500. This means it is difficult to request cells with the intended amount of measurements. In addition to this, the maximum number of measurements that can be retrieved for a cell thrugh HTTP is 1000.\
 \
-Before we use the data we need to clean it up. The OpenCellID database contain a lot of bad measurements. First, we look at the location of where the measurement was measured. A cell can not broadcast infinitely far, and some measurements are too far away from the cell tower it belongs to for it to be valid.  See for an example figure \\ref\{fig:badMeasurementLocation\}. Macro-cell is the type of cell with the strongest broadcasting capabilities. The standard range of the macro-cell is 35km \\cite\{maxRange\} so we use this range as a threshold when validating a measurement's distance to the cell tower.\
+Before we use the data we need to clean it up. The OpenCellID database contain a lot of bad measurements. First, we look at the location of where the measurement was measured. A cell can not broadcast infinitely far, and some measurements are too far away from the cell it belongs to for it to be valid. See for an example figure \\ref\{fig:badMeasurementLocation\}. That is why we need the threshold parameter $r_\{include\}$ to be able to only include measurements that are within a certain radius from the cell. Macro-cell is the type of cell with the strongest broadcasting capabilities. The standard range of the macro-cell is 35km \\cite\{maxRange\} so we use this range as a maximum $r_\{include\}$ value when validating a measurement's distance to it's cell. We will also experiment with lower thresholds of this parameter.\
 \
 \\begin\{figure\}[h!]\
-\
 \\centering\
 \\includegraphics[scale=0.6]\{pictures/realCell_badMeasLocation.png\}\
 \\caption\{A cell in Poland with one measurement in Libya\}\
 \\label\{fig:badMeasurementLocation\}\
 \\end\{figure\}\
 \
-Secondly, we need to validate each measurement's signal strength. This is only necessary when we are using RSS to compute $\\vec\{v\}_\{direction\}$. As described in table \\ref\{table:measurement\} the signal strength of a measurement is in either dBm or as defined in \\cite[section 8.5]\{TS127007\}. The dBm value of cell signals is always negative. \\cite[section 8.5]\{TS127007\} defines a mapping from the negative dBm values to positive numbers. See table \\ref\{table:signalStrengthMapping\}.\
+Secondly, we need to validate each measurement's signal strength. As described in table \\ref\{table:measurement\} the signal strength of a measurement is in either dBm or as defined in \\cite[section 8.5]\{TS127007\}. The dBm value of cell signals is always negative. \\cite[section 8.5]\{TS127007\} defines a mapping from the negative dBm values to positive numbers. See table \\ref\{table:signalStrengthMapping\}.\
 \
 \\begin\{table\}[h!]\
   \\center\
@@ -865,29 +866,316 @@ Secondly, we need to validate each measurement's signal strength. This is only n
   \\label\{table:signalStrengthMapping\}\
 \\end\{table\}\
 \
-As we can see from table \\ref\{table:signalStrengthMapping\}, signal strength can have the positive values 0 to 31 in addition to negative values. Measurements with signal strength values larger than 31 will not be considered valid. When running our process on data that includes measurements with signal strength values from 0 to 31, we translate these to dBm values. The formula is simple. If $x$ is a positive signal strength value not smaller than 0 and not larger than 31, the dBm value of $x$ can be calculated like this: $(2\\times x)-113$.\
+As we can see from table \\ref\{table:signalStrengthMapping\}, signal strength can have the positive values 0 to 31 in addition to negative dBm values. Measurements with signal strength values larger than 31 will not be considered valid. When running our process on data that includes measurements with signal strength values from 0 to 31, we translate these to dBm values. The formula is simple. If $x$ is a positive signal strength value not smaller than 0 and not larger than 31, the dBm value of $x$ can be calculated like this: $(2\\times x)-113$.\
 \
-We also need to consider the total number of different RSS values among every measurement belonging to a cell. If we are using RSS to compute $\\vec\{v\}_\{direction\}$ we need at least two different RSS values among the measurements. Since the pairing of measurements in algorithm 1 is done randomly we may need more than two different RSS values, especially when $n$ is small. That is why we use 3 as a threshold when validationg the different signal strength values among a cell's measurements.\
+We also need to consider the total number of different RSS values among every measurement belonging to a cell. If we are using RSS to compute $\\vec\{v\}_\{direction\}$ we need at least two different RSS values among the measurements. Since the pairing of measurements in algorithm 1 is done randomly we may need more than two different RSS values, especially when $n$ is small. That is why we use 3 as a threshold when validationg the different signal strength values among a cell's measurements. In addition to this we also need to control the number of measurements per cell when performing the computations. That is why we operate with a minimum number $M_\{min\}$ and maximum number $M_\{max\}$ of measurements per cell.\
 \
 \\subsection\{Testdata of Exact Cells\}\
-We ended up with a subset containing 2036 random cells with exact cell tower positions. The amount of measurements among the cells ranges from approximately 50 to 1000.\
+We ended up with a subset $S_\{exact\}$ containing 2036 random cells with exact cell tower positions. The amount of measurements among the cells ranges from approximately 70 to 1000. In a practical sense it will look a bit different due to the validation procedure of the cells in advance of the computations.\
+\
+We now summarize the validation procedure of an exact cell. For each measurement belonging to the cell, we approve it if\
+\\begin\{itemize\}\
+\\item the distance to the exact position of the cell tower is less than or equal to $r_\{include\}$.\
+\\item the RSS value is less than or equal to 31 (if it is greater than or equal to 0 and less than or equal to 31, we translate it to the corresponding dBm value).\
+\\end\{itemize\}\
+\
+After evaluating all the measurements belonging to the cell we approve the cell if\
+\\begin\{itemize\}\
+\\item the total number of different RSS values among the measurements is greater than or equal to 3.\
+\\item the total number of measurements is not less than $M_\{min\}$ and not greater than $M_\{max\}$.\
+\\end\{itemize\}\
 \
 \\subsection\{Testdata of Non-Exact Cells\}\
 \
 \
 \
-\\section\{Visualizing with Leaflet\}\
 \
 \\section\{Results\}\
 \\textit\{Her vil jeg liste resultater paa samme maate som under Developing the Process, men paa ekte data. Her tenker jeg og aa inkorporere en del diskusjon. Satser paa aa vaere ferdig med dette i slutten av april.\}\
 \
-We will now start listing the initial results from running our process on real data with exact cell tower positions. We will run the process with both RSS and distance as parameters when generating $\\vec\{v\}_\{direction\}$. For comparison purposes we will also show the error when computing the cell tower position by calculating the average longitude and latitude from the cells' measurements. Recall that this is method currently used by OpenCellId.\
+We will now start listing the initial results from running our process on real data with exact cell tower positions. We will run the process with both RSS and distance as parameters when generating $\\vec\{v\}_\{direction\}$. For comparison purposes we will also show the error when computing the cell tower position by calculating the average longitude and latitude from the cells' measurements. Recall that this is the method currently used by OpenCellId. We will also calculate the average maximum number of measurements $M_\{fit\}$ that can fit inside a cell sector of $120^\{\\circ\}$ when the position of the cell tower is computed by averaging the longitude and latitude of the measurements. To get the most accurate statistical results we will first calculate the average errors over five separate computations for each cell, and use these values to calculate the average errors for the complete subset of cells.\
 \
 \\subsection\{The Haversin Formula\}\
 %bruker n\'e5r vi genererer error og for \'e5 utelukke measurements\
+To calculate distances when dealing with the shape of Tellus, we need a bit more complex formula than the one we use with a regular Cartesion coordinate system. This is called the Haversin Formula \\cite[page 161]\{haversine\}. We will not incorporate this in our process because we are imagining that we still are dealing with a Cartesian coordinate system. But we will use it when calculating the error values and when filtering out measurements that are too far away from the cell tower.\
+\
+\\subsection\{Testing with constant $d_\{backwards\}$ and $r_\{include\}$ on exact cells\}\
+\\label\{sect:constant_d_r\}\
+We now present error values for three chosen subsets with different amount of measurements. We keep $r_\{include\} = 35,000$ and $d_\{backwards\} = 0.001$. The reason for this low $d_\{backwards\}$ is the difference between a Cartesion coordinate system and longitude/latitude coordinates. In a Cartesion coordinate system 0.001 is a very small distance, but in longitude and latitude coordinates it is 111.19 meters.\
+\
+Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 200$ and $M_\{min\} = 100$ resulted in 241 cells.\
+\
+\\begin\{table\}[h!]\
+  \\centering\
+  \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n$&\\cellcolor[gray]\{0.9\}$error_\{distance\}$&\\cellcolor[gray]\{0.9\}$error_\{RSS\}$\\\\\\hline\
+    10 & 7893,32 & 4668,65 \\\\\\hline\
+    20 & 8092,16 & 3961,84\\\\\\hline\
+    40 & 7844,76 & 3844,48\\\\\\hline\
+    80 & 7583,29 & 3871,66\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Errors when running our process\}\
+  \\label\{table:errors_exact_100/200_process\}\
+  \\end\{subtable\}\
+  \\hfill\
+  \\begin\{subtable\}[h]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$error_\{average\}$&\\cellcolor[gray]\{0.9\}$M_\{fit\}$\\\\\\hline\
+    2844,64 & 84\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Error and $M_\{fit\}$ when averaging longitudes and latitudes\}\
+  \\label\{table:errors_exact_100/200_averaging\}\
+  \\end\{subtable\}\
+  \\caption\{Errors from computations on $S_\{exact\}$ where $M_\{max\} = 200$ and $M_\{min\} = 100$\}\
+  \\label\{table:errors_exact_100/200\}\
+\\end\{table\}\
+\
+Recall that the error is, for a set of cells, the average distance from computed cell towers to the exact position of the cell towers. Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\} show three error values. $error_\{distance\}$ is the error when running our process and using distance to compute $\\vec\{v\}_\{direction\}$. $error_\{RSS\}$ is the error when running our process and using RSS to compute $\\vec\{v\}_\{direction\}$. $error_\{average\}$ is the error when computing the cell tower positions by averaging the longitudes and latitudes of the measurements belonging to the different cells, and $M_\{fit\}$ is the average maximum number of measurements that can fit in a cell sector of $120^\{\\circ\}$ when averaging the cell tower position. As we can see, averaging gives the lowest error, but the small $M_\{fit\}$ tells us that this way of computing is not right. Our process gives the lowest error when we use RSS to compute $\\vec\{v\}_\{direction\}$.\
+\
+Table \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_450/550_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 550$ and $M_\{min\} = 450$ resulted in 266 cells.\
+\
+\\begin\{table\}[h!]\
+  \\centering\
+  \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n$&\\cellcolor[gray]\{0.9\}$error_\{distance\}$&\\cellcolor[gray]\{0.9\}$error_\{RSS\}$\\\\\\hline\
+    10 & 13,752.19 & 10,140.19 \\\\\\hline\
+    20 & 14,330.62 & 9,915.33\\\\\\hline\
+    40 & 14,548.81 & 9,680.71\\\\\\hline\
+    80 & 14,162.72 & 9,728.50\\\\\\hline\
+    160 & 13,474.37 & 9,773.45\\\\\\hline\
+    320 & 13,153.45 & 9,779.82\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Errors when running our process\}\
+  \\label\{table:errors_exact_450/550_process\}\
+  \\end\{subtable\}\
+  \\hfill\
+  \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$error_\{average\}$&\\cellcolor[gray]\{0.9\}$M_\{fit\}$\\\\\\hline\
+    2,150.76 & 296\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Error and $M_\{fit\}$ when averaging longitudes and latitudes\}\
+  \\label\{table:errors_exact_450/550_averaging\}\
+  \\end\{subtable\}\
+  \\caption\{Errors from computations on $S_\{exact\}$ where $M_\{max\} = 450$ and $M_\{min\} = 550$\}\
+  \\label\{table:errors_exact_450/550\}\
+\\end\{table\}\
+\
+Table \\ref\{table:errors_exact_900/1000_process\} and \\ref\{table:errors_exact_900/1000_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 1000$ and $M_\{min\} = 900$ resulted in 308 cells.\
+\
+\\begin\{table\}[h!]\
+  \\centering\
+  \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n$&\\cellcolor[gray]\{0.9\}$error_\{distance\}$&\\cellcolor[gray]\{0.9\}$error_\{RSS\}$\\\\\\hline\
+    10 & 16,369.03 & 13,268.17 \\\\\\hline\
+    20 & 17,250.61 & 12,982.57\\\\\\hline\
+    40 & 17,600.04 & 12,722.09\\\\\\hline\
+    80 & 17,212.46 & 12,679.18\\\\\\hline\
+    160 & 16,613.71 & 12,684.28\\\\\\hline\
+    320 & 16,093.17 & 12,782.64\\\\\\hline\
+    640 & 15,784.28 & 13,210.35\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Errors when running our process\}\
+  \\label\{table:errors_exact_900/1000_process\}\
+  \\end\{subtable\}\
+  \\hfill\
+  \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$error_\{average\}$&\\cellcolor[gray]\{0.9\}$M_\{fit\}$\\\\\\hline\
+    2,706.83 & 611\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Error and $M_\{fit\}$ when averaging longitudes and latitudes\}\
+  \\label\{table:errors_exact_900/1000_averaging\}\
+  \\end\{subtable\}\
+  \\caption\{Errors from computations on $S_\{exact\}$ where $M_\{max\} = 900$ and $M_\{min\} = 1000$\}\
+  \\label\{table:errors_exact_900/1000\}\
+\\end\{table\}\
+\
+As we can see there are no strong correlation between the value of $n$ and $error_\{distance\}$ or $n$ and $error_\{RSS\}$. In alle three tables, $error_\{distance\}$ and $error_\{RSS\}$ changes very little between the different $n$ values, and there seems to be no pattern to predict whether the error values will increase or decrease when scaling $n$. Though we might argue that both $error_\{distance\}$ and $error_\{RSS\}$ will be slightly lower at maximum $n$ than minimum $n$.\
+\
+These unpredictable error values tells us several things. First, our randomization procedure when computing $\\vec\{v\}_\{direction\}$ in algorithm 1 works. Even with a low $n$ and large measurement pool per cell, the algorithm manages to produce a viable vector. We can see this by looking at the small and unpredictable changes in error as $n$ increases. Secondly, error values increases when $M_\{max\}$ and $M_\{min\}$ increases. This means that a larger number of measurements per cell produce larger error values. This again means that, on average, a cell with a large pool of measurements has them spread out on a larger area than a cell with a smaller pool of measurements. This conclusion is based on how much algorithm 2 has to increase the length of $\\vec\{v\}_\{direction\}$ to be able to compute a cell sector that every measurement fit inside.\
+\
+The error values produced when averaging measurement's longitudes and latitudes is also unpredictable as the error decrease from table \\ref\{table:errors_exact_100/200_averaging\} to table \\ref\{table:errors_exact_450/550_averaging\}, but increase from table \\ref\{table:errors_exact_450/550_averaging\} to table \\ref\{table:errors_exact_900/1000_averaging\}. This unpredictability in all error values tells us that the measurements are randomly distributed in the cell area and that there are no clear pattern for every cell. To improve our process we need to analyze some cells and consider some of the more regular patterns in our algorithms. We also need to pay attention to the measurements that most likely are causing the high errors. These are probably the ones furthest away or far from any other measurements belong to the cell.\
+\
+\\subsection\{Scaling $d_\{backwards\}$ and measuring time on exact cells\}\
+\\label\{section:scalingD_timing\}\
+We will now do experiments with $d_\{backwards\}$ and time the process. A small $d_\{backwards\}$ is one of the factors that potentially can increase the time it takes to perform a computation due to the increased number of iterations in algorithm 2. Recall that this algorithm extends $\\vec\{v\}_\{direction\}$ for each iteration every measurement does not fit inside the produced cell sector. We use five different $d_\{backwards\}$ values; 0.1, 0.01, 0.001, 0.0001 and 0.00001. We chose these values to learn which scale is neccessary for extending $\\vec\{v\}_\{direction\}$ to produce good results. The purpose is to learn the highest value for $d_\{backwards\}$ we can use and still obtain good error values. We still keep $r_\{include\} = 35,000$.\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/process_100-200_35000.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$ results in 241 cells\}.\
+\\label\{fig:scaling-d_100/200_errors\}\
+\\end\{figure\}\
+\
+Figure \\ref\{fig:scaling-d_100/200_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 241 cells where $M_\{max\}=200$ and $M_\{min\}=100$. The notation \\textit\{LV=Distance, n=80\} means the respective line shows the error when $\\vec\{v\}_\{direction\}$ was computed using distance and $n$ equals 80. As we can see there is a significant difference between $error_\{distance\}$ for all $n$ and $error_\{RSS\}$ for all $n$. Computing $\\vec\{v\}_\{direction\}$ using RSS clearly produce lower errors than when using\
+distance. \
+\
+Another interesting observation is that the error values for $d_\{backwards\}=0.01$ and $d_\{backwards\}=0.00001$ is approximately equal. This means we can with good conscience use $d_\{backwards\}=0.01$ and still produce viable cell tower positions. This is also very relevant with regard to time constraints. We want a computation of a cell tower position to take as little time as possible so we wish to use the largest $d_\{backwards\}$ as possible.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n$&\\cellcolor[gray]\{0.9\}$time_\{distance\}$&\\cellcolor[gray]\{0.9\}$time_\{RSS\}$\\\\\\hline\
+    10 & 0.01209s & 0.02383s\\\\\\hline\
+    20 & 0.00825s & 0.02401s\\\\\\hline\
+    40 & 0.00538s & 0.02397s\\\\\\hline\
+    80 & 0.00307s & 0.02320s\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Average time to compute the cell tower positions related to the error values in figure \\ref\{fig:scaling-d_100/200_errors\} when $d_\{backwards\}=0.00001$\}\
+  \\label\{table:scaling-d_100/200_time\}\
+\\end\{table\}\
+\
+Table \\ref\{table:scaling-d_100/200_time\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_100/200_errors\}, but only for $d_\{backwards\}=0.00001$. When computations with $d_\{backwards\}=0.00001$ are the most time demanding and these times are so small, it is not neccessary to include average times for larger $d_\{backwards\}$.\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/process_450-550_35000.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=550$ and $M_\{min\}=450$ results in 266 cells\}.\
+\\label\{fig:scaling-d_450/550_errors\}\
+\\end\{figure\}\
+\
+Figure \\ref\{fig:scaling-d_450/550_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 266 cells where $M_\{max\}=550$ and $M_\{min\}=450$. We can see that the error values behave similarly as in table \\ref\{fig:scaling-d_100/200_errors\} with respect to $d_\{backwards\}$. The $error_\{distance\}$ values are spread out more with respect to $Error$, but there are no pattern where the lowest $n$ shows the highest error value and the largest $n$ shows the lowest error value or vice versa. This means the reason for the spread simply must be caused by the heuristic choices throughout the process.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n$&\\cellcolor[gray]\{0.9\}$time_\{distance\}$&\\cellcolor[gray]\{0.9\}$time_\{RSS\}$\\\\\\hline\
+    10 & 0.08789s & 0.13032s\\\\\\hline\
+    20 & 0.06726s & 0.12592s\\\\\\hline\
+    40 & 0.03974s & 0.12742s\\\\\\hline\
+    80 & 0.03316s & 0.12964s\\\\\\hline\
+    160 & 0.02521s & 0.12904s\\\\\\hline\
+    320 & 0.01779s & 0.12828s\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Average time to compute the cell tower positions related to the error values in figure \\ref\{fig:scaling-d_450/550_errors\} when $d_\{backwards\}=0.00001$\}\
+  \\label\{table:scaling-d_450/550_time\}\
+\\end\{table\}\
+\
+Table \\ref\{table:scaling-d_450/550_time\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_450/550_errors\}, but only for $d_\{backwards\}=0.00001$. The average times are still too small to raise concern.\
+\
+Figure \\ref\{fig:scaling-d_900/1000_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 308 cells where $M_\{max\}=1000$ and $M_\{min\}=900$. Except for the increase in error as pointed out in section \\ref\{sect:constant_d_r\}, the $error_\{distance\}$ and $error_\{RSS\}$ values behaves similarly to the values in figure \\ref\{fig:scaling-d_100/200_errors\} and \\ref\{fig:scaling-d_450/550_errors\}.\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/process_900-1000_35000.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=1000$ and $M_\{min\}=900$ results in 308 cells\}.\
+\\label\{fig:scaling-d_900/1000_errors\}\
+\\end\{figure\}\
 \
 \
 \
+\\begin\{table\}[h!]\
+  \\centering\
+  \\begin\{subtable\}[t]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n \\backslash d_\{backwards\}$&\\cellcolor[gray]\{0.9\}$0.00001$&\\cellcolor[gray]\{0.9\}$0.0001$\\\\\\hline\
+    10 & 0.42886s & 0.04195s\\\\\\hline\
+    20 & 0.28581s & 0.03092s\\\\\\hline\
+    40 & 0.19582s & 0.02006s\\\\\\hline\
+    80 & 0.14640s & 0.01534s\\\\\\hline\
+    160 & 0.12031s & 0.01343s\\\\\\hline\
+    320 & 0.10992s & 0.01256s\\\\\\hline\
+    640 & 0.06617s & 0.01761s\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Average times for $error_\{distance\}$\}\
+  \\label\{table:scaling-d_900/1000_time_distance\}\
+  \\end\{subtable\}\
+  \\hfill\
+  \\begin\{subtable\}[t]\{0.45\\textwidth\}\
+  \\centering\
+  \\begin\{tabular\}\{|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$n \\backslash d_\{backwards\}$&\\cellcolor[gray]\{0.9\}$0.00001$&\\cellcolor[gray]\{0.9\}$0.0001$\\\\\\hline\
+    10 & 0.53701s & 0.05630s\\\\\\hline\
+    20 & 0.50846s & 0.05061s\\\\\\hline\
+    40 & 0.50531s & 0.05117s\\\\\\hline\
+    80 & 0.52693s & 0.04994s\\\\\\hline\
+    160 & 0.50782s & 0.05300s\\\\\\hline\
+    320 & 0.53684s & 0.05617s\\\\\\hline\
+    640 & 0.52266s & 0.06393s\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{Average times for $error_\{RSS\}$\}\
+  \\label\{table:scaling-d_900/1000_time_RSS\}\
+  \\end\{subtable\}\
+  \\caption\{Average time to compute the cell tower positions related to the $error_\{distance\}$ and $error_\{RSS\}$ values in figure \\ref\{fig:scaling-d_900/1000_errors\} when $d_\{backwards\}=0.00001$ and $d_\{backwards\}=0.0001$\}\
+  \\label\{table:scaling-d_900/1000_time\}\
+\\end\{table\}\
+\
+Table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_900/1000_errors\} for $d_\{backwards\}=0.00001$ and $d_\{backwards\}=0.0001$. For these errors we have chosen to include the average times for $d_\{backwards\}=0.0001$ because the average times for $d_\{backwards\}=0.00001$ are getting quite large. Especially for the $error_\{RSS\}$ values. As explained earlier in this section, setting $d_\{backwards\}$ equal to 0.00001 seems to be redundant with respect to the error size. Table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} proves that it is not worth using such a low $d_\{backwards\}$ when larger values of $d_\{backwards\}$ produce equally low errors, with resptect to time.\
+\
+% Average tid for error_RSS er st\'f8rre enn for error_distance i alle tre measurementsst\'f8rrelse intervaller. I tillegg holder average tid for error_RSS seg relativt konstant mens average til for error_distance synker n\'e5r n blir st\'f8rre (gjelder for alle tre measurementsst\'f8rrelse intervaller).\
+\
+\\subsection\{Scaling $r_\{include\}$\}\
+How will the error values look if we use lower values of $r_\{include\}$? Recall that the value of $r_\{include\}$ decides if a measurement is too far away from the cell tower or not. Initially it was to help exclude invalid measurements as figure \\ref\{fig:badMeasurementLocation\} shows an example of. Forcing our process to exclude measurements that are valid but just far away from the cell tower, will most likely produce lower error values as algorithm 2 will not need to extend $\\vec\{v\}_\{direction\}$ as far to be able to fit every measurement still included. For these computations we set $d_\{backwards\}$ to 0.0001. We will not time these computations since we can be sure we will not exceed the times given in section \\ref\{section:scalingD_timing\} as we are not lowering $d_\{backwards\}$.\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/scalingR_100-200.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$.\}\
+\\label\{fig:scalingR_100/200_errors\}\
+\\end\{figure\}\
+\
+Figure \\ref\{fig:scalingR_100/200_errors\} shows $error_\{distance\}$ and $error_\{RSS\}$ values for computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$. For these computations the cells used vary for each reduction of $r_\{include\}$. This is because we are excluding more and more measurements for a cell the lower $r_\{include\}$ gets. This means that a cell with too many measurements at $r_\{include\}=35,000$ might have the right amount at $r_\{include\}=25,000$, and a cell with the right amount of measurements at $r_\{include\}=15,000$ might have too few at $r_\{include\}=10,000$. The number of cells used to compute cell tower positions for each value of $r_\{include\}$ is given in parenthesis below the value of $r_\{include\}$.\
+\
+Since the measurement pool for a cell is changing when $r_\{include\}$ is decreasing, the value of $error_\{average\}$ is also changing. The line in the graph called \\textit\{Averaged\} shows the value of $error_\{average\}$ for each value of $r_\{include\}$. In addition, the value of $M_\{fit\}$ changes. The value for each $r_\{include\}$ for all three measurement size intervals is shown in table \\ref\{table:scalingR_fit\}.\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/scalingR_450-550.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=550$ and $M_\{min\}=450$.\}\
+\\label\{fig:scalingR_450/550_errors\}\
+\\end\{figure\}\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/scalingR_900-1000.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=1000$ and $M_\{min\}=900$.\}\
+\\label\{fig:scalingR_900/1000_errors\}\
+\\end\{figure\}\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabular\}\{|c|c|c|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}$r_\{include\} \\backslash M_\{min\}-M_\{max\}$&\\cellcolor[gray]\{0.9\}100-200&\\cellcolor[gray]\{0.9\}450-550&\\cellcolor[gray]\{0.9\}900-1000\\\\\\hline\
+    35,000 & 84 & 296 & 611\\\\\\hline\
+    25,000 & 83 & 294 & 600\\\\\\hline\
+    15,000 & 83 & 289 & 597\\\\\\hline\
+    10,000 & 82 & 280 & 596\\\\\\hline\
+    5,000 & 83 & 275 & 602\\\\\\hline\
+    2,000 & 83 & 276 & 577\\\\\\hline\
+  \\end\{tabular\}\
+  \\caption\{$M_\{fit\}$ for each value of $r_\{include\}$ when $M_\{max\}=200$ and $M_\{min\}=100$, $M_\{max\}=550$ and $M_\{min\}=450$ and $M_\{max\}=1000$ and $M_\{min\}=900$.\}\
+  \\label\{table:scalingR_fit\}\
+\\end\{table\}\
+\
+\
+% litt f\'e5 celler ved for noen r_include\
+% bruk av RSS gir bedre vektor ved h\'f8y r_include\
+% dist og RSS n\'e6rmer seg n\'e5r r minker\
+% riktig \'e5 ekskludere gyldige measurements til fordel for god errer?\
+\
+\\subsection\{What is affecting the errors?\}\
 \
 \
 \

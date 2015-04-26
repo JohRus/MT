@@ -82,6 +82,9 @@ public class Geom {
 
 	public static boolean pointIsWithinSectorAngleBoundries(Point2D.Double p, Point2D.Double origo, 
 			double angle1, double angle2) {
+//		System.out.println("Point: "+p.getX()+"-"+p.getY());
+//		System.out.println("Heuristic origo: "+origo.getX()+"-"+origo.getY());
+//		System.out.println("Vector: "+angle1+ "===== sector: "+angle2);
 		Line2D.Double vectorToP = new Line2D.Double(origo, p);
 		double vectorToPAngle = Math.toDegrees(angle(vectorToP));
 		if(angle2 > 360 && vectorToPAngle >= 0.0 && vectorToPAngle <= (angle2-360)) {
@@ -182,7 +185,7 @@ public class Geom {
 	}
 	
 	public static void main(String[] args) {
-		double d = sphericalDistance(5.314961, 60.388360, 5.330980, 60.381447);
+		double d = sphericalDistance(5.314961, 60.388360, 5.314961, 60.389360);
 		System.out.println(d);
 	}
 }

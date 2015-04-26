@@ -6,62 +6,236 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.MappingJsonFactory;
+import org.javatuples.Pair;
+import org.javatuples.Quartet;
 
 import logic.Generate;
 import logic.Geom;
 import logic.Process;
+import logic.Stopwatch;
+import gui.Charts4J;
 import infrastructure.Computation;
 import infrastructure.DefaultCell;
 import infrastructure.Measurement;
 
 public class Controller {
 
-	public void errors(
+	public void errorsScalingD(
 			List<OpenCellIdCell> cells, 
 			int maxMeasurements, 
 			int minMeasurements, 
 			int[] nArray, 
-			double[] dArray) {
+			double[] dArray,
+			double r) {
 		
-		System.out.printf("Cells\tMaxMeas\tMinMeas\tn\td\terror_distance\terror_RSS\terror_average\n");
+		HashMap<double[], String> chartMap = new HashMap<double[], String>();
+		
+		System.out.printf("Cells\tMaxMeas\tMinMeas\tr\tn\td\terror_dist\ttime_dist\terror_RSS\ttime_RSS\terror_average\taverage_fit\n");
+		
+		Pair<Double, Integer> averagedError = errorByAverage(cells);
+		double errorAverage = averagedError.getValue0();
+		int averageFit = averagedError.getValue1();
+		
 		
 		for(int i = 0; i < nArray.length; i++) {
 			int n = nArray[i];
+			
+			double[] distanceDataPoints = new double[dArray.length];
+			double[] rssDataPoints = new double[dArray.length];
 
 			for(int j = 0; j < dArray.length; j++) {
 				double d = dArray[j];
-
-				double errorDistance = 0.0;
-				double errorRSS = 0.0;
-				double errorAverage = 0.0;
 				
-				for(OpenCellIdCell cell : cells) {
-					Computation compDistance = Generate.computation(cell, n, d, false);
-					Computation compRSS = Generate.computation(cell, n, d, true);
-					DefaultCell cellByAveraging = Process.averageCellTowerPosition(cell.getMeasurements());
-					
-					
-					errorDistance += Generate.sphericalError(cell, compDistance.getHeuristicCell1());
-					errorRSS += Generate.sphericalError(cell, compRSS.getHeuristicCell1());
-					errorAverage += Generate.sphericalError(cell, cellByAveraging);
+				Quartet<Double, Double, Double, Double> data = errors(cells, n, d);
+				
+				double errorDistance = data.getValue0();
+				double timeDistance = data.getValue1();
+				double errorRSS = data.getValue2();
+				double timeRSS = data.getValue3();
+				
 
-				}
-				errorDistance = errorDistance/cells.size();
-				errorRSS = errorRSS/cells.size();
-				errorAverage = errorAverage/cells.size();
-
-				System.out.printf("%d\t%d\t%d\t%d\t%.3f\t%.2f\t%.2f\t%.2f\n", cells.size(), maxMeasurements, minMeasurements, n, d, errorDistance, errorRSS, errorAverage);
+				System.out.printf("%d\t%d\t%d\t%.1f\t%d\t%.5f\t%.2f \t%.5f\t\t%.2f \t%.5f\t\t%.2f\t\t%d\n", cells.size(), maxMeasurements, minMeasurements, r, n, d, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit);
+			
+				distanceDataPoints[j] = errorDistance;
+				rssDataPoints[j] = errorRSS;
 			}
+			chartMap.put(distanceDataPoints, new String("LV=Distance, n="+n));
+			chartMap.put(rssDataPoints, new String("LV=RSS, n="+n));
 		}
+		
+		String chartURL = Charts4J.errorChartScalingD(chartMap);
+		System.out.println("\n"+chartURL);
+	}
+	
+	public void errorsScalingR(
+			String fullFileName, 
+			int maxMeasurements, 
+			int minMeasurements,
+			int[] nArray, 
+			double d,
+			double[] rArray) {
+		
+		
+		double[][] dataPointsDistanceError = new double[rArray.length][nArray.length];
+		double[][] dataPointsRSSError = new double[rArray.length][nArray.length];
+		
+		double[][] dataPointsDistanceTime = new double[rArray.length][nArray.length];
+		double[][] dataPointsRSSTime = new double[rArray.length][nArray.length];
+		
+		double[] dataPointsAveragedError = new double[rArray.length];
+		int[] dataPointsAveragedFit = new int[rArray.length];
+		
+		int[] cellsSizes = new int[rArray.length];
+		
+
+		for(int i = 0; i < rArray.length; i++) {
+			double currR = rArray[i];
+			
+			List<OpenCellIdCell> cells = parseCells(
+					fullFileName,
+					maxMeasurements,
+					minMeasurements,
+					currR);
+			
+			cellsSizes[i] = cells.size();
+			
+			for(int j = 0; j < nArray.length; j++) {
+				int n = nArray[j];
+				
+				Quartet<Double, Double, Double, Double> data = errors(cells, n, d);
+				
+				double errorDistance = data.getValue0();
+				double timeDistance = data.getValue1();
+				double errorRSS = data.getValue2();
+				double timeRSS = data.getValue3();
+				
+				dataPointsDistanceError[i][j] = errorDistance;
+				dataPointsRSSError[i][j] = errorRSS;
+				
+				dataPointsDistanceTime[i][j] = timeDistance;
+				dataPointsRSSTime[i][j] = timeRSS;
+			}
+			
+			Pair<Double, Integer> averagedError = errorByAverage(cells);
+			
+			double errorAverage = averagedError.getValue0();
+			int averageFit = averagedError.getValue1();
+			
+			dataPointsAveragedError[i] = errorAverage;
+			dataPointsAveragedFit[i] = averageFit;
+		}
+		
+		System.out.printf("Cells\tMaxMeas\tMinMeas\td\tn\tr\terror_dist\ttime_dist\terror_RSS\ttime_RSS\terror_average\taverage_fit\n");
+		
+		HashMap<double[], String> dataPointsMap = new HashMap<double[], String>();
+		
+		for(int j = 0; j < nArray.length; j++) {
+			int n = nArray[j];
+			
+			double[] dataPointsErrorDistance = new double[rArray.length];
+			double[] dataPointsErrorRSS = new double[rArray.length];
+			
+			for(int i = 0; i < rArray.length; i++) {
+				
+				int cellSize = cellsSizes[i];
+				double r = rArray[i];
+				double errorDistance = dataPointsDistanceError[i][j];
+				double timeDistance = dataPointsDistanceTime[i][j];
+				double errorRSS = dataPointsRSSError[i][j];
+				double timeRSS = dataPointsRSSTime[i][j];
+				double errorAverage = dataPointsAveragedError[i];
+				int averageFit = dataPointsAveragedFit[i];
+				
+				System.out.printf("%d\t%d\t%d\t%.4f\t%d\t%.1f\t%.2f \t%.5f\t\t%.2f \t%.5f\t\t%.2f\t\t%d\n", cellSize, maxMeasurements, minMeasurements, d, n, r, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit);
+
+				dataPointsErrorDistance[i] = errorDistance;
+				dataPointsErrorRSS[i] = errorRSS;
+			}
+			
+			dataPointsMap.put(dataPointsErrorDistance, "LV=Distance, n="+n);
+			dataPointsMap.put(dataPointsErrorRSS, "LV=RSS, n="+n);
+			
+		}
+		
+		dataPointsMap.put(dataPointsAveragedError, "Averaged");
+		
+		String chartURL = Charts4J.errorChartScalingR(dataPointsMap, cellsSizes);
+		System.out.println("\n"+chartURL);
+		
+	}
+	
+	private Quartet<Double, Double, Double, Double> errors(List<OpenCellIdCell> cells, int n, double d) {
+		double errorDistance = 0.0;
+		double errorRSS = 0.0;
+		
+		double timeDistance = 0.0;
+		double timeRSS = 0.0;
+		
+		for(OpenCellIdCell cell : cells) {
+			
+			double errorCellDistance = 0.0;
+			double errorCellRSS = 0.0;
+			
+			Stopwatch stopWatchCellDistance = new Stopwatch();
+			Stopwatch stopWatchCellRSS = new Stopwatch();
+			
+			for(int k = 0; k < 5; k++) {
+				stopWatchCellDistance.start();
+				Computation compDistance = Generate.computation(cell, n, d, false);
+				stopWatchCellDistance.stop();
+				
+				stopWatchCellRSS.start();
+				Computation compRSS = Generate.computation(cell, n, d, true);
+				stopWatchCellRSS.stop();
+				
+				errorCellDistance += Generate.sphericalError(cell, compDistance.getHeuristicCell1());
+				errorCellRSS += Generate.sphericalError(cell, compRSS.getHeuristicCell1());
+			}
+			
+			errorCellDistance = errorCellDistance/5.0;
+			errorCellRSS = errorCellRSS/5.0;
+			
+			errorDistance += errorCellDistance;
+			errorRSS += errorCellRSS;
+			
+			timeDistance += stopWatchCellDistance.averageTime();
+			timeRSS += stopWatchCellRSS.averageTime();
+					
+		}
+		errorDistance = errorDistance/cells.size();
+		errorRSS = errorRSS/cells.size();
+		
+		timeDistance = timeDistance/cells.size();
+		timeRSS = timeRSS/cells.size();
+		
+		return new Quartet<Double, Double, Double, Double>(errorDistance, timeDistance, errorRSS, timeRSS);
+	}
+	
+	private Pair<Double, Integer> errorByAverage(List<OpenCellIdCell> cells) {
+		double errorAverage = 0.0;
+		int averageFit = 0;
+		
+		for(OpenCellIdCell cell : cells) {
+			DefaultCell cellByAveraging = Process.averageCellTowerPosition(cell.getMeasurements());
+			
+			errorAverage += Generate.sphericalError(cell, cellByAveraging);
+			averageFit += cellByAveraging.getMeasurements().size();
+		}
+		
+		errorAverage = errorAverage/cells.size();
+		averageFit = averageFit/cells.size();
+		
+		return new Pair<Double, Integer>(errorAverage, averageFit);
 	}
 
-	public List<OpenCellIdCell> parseCells(String fullFileName, int maxMeasurements, int minMeasurements) {
+	public List<OpenCellIdCell> parseCells(String fullFileName, int maxMeasurements, int minMeasurements, double r) {
 //		String fileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples81-120.json";
 		
 		List<OpenCellIdCell> cells = null;
@@ -84,7 +258,7 @@ public class Controller {
 						
 						for(JsonNode measurementNode : measurementsNode) {
 							Measurement measurement = createMeasurement(measurementNode);
-							if(measurementIsValid(measurement, cell))
+							if(measurementIsValid(measurement, cell, r))
 								measurements.add(measurement);
 						}
 						cell.setMeasurements(measurements);
@@ -99,7 +273,7 @@ public class Controller {
 			else 
 				System.out.println("cellsNode was not array");
 
-			System.out.println("Parsed "+cells.size()+" cells including measurements");
+			System.out.println("Parsed "+cells.size()+" cells including measurements with r_include = "+r);
 			System.out.println();
 						
 
@@ -170,7 +344,7 @@ public class Controller {
 		return new OpenCellIdMeasurement(coords, signalStrength);
 	}
 	
-	private boolean measurementIsValid(Measurement measurement, OpenCellIdCell cell) {
+	private boolean measurementIsValid(Measurement measurement, OpenCellIdCell cell, double r) {
 		
 		double distanceToCellTower = Geom.sphericalDistance(
 				cell.getCellTowerCoordinates().getX(), 
@@ -178,7 +352,7 @@ public class Controller {
 				measurement.getCoordinates().getX(), 
 				measurement.getCoordinates().getY());
 		
-		if(distanceToCellTower > 350000.0) {
+		if(distanceToCellTower > r) {
 			return false;
 		}
 		
@@ -194,17 +368,18 @@ public class Controller {
 		return true;
 	}
 	
-	private boolean cellIsValid(DefaultCell defaultCell, int maxMeasurements, int minMeasurements) {
-		if(defaultCell.getMeasurements().size() > maxMeasurements)
-			return false;
-		else if(defaultCell.getMeasurements().size() < minMeasurements)
-			return false;
+	private boolean cellIsValid(OpenCellIdCell cell, int maxMeasurements, int minMeasurements) {
 		
 		HashSet<Integer> signalValues = new HashSet<Integer>();
-		for(Measurement m : defaultCell.getMeasurements()) {
+		for(Measurement m : cell.getMeasurements()) {
 			signalValues.add(m.getSignalStrength());
 		}
 		if(signalValues.size() <= 3)
+			return false;
+		
+		if(cell.getMeasurements().size() > maxMeasurements)
+			return false;
+		else if(cell.getMeasurements().size() < minMeasurements)
 			return false;
 		
 		return true;
@@ -215,19 +390,30 @@ public class Controller {
 	public static void main(String[] args) {
 		String fullFileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples67-120_2036.json";
 		
-		int maxMeasurements = 300;
-		int minMeasurements = 100;
 		
+		int maxMeasurements = 1000;
+		int minMeasurements = 900;
+//		double r = 2000.0;
+//		
 		Controller controller = new Controller();
-		List<OpenCellIdCell> cells = controller.parseCells(
-				fullFileName,
-				maxMeasurements,
-				minMeasurements);
-		controller.errors(cells, maxMeasurements, minMeasurements, new int[]{10,20,40,80}, new double[]{0.001});
+//		List<OpenCellIdCell> cells = controller.parseCells(
+//				fullFileName,
+//				maxMeasurements,
+//				minMeasurements,
+//				r);
+//		controller.errorsScalingD(cells, maxMeasurements, minMeasurements, new int[]{10}, new double[]{0.0001}, r);
+		// 
 		
+		controller.errorsScalingR(fullFileName, maxMeasurements, minMeasurements, new int[]{10,20,40,80,160,320,640}, 0.0001, new double[]{35000.0,25000.0,15000.0,10000.0,5000.0,2000.0});
+		// 
 //		Controller controller = new Controller();
 //		List<OpenCellIdCell> cells = controller.parseCells(fullFileName, maxMeasurements, minMeasurements);
 //		controller.writeToFileForVisualizing(cells, 10, true);
+		
+		
+		
+		
+		
 		
 	}
 
