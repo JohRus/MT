@@ -82,7 +82,8 @@ public class Generate {
 
 	public static Computation computation(DefaultCell originalCell, int n, double d, boolean useRSS) {
 		Line2D.Double longestVector = Process.longestVector(originalCell.getMeasurements(), n, useRSS);
-//		System.out.println("Done with LV");
+//		System.out.println("1: "+longestVector.getP1());
+//		System.out.println("2: "+longestVector.getP2());
 
 		DefaultCell heuristicCell1 = Process.findSector(longestVector, originalCell, d);
 //		System.out.println("Done with HC1");

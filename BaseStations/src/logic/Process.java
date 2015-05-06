@@ -467,19 +467,11 @@ public class Process {
 		return new Line2D.Double(pointA, pointB);
 	}
 	
-	public static DefaultCell averageCellTowerPosition(List<Measurement> measurements) {
-		double sumLon = 0.0;
-		double sumLat = 0.0;
+	public static DefaultCell averagedCell(List<Measurement> measurements) {
 		
-		for(Measurement m : measurements) {
-			sumLon += m.getCoordinates().getX();
-			sumLat += m.getCoordinates().getY();
-		}
+		Point2D.Double averagedCellTowerPos = averagedCellTowerPosition(measurements);
 		
-		double lon = sumLon/measurements.size();
-		double lat = sumLat/measurements.size();
-		
-		DefaultCell averageCell = new DefaultCell(new Point2D.Double(lon, lat), 0.0, 120.0);
+		DefaultCell averageCell = new DefaultCell(averagedCellTowerPos, 0.0, 120.0);
 		
 		double vectorAngle = 0.0;
 		
@@ -512,18 +504,38 @@ public class Process {
 //		return new DefaultCell(new Point2D.Double(lon, lat), 120.0);
 	}
 	
+	public static Point2D.Double averagedCellTowerPosition(List<Measurement> measurements) {
+		double sumLon = 0.0;
+		double sumLat = 0.0;
+		
+		for(Measurement m : measurements) {
+			sumLon += m.getCoordinates().getX();
+			sumLat += m.getCoordinates().getY();
+		}
+		
+		double lon = sumLon/measurements.size();
+		double lat = sumLat/measurements.size();
+		
+		return new Point2D.Double(lon, lat);
+	}
+	
 	public static void main(String[] args) {
 		String fullFileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples67-120_2036.json";
 		opencellid.Controller cont = new opencellid.Controller();
-		List<OpenCellIdCell> cells = cont.parseCells(fullFileName, 135, 130, 59675);
+		List<OpenCellIdCell> cells = cont.parseCells(fullFileName, 240, 0, 1000000);
 		for(OpenCellIdCell cell : cells) {
 			if(cell.getMcc() == 262 && cell.getNet() == 7 && cell.getArea() == 30605 && cell.getCell() == 342) {
 				System.out.println(cell.getMeasurements().size());
+				System.out.println(cell.getCellTowerCoordinates());
+				System.out.println(cell.getAverageSignal());
+				System.out.println(cell.getRange());
+				System.out.println(cell.getSamples());
+				System.out.println(cell.getRadio());
 				
-				DefaultCell averagedCell = Process.averageCellTowerPosition(cell.getMeasurements());
-				System.out.println("\n"+averagedCell.getCellTowerCoordinates());
-				System.out.println(averagedCell.getMeasurements().size());
-				System.out.println(averagedCell.getVectorAngle());
+//				DefaultCell averagedCell = Process.averageCellTowerPosition(cell.getMeasurements());
+//				System.out.println("\n"+averagedCell.getCellTowerCoordinates());
+//				System.out.println(averagedCell.getMeasurements().size());
+//				System.out.println(averagedCell.getVectorAngle());
 				
 //				for(Measurement m : cell.getMeasurements()) {
 //					if(Geom.sphericalDistance(cell.getCellTowerCoordinates().getX(), cell.getCellTowerCoordinates().getY(), m.getCoordinates().getX(), m.getCoordinates().getY()) > 9450) {

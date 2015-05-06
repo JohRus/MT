@@ -28,12 +28,14 @@ import infrastructure.Measurement;
 public class Controller {
 
 	public void errorsScalingD(
-			List<OpenCellIdCell> cells, 
+			String fullFileName, 
 			int maxMeasurements, 
 			int minMeasurements, 
 			int[] nArray, 
 			double[] dArray,
 			double r) {
+		
+		List<OpenCellIdCell> cells = parseCells(fullFileName, maxMeasurements, minMeasurements, r);
 		
 		HashMap<double[], String> chartMap = new HashMap<double[], String>();
 		
@@ -223,7 +225,7 @@ public class Controller {
 		int averageFit = 0;
 		
 		for(OpenCellIdCell cell : cells) {
-			DefaultCell cellByAveraging = Process.averageCellTowerPosition(cell.getMeasurements());
+			DefaultCell cellByAveraging = Process.averagedCell(cell.getMeasurements());
 			
 			errorAverage += Generate.sphericalError(cell, cellByAveraging);
 			averageFit += cellByAveraging.getMeasurements().size();
@@ -236,7 +238,6 @@ public class Controller {
 	}
 
 	public List<OpenCellIdCell> parseCells(String fullFileName, int maxMeasurements, int minMeasurements, double r) {
-//		String fileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples81-120.json";
 		
 		List<OpenCellIdCell> cells = null;
 		
@@ -287,7 +288,7 @@ public class Controller {
 		return cells;
 	}
 	
-	public void writeToFileForVisualizing(List<OpenCellIdCell> cells, int cellsToWrite, boolean useRSS) {
+	public void writeRandomCellsToFileForVisualizing(List<OpenCellIdCell> cells, int cellsToWrite, boolean useRSS) {
 		HashSet<Integer> items = Generate.randomInts(cellsToWrite, cells.size(), null);
 		
 		for(int i : items) {
@@ -307,6 +308,80 @@ public class Controller {
 		
 		System.out.println("Wrote "+cellsToWrite+" computations to files");
 		
+	}
+	
+	public void writeCellWithComputationsToFilesForVisualization(
+			String fullFileName,
+			int maxMeas, 
+			int minMeas,
+			int mcc,
+			int net,
+			int area,
+			long cellid,
+			int n,
+			double d,
+			double r) {
+		
+		List<OpenCellIdCell> cells = parseCells(fullFileName, maxMeas, minMeas, r);
+		for(OpenCellIdCell cell :  cells) {
+			if(cell.getMcc() == mcc && cell.getNet() == net && cell.getArea() == area && cell.getCell() == cellid) {
+				
+				System.out.println("Measurements: "+cell.getMeasurements().size());
+				
+				Computation compDist = Generate.computation(cell, n, d, false);
+				Computation compRSS = Generate.computation(cell, n, d, true);
+				Point2D.Double averagedCellTowerPos = Process.averagedCellTowerPosition(cell.getMeasurements());
+				DefaultCell averagedCell = new DefaultCell(averagedCellTowerPos, 120.0);
+				
+				double errorDist = Generate.sphericalError(cell, compDist.getHeuristicCell1());
+				double errorRSS = Generate.sphericalError(cell, compRSS.getHeuristicCell1());
+				double errorAver = Generate.sphericalError(cell, averagedCell);
+				
+				String newFileNameFirst = JSONFile.filePathDesktop;
+				newFileNameFirst += cell.getMcc()+"-"+cell.getNet()+"-"+cell.getArea()+"-"+cell.getCell();
+				
+				String newFileNameDist = newFileNameFirst + "_distance"+JSONFile.fileFormat;
+				String newFileNameRSS = newFileNameFirst + "_RSS"+JSONFile.fileFormat;
+				String newFileNameAver = newFileNameFirst + "_averaged"+JSONFile.fileFormat;
+				
+				JSONFile jsonFile = new JSONFile(newFileNameDist);
+				jsonFile.writeResultForMap(cell, compDist.getHeuristicCell1(), errorDist);
+				
+				jsonFile = new JSONFile(newFileNameRSS);
+				jsonFile.writeResultForMap(cell, compRSS.getHeuristicCell1(), errorRSS);
+				
+				jsonFile = new JSONFile(newFileNameAver);
+				jsonFile.writeResultForMap(cell, averagedCell, errorAver);
+				
+				
+				System.out.println("Done writin cells to files");
+				return;
+			}
+		}
+	}
+	
+	public void cellError() {
+		List<OpenCellIdCell> cells = parseCells(
+				"/Users/Johan/Documents/CellTowers/cells_exact_samples67-120_2036.json", 
+				150, 
+				100,
+				50000);
+		for(OpenCellIdCell cell : cells) {
+			if(cell.getMcc() == 262 && cell.getNet() == 7 && cell.getArea() == 30605 && cell.getCell() == 342) {
+				System.out.println("Measurements: "+cell.getMeasurements().size());
+				
+				Computation compDist = Generate.computation(cell, 40, 0.0001, false);
+				Computation compRSS = Generate.computation(cell, 40, 0.0001, true);
+				
+				double errorDist = Generate.sphericalError(cell, compDist.getHeuristicCell1());
+				double errorRSS = Generate.sphericalError(cell, compRSS.getHeuristicCell1());
+				
+				System.out.println("LV=Dist: "+compDist.getHeuristicCell1().getCellTowerCoordinates()+", error: "+errorDist);
+				System.out.println("LV=RSS: "+compRSS.getHeuristicCell1().getCellTowerCoordinates()+", error: "+errorRSS);
+				
+				break;
+			}
+		}
 	}
 	
 	protected static OpenCellIdCell createCell(JsonNode n) {
@@ -390,30 +465,32 @@ public class Controller {
 	public static void main(String[] args) {
 		String fullFileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples67-120_2036.json";
 		
-		
-		int maxMeasurements = 1000;
-		int minMeasurements = 900;
-//		double r = 2000.0;
-//		
+		int maxMeasurements = 300;
+		int minMeasurements = 100;
+		double r = 100000.0;
+	
 		Controller controller = new Controller();
-//		List<OpenCellIdCell> cells = controller.parseCells(
-//				fullFileName,
-//				maxMeasurements,
-//				minMeasurements,
-//				r);
 //		controller.errorsScalingD(cells, maxMeasurements, minMeasurements, new int[]{10}, new double[]{0.0001}, r);
-		// 
+				
+//		controller.errorsScalingR(fullFileName, maxMeasurements, minMeasurements, new int[]{10,20,40,80,160,320,640}, 0.0001, new double[]{35000.0,25000.0,15000.0,10000.0,5000.0,2000.0});
 		
-		controller.errorsScalingR(fullFileName, maxMeasurements, minMeasurements, new int[]{10,20,40,80,160,320,640}, 0.0001, new double[]{35000.0,25000.0,15000.0,10000.0,5000.0,2000.0});
-		// 
-//		Controller controller = new Controller();
-//		List<OpenCellIdCell> cells = controller.parseCells(fullFileName, maxMeasurements, minMeasurements);
-//		controller.writeToFileForVisualizing(cells, 10, true);
+//		List<OpenCellIdCell> cells = controller.parseCells(fullFileName, maxMeasurements, minMeasurements, r);
+//		controller.writeRandomCellsToFileForVisualizing(cells, 10, true);
+		
+		controller.writeCellWithComputationsToFilesForVisualization(
+				fullFileName, 
+				maxMeasurements, 
+				minMeasurements, 
+				260, 
+				1, 
+				29001, 
+				22095, 
+				80, 
+				0.0001, 
+				r);
 		
 		
-		
-		
-		
+//		controller.cellError();
 		
 	}
 

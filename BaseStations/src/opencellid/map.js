@@ -57,7 +57,7 @@ function readText(filePath) {
         //}
 
         var ctMarker = L.icon({
-			iconUrl: '/Users/Johan/Workspace/MT/BaseStations/resources/ct.png',
+			iconUrl: '/Users/Johan/Workspace/MT/BaseStations/resources/ct_alt.png',
 			iconSize: [25, 41],
 			iconAnchor: [13, 41]
 		});
@@ -79,6 +79,13 @@ function readText(filePath) {
     			opacity: 0.9,
     			fillColor: '#1A4982',
    				fillOpacity: 0.5
+			}).addTo(map);
+
+			L.polyline(
+				[[json.measurements[i].lat, json.measurements[i].lon],
+				[json.cell.lat, json.cell.lon]], 
+				{color: '#666',
+				weight: 1
 			}).addTo(map);
         }
 

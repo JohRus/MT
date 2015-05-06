@@ -21,8 +21,8 @@ public class JSONFile {
 	FileWriter fw;
 	JsonGenerator jg;
 
-	public JSONFile(String fullFileName) {
-		initGenerator(fullFileName);
+	public JSONFile(String newFileName) {
+		initGenerator(newFileName);
 //		initGenerator(filePathCellTowers+fileName+fileFormat);
 	}
 
