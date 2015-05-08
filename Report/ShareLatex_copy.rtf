@@ -21,6 +21,7 @@
 \\usepackage\{caption,subcaption\}\
 \\usepackage\{tabularx\}\
 %\\usepackage\{tikz\}\
+\\usepackage\{tocbibind\}\
 \\usepackage\{hyperref\}\
 \\hypersetup\{\
     %colorlinks=black, % make the links colored\
@@ -68,19 +69,78 @@
 \}\
 \
 \
-\\title\{Master Thesis\}% \\\\ \\vspace\{2 mm\} \{\\large Group 4\}\}\
-\\author\{\
-    Rusvik, Johan Alexander\\\\\
-    \\texttt\{johan.rusvik@student.uib.no\}\
-\}\
-\\date\{\\today\}\
+%\\title\{Master Thesis\}% \\\\ \\vspace\{2 mm\} \{\\large Group 4\}\}\
+%\\author\{\
+%    Rusvik, Johan Alexander\\\\\
+%    \\texttt\{johan.rusvik@student.uib.no\}\
+%\}\
+%\\date\{\\today\}\
+\
+\\pagenumbering\{roman\}\
 \
 \\begin\{document\}\
 \
-\\maketitle\
+%\\maketitle\
+\
+\\begin\{titlepage\}\
+\
+\\newcommand\{\\HRule\}\{\\rule\{\\linewidth\}\{0.5mm\}\} % Defines a new command for the horizontal lines, change thickness here\
+\
+\\center % Center everything on the page\
+\
+\\includegraphics[scale=1.5]\{pictures/uib-logo.jpg\}\\\\[0.4cm] % Include a department/university logo - this will require the graphicx package\
+\
+%\\textsc\{\\LARGE Bergen University\}\\\\[1.5cm] % Name of your university/college\
+\\textsc\{\\Large Department of Informatics\\\\Algorithms\}\\\\[0.7cm] % Major heading such as course name\
+\{ \\Large \\bfseries Master Thesis\}\\\\[0.5cm]\
+%\\textsc\{\\large Minor Hading\}\\\\[0.5cm] % Minor heading such as course title\
+\
+\\HRule \\\\[0.4cm]\
+\{ \\huge \\bfseries Title\}\\\\[0.4cm] % Title of your document\
+\\HRule \\\\[1.5cm]\
+\
+%\\begin\{minipage\}\{0.4\\textwidth\}\
+%\\begin\{flushleft\} \\large\
+\\emph\{Author:\}\\\\[0.5cm]\
+\{\\Large Johan Alexander Nordstrand \\textsc\{Rusvik\}\}\\\\[2cm] % Your name\
+%\\end\{flushleft\}\
+%\\end\{minipage\}\
+%~\
+%\\begin\{minipage\}\{0.4\\textwidth\}\
+%\\begin\{flushright\} \\large\
+%\\emph\{Supervisor:\} \\\\\
+%Prof. Jan Arne \\textsc\{Telle\} % Supervisor's Name\
+%\\end\{flushright\}\
+%\\end\{minipage\}\\\\[4cm]\
+\
+% If you don't want a supervisor, uncomment the two lines below and remove the section above\
+%\\Large \\emph\{Author:\}\\\\\
+%John \\textsc\{Smith\}\\\\[3cm] % Your name\
+\
+\
+\{\\large \\today\}%\\\\[3cm] % Date, change the \\today to a set date if you want to be precise\
+\
+\
+\\vfill % Fill the rest of the page with whitespace\
+\
+\\end\{titlepage\}\
+\
+\\begin\{abstract\}\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\
+\
+\\vfill % Fill the rest of the page with whitespace\
+\\end\{abstract\}\
+\
+\\renewcommand\{\\abstractname\}\{Acknowledgements\}\
+\\begin\{abstract\}\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\
+\
+\\vfill % Fill the rest of the page with whitespace\
+\\end\{abstract\}\
 \
 \\newpage\
 \\tableofcontents\
+%\\setcounter\{page\}\{1\}\
 \
 \\newpage\
 \\listoffigures\
@@ -90,9 +150,11 @@
 \
 \\newpage\
 \\listofalgorithms\
+\\addcontentsline\{toc\}\{chapter\}\{List of Algorithms\}\
 \
 \\newpage\
 \\chapter\{Introduction\}\
+\\pagenumbering\{arabic\}\
 \
 \\section\{Motivation and background\}\
 No one can reject that instant communication through mobile devices are becoming more and more a part of our society. The number of devices connected to the cellular network is increasing and the demand for good reception is growing. In urban areas the general citizen might get frustrated if she is disconnected from the network unwillingly for just a second. Users expect to be able to surf the internet inside car tunnels made of concrete, or make phone calls below the ground while riding the subway. But how is this possible? To communicate with the outside world through the cell phone requires the phone to be connected to the cellular network, which means it needs to receive a signal from somewhere. These signals originate from antennas that are placed all over the world. How many antennas are there and where are they located?\
@@ -212,8 +274,26 @@ We could not find any work relating to our problem of positioning cell towers ba
 \
 \\newpage\
 \\chapter\{Developing the algorithm\}\
+\\label\{chapt:developing\}\
 \
-In this chapter we develop the theoretical process for guessing the location of cell towers. We start by exploring the notion of heuristics and establish this as the basis for our algorithm. We then define the theoretical test data before introducing the sub-algorithms. We test the algorithm step by step. We start with small angles and work our way up towards $120^\{\\circ\}$. We then introduce RSS and attempt to optimize algorithm further.\
+In this chapter we develop the theoretical process for guessing the location of cell towers. We start by exploring the notion of heuristics and establish this as the basis for our algorithm. We then define the theoretical test data before introducing the sub-routines, which are briefly summarized in table \\ref\{table:subRoutines\}. We test the algorithm step by step. We start with small angles and work our way up towards $120^\{\\circ\}$. We then introduce RSS and attempt to optimize the algorithm further.\
+\
+\\begin\{table\}[h!]\
+  \\center\
+  \\begin\{tabularx\}\{\\textwidth\}\{|p\{2.2cm\}|c|p\{6cm\}|c|\}\
+    \\hline\
+    \\cellcolor[gray]\{0.9\}Sub-routine&\\cellcolor[gray]\{0.9\}Abbrev.&\\cellcolor[gray]\{0.9\}Description&\\cellcolor[gray]\{0.9\}Sect.\\\\\\hline\
+    Longest Vector based on Distance & D-LV & Computes a vector between the two measurements that are furthest apart from each other, chosen from $n^2$ randomly picked pairs of measurements. & \\ref\{sect:D-LV\} \\\\\\hline\
+    Longest Vector based on RSS & RSS-LV & Computes a vector between the two measurements whose difference in RSS values are the largest, chosen from $n^2$ randomly picked pairs of measurements. & \\ref\{sect:sectorAngle120\} \\\\\\hline\
+    Find Sector & FS & Based on the output from D-LV or RSS-LV, finds the cell sector every measurement fit within. & \\ref\{sect:FS\} \\\\\\hline\
+    Compute Sector & CS & Used within FS. Computes the actual cell sectors based on the output from D-LV or RSS-LV. & \\ref\{sect:FS\} \\\\\\hline\
+    Cell Direction based on Distance & D-CD & Based on distance, picks the best out of two estimated cell tower positions with corresponding cell sectors. & \\ref\{sect:D-CD\} \\\\\\hline\
+    Cell Direction based on RSS & RSS-CD & Based on RSS, picks the best out of two estimated cell tower positions with corresponding cell sectors. & \\ref\{sect:RSS-CD\} \\\\\\hline\
+    \
+  \\end\{tabularx\}\
+  \\caption\{Sub-routines of the CTPCM algorithm\}\
+  \\label\{table:subRoutines\}\
+\\end\{table\}\
 \
 \\section\{Heuristics\}\
 With this algorithm we want to find good estimates of positions of cell towers. We want to start this chapter by exploring what such a good estimate is.\
@@ -229,6 +309,7 @@ In our case we must accept an approximate solution as we can not know for sure w
 \\item The algorithm must be able to compute a good cell tower position given only a random subset of the measurements, given potential time constraints.\
 \\end\{itemize\}\
 \
+We choose to exclude one rule that might seem obvious: \\textit\{The algorithm must find a cell tower position such that the corresponing cell sector does not include measurements from other cells.\} To include this rule seems only natural if we assume that the cell tower a measurement belongs to is the closest cell tower to that measurement. Can we make this assumption? First, we must take into consideration the direction of the cell. If the closest cell tower to a mobile device has it's cell sector pointing in the opposite direction, the mobile device would not be able to receive that cell's signal. Second, there are buildings, hills and other obstacles to consider that may block the signal completely. Third, the cellular network contains cells from several different cellular network providers, even within small areas. If a mobile device subscribes to one specific cellular network provider, it would not be able to receive a signal from a cell belonging to a different cellular network provider, even if the cell was closer. We therefore conclude we cannot make the stated assumption.\
 \
 \
 %avstand fra cell tower to measurements\
@@ -249,9 +330,10 @@ We also need to set a maximum distance from the cell tower the measurements are 
 The actual generation of test data happens as follows. The cell is generated including cell tower position and sector boundaries. We then generate measurements with random positions within the cell sector.\
 \
 \\section\{Positioning Cell Towers Theoretically\}\
-To predict the positon of a cell tower as effective as possible in real time, we need to develop heuristic algorithms that work on a random subset of the measurements available $M$. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower we start by computing a linear vector $\\vec\{v\}_\{direction\}$ from the measurements in $M$. This will give us a good impression of which direction the cell tower is pointing, but only works well on small sector angles. This is done with one of the two variations of the Longest Vector algorithm. After the computation of $\\vec\{v\}_\{direction\}$ we propose two possible cell tower positions, one for each endpoint of $\\vec\{v\}_\{direction\}$. The criteria for a valid cell is that every $m \\in M$ fits inside it. We use the Find Sector algorithm for this. At the end of the chapter we pick one of the two cell tower positions.\
+To predict the positon of a cell tower as effective as possible in real time, we need to develop a heuristic algorithm that work on a random subset of the measurements available $M$. For some cells, not many measurements exist and we may have to use all of them. To predict the positon of the cell tower we start by computing a linear vector $\\vec\{v\}_\{direction\}$ from the measurements in $M$. This will give us a good impression of which direction the cell tower is pointing, but only works well on small sector angles. This is done with one of the two variations of the Longest Vector algorithm. After the computation of $\\vec\{v\}_\{direction\}$ we propose two possible cell tower positions, one for each endpoint of $\\vec\{v\}_\{direction\}$. The criteria for a valid cell is that every $m \\in M$ fits within it. We use the Find Sector algorithm for this. At the end of the chapter we pick one of the two cells by using one of the two variants of the Cell Direction algorithm.\
 \
 \\section\{Small Angles: Longest Vector based on Distance (D-LV)\}\
+\\label\{sect:D-LV\}\
 \
 \\begin\{figure\}[h!]\
 \\label\{fig:10deg20m\}\
@@ -340,6 +422,7 @@ D-LV takes as input $M$ and $n$. First it declares the variables $ep_1$, $ep_2$ 
 \
 \
 \\section\{Find Sector (FS)\}\
+\\label\{sect:FS\}\
 After retrieving $\\vec\{v\}_\{direction\}$ we have two suggested solutions for which direction the cell tower is pointing. It is either from $ep_1$ to $ep_2$, or from $ep_2$ to $ep_1$. We compute solution cells for both directions. To describe the process we look at the solution where the direction of the cell tower points from $ep_1$ to $ep_2$.\
 \
 To provide a valid solution we need to make sure every measurement $m$ $\\in$ $M$ fits inside the sector. The Find Sector algorithm starts by computing a heuristic cell sector $C_\{heuristic\}$ with the same angle as the original cell sector, with $ep_1$ as the current estimated cell tower position, such that $\\vec\{v\}_\{direction\}$ lies in the middle of the sector. That is, the distance from a point on $\\vec\{v\}_\{direction\}$ to both boundries of $C_\{heuristic\}$ is equal for every point on $\\vec\{v\}_\{direction\}$. The computation of $C_\{heuristic\}$ is done with the Compute Sector (CP) algorithm with $\\vec\{v\}_\{direction\}$ and sector angle $\\alpha$ as input. After this first computation of $C_\{heuristic\}$ we do several iterations. For each iteration, if every $m$ does not fit inside $C_\{heuristic\}$ we extend $\\vec\{v\}_\{direction\}$ by $ep_1$ by a constant length $d_\{backwards\}$, and compute $C_\{heuristic\}$ with the new origin. The iterations stop when every $m$ fit inside $C_\{heuristic\}$.\
@@ -745,6 +828,7 @@ $n \\backslash r_\{cz\}$ & 20 & 30 & 40 & 50 & 60 \\\\ \\hline\
 We have now come to the point where we have to pick one of the two heuristic cells we have proposed. We look at the case where the measurements are equipped with RSS and the case where they are not, though the methods are very similar. \
 \
 \\subsection\{RSS is not available\}\
+\\label\{sect:D-CD\}\
 We first look at the case where the measurements are not equipped with RSS. In a cell sector, the further away from the cell tower we get, the distance between the two vectors forming the edges of the cell sector, $v_1$ and $v_2$, increases. The perfect vector $v$ to give an impression of which direction the cell tower is pointing would intersect with the cell tower and go between $v_1$ and $v_2$ such that the distance from $v$ to $v_1$ and the distance from $v$ to $v_2$ always are equal. This means that measurements further away from the cell tower may be further away from $v$, than those close to it. Now consider the two endpoints of $v$, $ep_1$ and $ep_2$, and our randomly distributed measurements. Let $ep_1$ be the endpoint on top of the cell tower, $m_1$ be those measurements closer to $ep_1$ than $ep_2$, and $m_2$ be those measurements closer to $ep_2$ than $ep_1$. The mean of the least possible distances from the points in $m_1$ to $v$ are very likely to be smaller than the mean of the least possible distances from the points in $m_2$ to $v$, which means we can presume that $ep_1$ is the endpoint of $v$ that is on top of the cell tower.\
 \
 We do not have such a perfect direction vector $v$, but we use $\\vec\{v\}_\{direction\}$ instead. This will not provide us with the exact location of the cell tower, but some point relatively close to it, depending on the sector angle. When we have calculated which endpoint of $\\vec\{v\}_\{direction\}$ that is most likely to be closest to the cell tower we simply pick the heuristic cell whos cell tower position is closest to this endpoint.\
@@ -796,6 +880,7 @@ As discussed earlier in section \\ref\{sect:greaterAngles\} and \\ref\{sect:sect
 The second parameter is the distance between the measurement closest to the cell tower and the one furthest away. If this distance is larger than the largest distance across the cell between two other measurements, we may still get a good $\\vec\{v\}_\{direction\}$, even when our sector angle is $120^\{\\circ\}$. Of course, if there are few of these measurements that provide such a distance, to choose from, we need to be lucky with the random pairing of measurements in the Longest Vector algorithm.\
 \
 \\subsection\{RSS is available\}\
+\\label\{sect:RSS-CD\}\
 For cells where the measurements are equipped with RSS, we use the same concept as for when the measurements are not equipped with RSS. We take advantage of the fact that measurements closer to the cell tower most likely have a stronger RSS than those further away from it. We call the algorithm \\textit\{Cell Direction based on RSS\} (RSS-CD) Instead of using the mean of the least possible distances we use the mean of the RSS for the points in $m_1$ and $m_2$. If the mean of the RSS for $m_1$ is higher than the mean of the RSS for $m_2$, then $ep_1$ is on top of the cell tower. We again use $\\vec\{v\}_\{direction\}$ and pick the heuristic cell whos cell tower position is closest to the endpoint closest to the cell tower. See algorithm \\ref\{alg:RSS-CD\}.\
 \
 \\begin\{algorithm\}[h!]\
@@ -843,7 +928,7 @@ Up until now we have only considered cells individually. There are several ways 
 We can apply the third step in the Bounding Technique described in section \\ref\{sect:paper1\}, Tower-based Regrouping, to our problem. In this step, cells that share a cell tower is considered together, thus simulating a $360^\{\\circ\}$ cell. When the measurements within these cells are combined, the Weighted Centroid algorithm can guess the cell tower location with good accuracy. The problem with the data provided by OpenCellID is that we cannot know which cells share a cell tower. OpenCellID states that the identification number for each cell says something about which cell tower it belongs to, but there are too many identification schemes among the cellular network providers in each country to be able to know how to look for it. In addition to this, it is impossible to know if cells are missing or just do not exist as OpenCellID do not have an overview of every cell in the world. When searching for a cell to complete a $360^\{\\circ\}$ radius around a cell tower we cannot know whether it exists in the database or not.\
 \
 \\paragraph\{Grid or Hexagon\}\
-Another way to improve the guessed estimates is to look at the guessed positions of several cell towers within an area. We evaluate the guessed position of each individual cell tower relative to the other cell towers. Recall that section \\ref\{sect:paper2\} describes a technique where each cell tower is placed on a grid, and every cell tower's position is re-evaluated when a new one is added to the grid. In addition, we described a theoretical structure of cell towers as a system of hexagons in section \\ref\{sect:cell\}. Evaluating cells as an organized system helps us guess individual cell tower positions based on more than individual cell data. The measurements provides valuable information for this. Lets assume that the closest cell tower to a large subset of the measurements within a cell, is the cell tower the measurements belongs to. Then, if we have guessed another cell tower's position to be closer to each measurement in that subset, we get a contradiction. See figure \\ref\{fig:cellSystem-overlap\}. Naturally, the direction of the cell sectors also has to be considered. See figure \\ref\{fig:cellSystem-close\}. Thus, the cell tower positions can be adjusted so that the system of cells is in harmony. We must not take an organised cell system for granted. For example, taking every GSM cell within an area that belongs to a specific cellular network provider is a good approach.\
+Another way to improve the guessed estimates is to look at the guessed positions of several cell towers within an area. We evaluate the guessed position of each individual cell tower relative to the other cell towers. Recall that section \\ref\{sect:paper2\} describes a technique where each cell tower is placed on a grid, and every cell tower's position is re-evaluated when a new one is added to the grid. In addition, we described a theoretical structure of cell towers as a system of hexagons in section \\ref\{sect:cell\}. Evaluating cells as an organized system helps us guess individual cell tower positions based on more than individual cell data. The measurements provide valuable information for this. Lets assume that the closest cell tower to a large subset of the measurements within a cell, is the cell tower the measurements belongs to. Then, if we have guessed another cell tower's position to be closer to each measurement in that subset, we get a contradiction. See figure \\ref\{fig:cellSystem-overlap\}. Naturally, the direction of the cell sectors also has to be considered. See figure \\ref\{fig:cellSystem-close\}. Thus, the cell tower positions can be adjusted so that the system of cells is in harmony. We must not take an organised cell system for granted. For example, taking every GSM cell within an area that belongs to a specific cellular network provider is a good approach.\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -865,7 +950,7 @@ Another way to improve the guessed estimates is to look at the guessed positions
 \\end\{figure\}\
 \
 \\section\{Chapter Review\}\
-In this chapter we have step by step developed a heuristic algorithm to estimate positions of cell towers, and generated theoretical data to test our algorithm on. We have done our utmost best to simulate real data provided by OpenCellID to see how the algorithm performs. Algorithm \\ref\{alg:CTPCM\} is the result of the sub-algorithms developed throughout this chapter. In the next chapter we will use the CTPCM algorithm to estimate positions based on real data provided by OpenCellID.\
+In this chapter we have step by step developed a heuristic algorithm to estimate positions of cell towers, and generated theoretical data to test our algorithm on. We have done our utmost best to simulate real data provided by OpenCellID to see how the algorithm performs. Algorithm \\ref\{alg:CTPCM\} is the result of the sub-routines developed throughout this chapter. An overview of the sub-routines can be found in table \\ref\{table:subRoutines\}. In the next chapter we will use the CTPCM algorithm to estimate positions based on real data provided by OpenCellID.\
 \
 \\begin\{algorithm\}[h!]\
   \\center\
@@ -1048,7 +1133,7 @@ When choosing the subsets to test the CTPCM algorithm on we keep a similar tacti
 Before we use the data we need to clean it up due to the fact that the OpenCellID database contains a lot of bad measurements. \
 \
 \\paragraph\{$r_\{include\}$ validates distance from measurement to cell tower\}\
-We look at the location of where the measurement was measured. A cell can not broadcast infinitely far, and some measurements are too far away from the cell it belongs to for it to be valid. See for an example figure \\ref\{fig:badMeasurementLocation\}. That is why we introduce the radius threshold parameter $r_\{include\}$. If a measurement is further away from the cell tower position than the value of $r_\{include\}$, we do not consider it when running the CTPCM algorithm. Macro-cell is the type of cell with the strongest broadcasting capabilities. The standard range of the macro-cell is 35km \\cite\{maxRange\} so we use this range as a maximum $r_\{include\}$ value when validating a measurement's distance to it's cell. We will also experiment with lower thresholds of this parameter.\
+We look at the location of where the measurement was measured. A cell can not broadcast infinitely far, and some measurements are too far away from the cell it belongs to for it to be valid. See for an example figure \\ref\{fig:badMeasurementLocation\}. That is why we introduce the radius threshold parameter $r_\{include\}$. If a measurement is further away from the cell tower position than the value of $r_\{include\}$, we do not consider it when running the CTPCM algorithm. Macro-cell is the type of cell with the strongest broadcasting capabilities. The standard range of the macro-cell is 35,000 meters \\cite\{maxRange\}, so we use this distance as a maximum $r_\{include\}$ value when validating a measurement's distance to it's cell. We will also experiment with lower thresholds of this parameter.\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -1082,8 +1167,8 @@ We need to consider the total number of different RSS values among every measure
 \\paragraph\{$M_\{min\}$ and $M_\{max\}$\}\
 We need to control the number of measurements per cell when performing the computations. That is why we operate with a minimum number $M_\{min\}$ and maximum number $M_\{max\}$ of measurements per cell when we want to run the CTPCM algorithm on a subset of cells.\
 \
-\\section\{Testdata of Exact Cells\}\
-We ended up with a subset $S_\{exact\}$ containing 2036 random cells with exact cell tower positions. The amount of measurements among the cells ranges from approximately 70 to 1000. In a practical sense it will look a bit different due to the validation procedure of the cells in advance of the computations.\
+\\section\{Testdata: Exact Cells\}\
+For our testdata of cells with exact cell tower positions, we downloaded a random set $S_\{exact\}$ which contains 2036 cells where the changeable value is 0. The amount of measurements among the cells ranges from approximately 70 to 1000. In a practical sense it will look a bit different due to the validation procedure of the cells in advance of the computations.\
 \
 We now summarize the validation procedure of an exact cell. For each measurement belonging to the cell, we approve it if\
 \\begin\{itemize\}\
@@ -1097,24 +1182,94 @@ After evaluating all the measurements belonging to the cell we approve the cell 
 \\item the total number of measurements is not less than $M_\{min\}$ and not greater than $M_\{max\}$.\
 \\end\{itemize\}\
 \
-\\section\{Testdata of Non-Exact Cells\}\
+\\section\{Testdata: Non-Exact Cells\}\
+\\textit\{Her er planen aa definere testdata der cellene ikke har eksakte cell tower posisjoner\}\
 \
+\\section\{Chapter Review\}\
+In this chapter we have analyzed the real cell and measurement data provided by OpenCellID. We have discussed the process of how to retrieve it from OpenCellID's database, and what we must do with it before actually using it to test the CTPCM algorithm. We conclude that this dataset is large, complex, and has many flaws. Understanding the complexity and problems with this large pool of data was very time-demanding.\
 \
 \
 \\chapter\{Results\}\
 \
-We will now start listing the initial results from running the CTPCM algorithm on real data with exact cell tower positions. We will run the algorithm with both RSS and distance as parameters when generating $\\vec\{v\}_\{direction\}$. We include results for distance as this can be an alternative when RSS is not available. For comparison purposes we will also show the error when computing the cell tower position by calculating the average longitude and latitude from the cells' measurements. Recall that this is the method currently used by OpenCellId. We will also calculate the average maximum number of measurements $M_\{fit\}$ that can fit inside a cell sector of $120^\{\\circ\}$ when the position of the cell tower is computed by averaging the longitude and latitude of the measurements. To get the most accurate statistical results we will first calculate the average errors over five separate computations for each cell, and use these values to calculate the average errors for the complete subset of cells.\
+We will now estimate cell tower positions of real cells by using the CTPCM algorithm. We will run the algorithm with both RSS and distance as parameters when generating $\\vec\{v\}_\{direction\}$. We include results for distance as this can be an alternative when RSS is not available. We ask the reader to think of it as two tracks of sub-routines within the same algorithm. See Appendix \\ref\{table:subRoutines\} The sub-routines for the two tracks are:\
+\\begin\{description\}\
+\\item[Track 1] D-LV $\\rightarrow$ FS $\\rightarrow$ D-CD\
+\\item[Track 2] RSS-LV $\\rightarrow$ FS $\\rightarrow$ RSS-CD\
+\\end\{description\}\
+\
+For comparison purposes we will also show the error when computing the cell tower position by calculating the average longitude and latitude from the cells' measurements. Recall that this is the method currently used by OpenCellId. We will also calculate the average maximum number of measurements that can fit inside a cell sector of $120^\{\\circ\}$ when the position of the cell tower is computed by averaging the longitude and latitude of the measurements. For each error computation, each cell will be run through the CTPCM algorithm five times to ensure the best statistical results. The average error value of these five times will be passed on to the average error value of all the cells.\
+\
+\\section\{Error values\}\
+Recall that the error is, for a set of cells, the average distance from estimated cell tower positions to the exact cell tower positions.\
+\
+\\paragraph\{$error_\{distance\}$\}\
+This is the error when running the CTPCM algorithm and using distance to compute $\\vec\{v\}_\{direction\}$ in D-LV. \
+\
+\\paragraph\{$error_\{RSS\}$\}\
+This is the error when running the CTPCM algorithm and using RSS to compute $\\vec\{v\}_\{direction\}$ in RSS-LV. \
+\
+\\paragraph\{$error_\{average\}$\}\
+This is the error when estimating the cell tower positions by averaging the longitudes and latitudes of the measurements belonging to the different cells.\
+\
+\\paragraph\{$M_\{fit\}$\}\
+This is the average maximum number of measurements that fits within the cell sectors of $120^\{\\circ\}$ when averaging the cell tower positions.\
+\
+\\section\{Parameters for the error computations\}\
+\\label\{sect:parameters\}\
+There are several parameters we wish to test when generating error values of cell tower positions from the CTPCM algorithm.\
+\
+\\paragraph\{$n$\}\
+In the sub-routines D-LV and RSS-LV, $n^2$ pairs of measurements are compared to find the best $\\vec\{v\}_\{direction\}$. We generate error values from different values of $n$ to learn if a small $n$ gives as good results as a large $n$.\
+\
+\\paragraph\{$d_\{backwards\}$\}\
+In the sub-routine FS, $\\vec\{v\}_\{direction\}$ is extended by a distance of $d_\{backwards\}$ until every measurement of a cell fit within the cell sector. We generate error values from different values of $d_\{backwards\}$ to learn if a large $d_\{backwards\}$ gives as good results as a small $d_\{backwards\}$. For tests on real data, the value of $d_\{backwards\}$ is on a much lower scale than when we did theoretical tests in chapter \\ref\{chapt:developing\}. The reason for such a low $d_\{backwards\}$ is the difference between a Cartesion coordinate system and longitude/latitude coordinates. For example, in a Cartesion coordinate system 0.001 is a very small distance, but in longitude and latitude coordinates it is 111.19 meters.\
+\
+\\paragraph\{$r_\{include\}$\}\
+When validating measurements, we decline those that are further away than $r_\{include\}$ meters. Even though measurements are valid, just far away, we want to exclude them from the computation to see how it affects the error values.\
+\
+\\paragraph\{$M_\{min\}$ and $M_\{max\}$\}\
+When generating errors we will run the CTPCM algorithm on datasets of cells whose measurement pool size is greater than or equal to $M_\{min\}$, and less than or equal to $M_\{max\}$. From this we wish to learn how the measurement pool size affects the error values.\
 \
 \\section\{The Haversin Formula\}\
 %bruker n\'e5r vi genererer error og for \'e5 utelukke measurements\
-To calculate distances when dealing with the shape of Tellus, we need a bit more complex formula than the one we use with a regular Cartesion coordinate system. This is called the Haversin Formula \\cite[page 161]\{haversine\}. We will not incorporate this in the CTPCM algorithm because we are imagining that we still are dealing with a Cartesian coordinate system. But we will use it when calculating the error values and when filtering out measurements that are too far away from the cell tower.\
+Our planet has the shape of a sphere. To calculate distances from one point to another on the surface of a sphere, we need a bit more complex formula than the one we use with a regular Cartesion coordinate system. We will use the Haversin Formula \\cite[page 161]\{haversine\}:\
 \
-\\section\{Testing with constant $d_\{backwards\}$ and $r_\{include\}$ on exact cells\}\
+\\begin\{center\}\
+$\\operatorname\{haversin\}(\\frac\{d\}\{r\})=\\operatorname\{haversin\}(\\phi_2 - \\phi_1)+\\cos (\\phi_1)\\cos (\\phi_2)\\operatorname\{haversin\}(\\lambda_2 - \\lambda_1)$\
+\\end\{center\}\
+where\
+\\begin\{itemize\}\
+\\item \\textit\{haversin\} is the haversin function: $\\operatorname\{haversin\}(\\theta)=\\sin^2(\\frac\{\\theta\}\{2\})=\\frac\{1-\\cos(\\theta)\}\{2\}$,\
+\\item \\textbf\{\\textit\{d\} is the distance between the two points,\}\
+\\item \\textit\{r\} is the radius of the sphere,\
+\\item $\\phi_1$ and $\\phi_2$ is the latitude of point 1 and latitude of point 2, and\
+\\item $\\lambda_1$ and $\\lambda_2$ is the longitude of point 1 and longitude of point 2\
+\\end\{itemize\}\
+\
+We will not incorporate this in the CTPCM algorithm because we are imagining that we still are dealing with a Cartesian coordinate system. But we will use it when calculating the error values and when filtering out measurements that are too far away from the cell tower.\
+\
+\\section\{Graph Notations\}\
+When presenting several of the results we will visualize the error values as graphs in a cartesian coordinate system. Each coordinate system will have several graphs, so we need notations to tell them apart. The notations will have the following format: \
+\\begin\{center\}\
+LV=\\textit\{x\}, n=\\textit\{y\}\
+\\end\{center\}\
+where\
+\\begin\{itemize\}\
+\\item \\textit\{x\} can have the value \\textit\{Direction\} or \\textit\{RSS\}, and\
+\\item \\textit\{y\} is an integer\
+\\end\{itemize\}\
+\
+See section \\ref\{sect:parameters\} for an explanation of $n$. If \\textit\{LV=Distance\}, track 1 within in the CTPCM algorithm has been used. If \\textit\{LV=RSS\}, track 2 has been used. The tracks are explained at the beginning of this chapter.\
+\
+\\section\{Exact Cells: Constant $d_\{backwards\}$ and $r_\{include\}$\}\
 \\label\{sect:constant_d_r\}\
-We now present error values for three chosen subsets with different amount of measurements. We keep $r_\{include\} = 35,000$ and $d_\{backwards\} = 0.001$. The reason for this low $d_\{backwards\}$ is the difference between a Cartesion coordinate system and longitude/latitude coordinates. In a Cartesion coordinate system 0.001 is a very small distance, but in longitude and latitude coordinates it is 111.19 meters.\
+We now present error values for three different measurement pool sizes. Consant parameters for these computations:\
+\\begin\{itemize\}\
+\\item $d_\{backwards\} = 0.001$\
+\\item $r_\{include\} = 35,000$\
+\\end\{itemize\}\
 \
-Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 200$ and $M_\{min\} = 100$ resulted in 241 cells.\
-\
+\\subsection\{$M_\{min\} = 100$ and $M_\{max\} = 200$\}\
 \\begin\{table\}[h!]\
   \\centering\
   \\begin\{subtable\}[h!]\{0.45\\textwidth\}\
@@ -1145,9 +1300,10 @@ Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_
   \\label\{table:errors_exact_100/200\}\
 \\end\{table\}\
 \
-Recall that the error is, for a set of cells, the average distance from computed cell towers to the exact position of the cell towers. Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\} shows three error values. $error_\{distance\}$ is the error when running the CTPCM algorithm and using distance to compute $\\vec\{v\}_\{direction\}$. $error_\{RSS\}$ is the error when running the CTPCM algorithm and using RSS to compute $\\vec\{v\}_\{direction\}$. $error_\{average\}$ is the error when computing the cell tower positions by averaging the longitudes and latitudes of the measurements belonging to the different cells, and $M_\{fit\}$ is the average maximum number of measurements that can fit in a cell sector of $120^\{\\circ\}$ when averaging the cell tower position. As we can see, averaging gives the lowest error, but the small $M_\{fit\}$ tells us that this way of computing is not right. The CTPCM algorithm gives the lowest error when we use RSS to compute $\\vec\{v\}_\{direction\}$.\
+Table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 200$ and $M_\{min\} = 100$ resulted in 241 cells. As we can see, averaging gives the lowest error, but the small $M_\{fit\}$ tells us that this way of computing is not right. The CTPCM algorithm gives the lowest error when we use RSS to compute $\\vec\{v\}_\{direction\}$.\
 \
-Table \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_450/550_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 550$ and $M_\{min\} = 450$ resulted in 266 cells.\
+ \
+\\subsection\{$M_\{min\} = 450$ and $M_\{max\} = 550$\}\
 \
 \\begin\{table\}[h!]\
   \\centering\
@@ -1181,7 +1337,11 @@ Table \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_
   \\label\{table:errors_exact_450/550\}\
 \\end\{table\}\
 \
-Table \\ref\{table:errors_exact_900/1000_process\} and \\ref\{table:errors_exact_900/1000_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 1000$ and $M_\{min\} = 900$ resulted in 308 cells.\
+Table \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_450/550_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 550$ and $M_\{min\} = 450$ resulted in 266 cells. Except for the scaling of $M_\{min\}$ and $M_\{max\}$, the relation between the error values are the same as in table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\}.\
+\
+\
+\
+\\subsection\{$M_\{min\} = 900$ and $M_\{max\} = 1000$\}\
 \
 \\begin\{table\}[h!]\
   \\centering\
@@ -1216,15 +1376,36 @@ Table \\ref\{table:errors_exact_900/1000_process\} and \\ref\{table:errors_exact
   \\label\{table:errors_exact_900/1000\}\
 \\end\{table\}\
 \
-As we can see there are no strong correlation between the value of $n$ and $error_\{distance\}$ or $n$ and $error_\{RSS\}$. In alle three tables, $error_\{distance\}$ and $error_\{RSS\}$ changes very little between the different $n$ values, and there seems to be no pattern to predict whether the error values will increase or decrease when scaling $n$. Though we might argue that both $error_\{distance\}$ and $error_\{RSS\}$ will be slightly lower at maximum $n$ than minimum $n$.\
+Table \\ref\{table:errors_exact_900/1000_process\} and \\ref\{table:errors_exact_900/1000_averaging\} show error values from computations on $S_\{exact\}$ where $M_\{max\} = 1000$ and $M_\{min\} = 900$ resulted in 308 cells. Except for the scaling of $M_\{min\}$ and $M_\{max\}$, the relation between the error values are the same as in table \\ref\{table:errors_exact_100/200_process\} and \\ref\{table:errors_exact_100/200_averaging\}, and \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_450/550_averaging\}.\
 \
-These unpredictable error values tells us several things. First, our randomization procedure when computing $\\vec\{v\}_\{direction\}$ in algorithm 1 works. Even with a low $n$ and large measurement pool per cell, the algorithm manages to produce a viable vector. We can see this by looking at the small and unpredictable changes in error as $n$ increases. Secondly, error values increases when $M_\{max\}$ and $M_\{min\}$ increases. This means that a larger number of measurements per cell produce larger error values. This again means that, on average, a cell with a large pool of measurements has them spread out on a larger area than a cell with a smaller pool of measurements. This conclusion is based on how much algorithm 2 has to increase the length of $\\vec\{v\}_\{direction\}$ to be able to compute a cell sector that every measurement fit inside.\
 \
-The error values produced when averaging measurement's longitudes and latitudes is also unpredictable as the error decrease from table \\ref\{table:errors_exact_100/200_averaging\} to table \\ref\{table:errors_exact_450/550_averaging\}, but increase from table \\ref\{table:errors_exact_450/550_averaging\} to table \\ref\{table:errors_exact_900/1000_averaging\}. This unpredictability in all error values tells us that the measurements are randomly distributed in the cell area and that there are no clear pattern for every cell. To improve the CTPCM algorithm we need to analyze some cells and consider some of the more regular patterns in our algorithms. We also need to pay attention to the measurements that most likely are causing the high errors. These are probably the ones furthest away or far from any other measurements belong to the cell.\
 \
-\\section\{Scaling $d_\{backwards\}$ and measuring time on exact cells\}\
+\\subsection\{Analysis\}\
+As we can see there are no strong correlation between the value of $n$ and $error_\{distance\}$ or $n$ and $error_\{RSS\}$. In table \\ref\{table:errors_exact_100/200_process\}, \\ref\{table:errors_exact_450/550_process\} and \\ref\{table:errors_exact_900/1000_process\}, $error_\{distance\}$ and $error_\{RSS\}$ changes very little between the different $n$ values, and there seems to be no pattern to predict whether the error values will increase or decrease when scaling $n$. Though we might argue that both $error_\{distance\}$ and $error_\{RSS\}$ will be slightly lower at maximum $n$ than minimum $n$.\
+\
+These unpredictable $error_\{distance\}$ and $error_\{RSS\}$ values tells us several things. First, our randomization procedure when computing $\\vec\{v\}_\{direction\}$ in algorithm 1 works. Even with a low $n$ and large measurement pool per cell, the algorithm manages to produce a viable vector. We can see this by looking at the small and unpredictable changes in error as $n$ increases. Secondly, error values increase when $M_\{max\}$ and $M_\{min\}$ increases. This means that a larger number of measurements per cell produce larger error values. This again means that, on average, a cell with a large pool of measurements has them spread out on a larger area than a cell with a smaller pool of measurements. This conclusion is based on how much algorithm \\ref\{alg:FindSector\} has to increase the length of $\\vec\{v\}_\{direction\}$ to be able to compute a cell sector that every measurement fits within, thus generating a larger error.\
+\
+The $error_\{average\}$ values produced when averaging measurement's longitudes and latitudes is also unpredictable as the error decrease from table \\ref\{table:errors_exact_100/200_averaging\} to table \\ref\{table:errors_exact_450/550_averaging\}, but increase from table \\ref\{table:errors_exact_450/550_averaging\} to table \\ref\{table:errors_exact_900/1000_averaging\}. \
+\
+This unpredictability in both $error_\{distance\}$, $error_\{RSS\}$ and $error_\{average\}$ values tells us that the measurements are randomly distributed within their cell. There are no patterns explaining the distribution.\
+\
+\\section\{Exact Cells: Scaling $d_\{backwards\}$ and measuring time\}\
 \\label\{section:scalingD_timing\}\
-We will now do experiments with $d_\{backwards\}$ and time the CTPCM algorithm. A small $d_\{backwards\}$ is one of the factors that potentially can increase the time it takes to perform a computation due to the increased number of iterations in algorithm 2. Recall that this algorithm extends $\\vec\{v\}_\{direction\}$ for each iteration every measurement does not fit inside the produced cell sector. We use five different $d_\{backwards\}$ values; 0.1, 0.01, 0.001, 0.0001 and 0.00001. We chose these values to learn which scale is neccessary for extending $\\vec\{v\}_\{direction\}$ to produce good results. The purpose is to learn the highest value for $d_\{backwards\}$ we can use and still obtain good error values. We still keep $r_\{include\} = 35,000$.\
+We present error values for three different measurement pool sizes. Constant parameters for these computations:\
+\\begin\{itemize\}\
+\\item $r_\{include\} = 35,000$\
+\\end\{itemize\}\
+Using a too small value of $d_\{backwards\}$ is one of the factors that potentially can increase the time it takes to perform a computation due to the increased number of iterations in algorithm \\ref\{alg:FindSector\}. We will use the following five values of $d_\{backwards\}$:\
+\\begin\{itemize\}\
+\\item $d_\{backwards\}=0.1$\
+\\item $d_\{backwards\}=0.01$\
+\\item $d_\{backwards\}=0.001$\
+\\item $d_\{backwards\}=0.0001$\
+\\item $d_\{backwards\}=0.00001$\
+\\end\{itemize\}\
+We chose these values to learn how high we can set the value of $d_\{backwards\}$ and still produce good results. The purpose is to learn the highest value of $d_\{backwards\}$ we can use and still obtain good error values.\
+\
+\\subsection\{$M_\{min\} = 100$ and $M_\{max\} = 200$\}\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -1232,11 +1413,6 @@ We will now do experiments with $d_\{backwards\}$ and time the CTPCM algorithm. 
 \\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$ results in 241 cells\}.\
 \\label\{fig:scaling-d_100/200_errors\}\
 \\end\{figure\}\
-\
-Figure \\ref\{fig:scaling-d_100/200_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 241 cells where $M_\{max\}=200$ and $M_\{min\}=100$. The notation \\textit\{LV=Distance, n=80\} means the respective line shows the error when $\\vec\{v\}_\{direction\}$ was computed using distance and $n$ equals 80. As we can see there is a significant difference between $error_\{distance\}$ for all $n$ and $error_\{RSS\}$ for all $n$. Computing $\\vec\{v\}_\{direction\}$ using RSS clearly produce lower errors than when using\
-distance. \
-\
-Another interesting observation is that the error values for $d_\{backwards\}=0.01$ and $d_\{backwards\}=0.00001$ is approximately equal. This means we can with good conscience use $d_\{backwards\}=0.01$ and still produce viable cell tower positions. This is also very relevant with regard to time constraints. We want a computation of a cell tower position to take as little time as possible so we wish to use the largest $d_\{backwards\}$ as possible.\
 \
 \\begin\{table\}[h!]\
   \\center\
@@ -1252,7 +1428,11 @@ Another interesting observation is that the error values for $d_\{backwards\}=0.
   \\label\{table:scaling-d_100/200_time\}\
 \\end\{table\}\
 \
-Table \\ref\{table:scaling-d_100/200_time\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_100/200_errors\}, but only for $d_\{backwards\}=0.00001$. When computations with $d_\{backwards\}=0.00001$ are the most time demanding and these times are so small, it is not neccessary to include average times for larger $d_\{backwards\}$.\
+Figure \\ref\{fig:scaling-d_100/200_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 241 cells where $M_\{max\}=200$ and $M_\{min\}=100$. As we can see there is a significant difference between $error_\{distance\}$ for all $n$, and $error_\{RSS\}$ for all $n$. Track 1 clearly produce lower errors than track 2.\
+\
+Table \\ref\{table:scaling-d_100/200_time\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_100/200_errors\}, but only for $d_\{backwards\}=0.00001$. When computations with $d_\{backwards\}=0.00001$ are the most time demanding and these times are so small, we concluded it was not neccessary to include average times for larger $d_\{backwards\}$.\
+\
+\\subsection\{$M_\{min\} = 450$ and $M_\{max\} = 550$\}\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -1260,8 +1440,6 @@ Table \\ref\{table:scaling-d_100/200_time\} shows the average times it take to c
 \\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=550$ and $M_\{min\}=450$ results in 266 cells\}.\
 \\label\{fig:scaling-d_450/550_errors\}\
 \\end\{figure\}\
-\
-Figure \\ref\{fig:scaling-d_450/550_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 266 cells where $M_\{max\}=550$ and $M_\{min\}=450$. We can see that the error values behave similarly as in table \\ref\{fig:scaling-d_100/200_errors\} with respect to $d_\{backwards\}$. The $error_\{distance\}$ values are spread out more with respect to $Error$, but there are no pattern where the lowest $n$ shows the highest error value and the largest $n$ shows the lowest error value or vice versa. This means the reason for the spread simply must be caused by the heuristic choices throughout the CTPCM algorithm.\
 \
 \\begin\{table\}[h!]\
   \\center\
@@ -1279,9 +1457,11 @@ Figure \\ref\{fig:scaling-d_450/550_errors\} shows a graph displaying $error_\{d
   \\label\{table:scaling-d_450/550_time\}\
 \\end\{table\}\
 \
+Figure \\ref\{fig:scaling-d_450/550_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 266 cells where $M_\{max\}=550$ and $M_\{min\}=450$. We can see that the error values behave similarly as in table \\ref\{fig:scaling-d_100/200_errors\} with respect to $d_\{backwards\}$. The $error_\{distance\}$ values are spread out more with respect to $Error$.\
+\
 Table \\ref\{table:scaling-d_450/550_time\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_450/550_errors\}, but only for $d_\{backwards\}=0.00001$. The average times are still too small to raise concern.\
 \
-Figure \\ref\{fig:scaling-d_900/1000_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 308 cells where $M_\{max\}=1000$ and $M_\{min\}=900$. Except for the increase in error as pointed out in section \\ref\{sect:constant_d_r\}, the $error_\{distance\}$ and $error_\{RSS\}$ values behaves similarly to the values in figure \\ref\{fig:scaling-d_100/200_errors\} and \\ref\{fig:scaling-d_450/550_errors\}.\
+\\subsection\{$M_\{min\} = 900$ and $M_\{max\} = 1000$\}\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -1289,8 +1469,6 @@ Figure \\ref\{fig:scaling-d_900/1000_errors\} shows a graph displaying $error_\{
 \\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=1000$ and $M_\{min\}=900$ results in 308 cells\}.\
 \\label\{fig:scaling-d_900/1000_errors\}\
 \\end\{figure\}\
-\
-\
 \
 \\begin\{table\}[h!]\
   \\centering\
@@ -1331,23 +1509,34 @@ Figure \\ref\{fig:scaling-d_900/1000_errors\} shows a graph displaying $error_\{
   \\label\{table:scaling-d_900/1000_time\}\
 \\end\{table\}\
 \
-Table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_900/1000_errors\} for $d_\{backwards\}=0.00001$ and $d_\{backwards\}=0.0001$. For these errors we have chosen to include the average times for $d_\{backwards\}=0.0001$ because the average times for $d_\{backwards\}=0.00001$ are getting quite large. Especially for the $error_\{RSS\}$ values. As explained earlier in this section, setting $d_\{backwards\}$ equal to 0.00001 seems to be redundant with respect to the error size. Table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} proves that it is not worth using such a low $d_\{backwards\}$ when larger values of $d_\{backwards\}$ produce equally low errors, with resptect to time.\
+Figure \\ref\{fig:scaling-d_900/1000_errors\} shows a graph displaying $error_\{distance\}$ and $error_\{RSS\}$ values for 308 cells where $M_\{max\}=1000$ and $M_\{min\}=900$. Except for the increase in error as pointed out in section \\ref\{sect:constant_d_r\}, the $error_\{distance\}$ and $error_\{RSS\}$ values behaves similarly to the values in figure \\ref\{fig:scaling-d_100/200_errors\} and \\ref\{fig:scaling-d_450/550_errors\}.\
 \
-% Average tid for error_RSS er st\'f8rre enn for error_distance i alle tre measurementsst\'f8rrelse intervaller. I tillegg holder average tid for error_RSS seg relativt konstant mens average til for error_distance synker n\'e5r n blir st\'f8rre (gjelder for alle tre measurementsst\'f8rrelse intervaller).\
+Table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} shows the average times it take to compute the cell tower positions that produces the errors in figure \\ref\{fig:scaling-d_900/1000_errors\}, for $d_\{backwards\}=0.00001$ and $d_\{backwards\}=0.0001$. For these error values we have chosen to include the average times for $d_\{backwards\}=0.0001$ because the average times for $d_\{backwards\}=0.00001$ are getting quite large. Especially for the $error_\{RSS\}$ values. \
 \
-\\section\{Scaling $r_\{include\}$\}\
-How will the error values look if we use lower values of $r_\{include\}$? Recall that the value of $r_\{include\}$ decides if a measurement is too far away from the cell tower or not. Initially it was to help exclude invalid measurements as figure \\ref\{fig:badMeasurementLocation\} shows an example of. Forcing the CTPCM algorithm to exclude measurements that are valid but just far away from the cell tower, will most likely produce lower error values as algorithm 2 will not need to extend $\\vec\{v\}_\{direction\}$ as far to be able to fit every measurement still included. For these computations we set $d_\{backwards\}$ to 0.0001. We will not time these computations since we can be sure we will not exceed the times given in section \\ref\{section:scalingD_timing\} as we are not lowering $d_\{backwards\}$.\
+\\subsection\{Analysis\}\
+In figure \\ref\{fig:scaling-d_100/200_errors\}, \\ref\{fig:scaling-d_450/550_errors\} and \\ref\{fig:scaling-d_900/1000_errors\}, the error values for $d_\{backwards\}=0.01$ and $d_\{backwards\}=0.00001$ is approximately equal. This means we can with good conscience use $d_\{backwards\}=0.01$ and still produce viable cell tower positions. This is also very relevant with regard to time constraints. We want the computation of a cell tower position to take as little time as possible so we wish to use the largest $d_\{backwards\}$ as possible. In table \\ref\{table:scaling-d_100/200_time\} and \\ref\{table:scaling-d_450/550_time\}, the average times it took to run a cell through the CTPCM algorithm was not large enough for us to consider using a larger $d_\{backwards\}$. But in table \\ref\{table:scaling-d_900/1000_time_distance\} and \\ref\{table:scaling-d_900/1000_time_RSS\} the average times for $d_\{backwards\}=0.00001$ is getting high. So we must consider using a larger value of $d_\{backwards\}$ for future computations.\
 \
-\\begin\{figure\}[h!]\
-\\centering\
-\\includegraphics[scale=0.6]\{pictures/scalingR_100-200.png\}\
-\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$.\}\
-\\label\{fig:scalingR_100/200_errors\}\
-\\end\{figure\}\
+In figure \\ref\{fig:scaling-d_450/550_errors\} and \\ref\{fig:scaling-d_900/1000_errors\}, the error values produced from track 1 are spread out more than in figure \\ref\{fig:scaling-d_100/200_errors\}, with respect to \\textit\{Error\}. We cannot see any pattern where the lowest $n$ shows the highest error value and the largest $n$ shows the lowest error value or vice versa. This means the reason for the spread simply must be caused by the heuristic choices throughout the CTPCM algorithm.\
 \
-Figure \\ref\{fig:scalingR_100/200_errors\} shows $error_\{distance\}$ and $error_\{RSS\}$ values for computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$. For these computations the cells used vary for each reduction of $r_\{include\}$. This is because we are excluding more and more measurements for a cell the lower $r_\{include\}$ gets. This means that a cell with too many measurements at $r_\{include\}=35,000$ might have the right amount at $r_\{include\}=25,000$, and a cell with the right amount of measurements at $r_\{include\}=15,000$ might have too few at $r_\{include\}=10,000$. The number of cells used to compute cell tower positions for each value of $r_\{include\}$ is given in parenthesis below the value of $r_\{include\}$.\
+\\section\{Exact Cells: Scaling $r_\{include\}$\}\
+We present error values for three different measurement pool sizes. Constant parameters for these computations:\
+\\begin\{itemize\}\
+\\item $d_\{backwards\}=0.0001$\
+\\end\{itemize\}\
+How will the error values look if we use lower values of $r_\{include\}$? Recall that the value of $r_\{include\}$ decides if a measurement is too far away from the cell tower or not. Initially it was to help exclude invalid measurements as figure \\ref\{fig:badMeasurementLocation\} shows an example of. Forcing the CTPCM algorithm to exclude measurements that are valid but just far away from the cell tower, will most likely produce lower error values as algorithm \\ref\{alg:FindSector\} will not need to extend $\\vec\{v\}_\{direction\}$ as far to be able to fit the remaining measurements. We will use the following five values of $r_\{include\}$:\
+\\begin\{itemize\}\
+\\item $r_\{include\}=35,000$\
+\\item $r_\{include\}=25,000$\
+\\item $r_\{include\}=15,000$\
+\\item $r_\{include\}=10,000$\
+\\item $r_\{include\}=5,000$\
+\\item $r_\{include\}=2,000$\
+\\end\{itemize\}\
+We will not time these computations since we can be sure we will not exceed the times given in section \\ref\{section:scalingD_timing\} as we are not lowering $d_\{backwards\}$.\
 \
-Since the measurement pool for a cell is changing when $r_\{include\}$ is decreasing, the value of $error_\{average\}$ is also changing. The line in the graph called \\textit\{Averaged\} shows the value of $error_\{average\}$ for each value of $r_\{include\}$. In addition, the value of $M_\{fit\}$ changes. The value for every $r_\{include\}$ for all three measurement size intervals is shown in table \\ref\{table:scalingR_fit\}.\
+For these computations, the cells used will vary for each reduction of $r_\{include\}$. This is because we are excluding more and more measurements for a cell the lower $r_\{include\}$ gets. This means that a cell with too many measurements at $r_\{include\}=35,000$ might have the right amount at $r_\{include\}=25,000$, and a cell with the right amount of measurements at $r_\{include\}=15,000$ might have too few at $r_\{include\}=10,000$. The number of cells used to compute cell tower positions for each value of $r_\{include\}$ is given in parenthesis below the value of $r_\{include\}$ in the coordinate systems.\
+\
+Since the measurement pool for a cell is changing when $r_\{include\}$ decreases, the value of $error_\{average\}$ is also changing. The line in the graph called \\textit\{Averaged\} shows the value of $error_\{average\}$ for each value of $r_\{include\}$. As a result of this, the value of $M_\{fit\}$ changes. The value of $M_\{fit\}$ for every $r_\{include\}$ for all three measurement pool size intervals is shown in table \\ref\{table:scalingR_fit\}.\
 \
 \\begin\{table\}[h!]\
   \\center\
@@ -1365,6 +1554,20 @@ Since the measurement pool for a cell is changing when $r_\{include\}$ is decrea
   \\label\{table:scalingR_fit\}\
 \\end\{table\}\
 \
+\\subsection\{$M_\{min\} = 100$ and $M_\{max\} = 200$\}\
+\
+\\begin\{figure\}[h!]\
+\\centering\
+\\includegraphics[scale=0.6]\{pictures/scalingR_100-200.png\}\
+\\caption\{Overview of error values from computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$.\}\
+\\label\{fig:scalingR_100/200_errors\}\
+\\end\{figure\}\
+\
+Figure \\ref\{fig:scalingR_100/200_errors\} shows $error_\{distance\}$ and $error_\{RSS\}$ values for computations on $S_\{exact\}$ when $M_\{max\}=200$ and $M_\{min\}=100$.\
+\
+\
+\\subsection\{$M_\{min\} = 450$ and $M_\{max\} = 550$\}\
+\
 \\begin\{figure\}[h!]\
 \\centering\
 \\includegraphics[scale=0.6]\{pictures/scalingR_450-550.png\}\
@@ -1372,7 +1575,9 @@ Since the measurement pool for a cell is changing when $r_\{include\}$ is decrea
 \\label\{fig:scalingR_450/550_errors\}\
 \\end\{figure\}\
 \
-Figure \\ref\{fig:scalingR_450/550_errors\} and \\ref\{fig:scalingR_900/1000_errors\} show errors values from computations on $S_\{exact\}$ when $M_\{min\}=450$ and $M_\{max\}=550$, and $M_\{min\}=900$ and $M_\{max\}=1000$, respectively. For some values of $r_\{include\}$ the number of cells used to compute errors is lower than preferred, especially for $r_\{include\} = 2,000$ in figure \\ref\{fig:scalingR_900/1000_errors\}. Recall that the maximum number of measurements we can download through HTTP is 1000, even if OpenCellID has more measurements in their database. When we are running the CTPCM algorithm with $r_\{include\} = 2,000$ and $M_\{min\}=900$ we are dependent of cells that has 900 or more measurements within a radius of 2,000 meters from the cell tower. As we can see from figure \\ref\{fig:scalingR_900/1000_errors\} only 58 of the cells in $S_\{exact\}$ has that property. On the other hand, the values of $error_\{distance\}$ and $error_\{RSS\}$ for every $n$ and every $r_\{include\}$ behave similar statistically in all three graphs. Thus we can argue that 58 cells is enough.\
+Figure \\ref\{fig:scalingR_450/550_errors\} shows errors values from computations on $S_\{exact\}$ when $M_\{min\}=450$ and $M_\{max\}=550$. \
+\
+\\subsection\{$M_\{min\} = 900$ and $M_\{max\} = 1000$\}\
 \
 \\begin\{figure\}[h!]\
 \\centering\
@@ -1381,13 +1586,28 @@ Figure \\ref\{fig:scalingR_450/550_errors\} and \\ref\{fig:scalingR_900/1000_err
 \\label\{fig:scalingR_900/1000_errors\}\
 \\end\{figure\}\
 \
-The errors computed throughout this section are giving us very valuable information. Just as expected there is a gap in error between the $error_\{distance\}$ and $error_\{RSS\}$ values for $r_\{include\} = 35,000$. We already knew this from our findings in section \\ref\{sect:constant_d_r\} and \\ref\{section:scalingD_timing\}. What we could only project, but not know, is that they would converge for lower values of $r_\{include\}$. This means that a lot of the pairs of measurements we choose when computing $\\vec\{v\}_\{direction\}$ with distance as parameter are not optimal. An optimal pair would be two measuremts forming a line between them where this line, if extended infinitely, intersects the cell tower and have an angle of approximately $45^\{\\circ\}$ to both of the sector edges. When we reduce $r_\{include\}$ we prevent the potential pair of two measurements that are far away from each other in the wrong direction from being picked.\
+Figure \\ref\{fig:scalingR_900/1000_errors\} shows errors values from computations on $S_\{exact\}$ when $M_\{min\}=900$ and $M_\{max\}=1000$.\
 \
-By reducing $r_\{include\}$ we obviously produce lower error values which are better results if we want to compute cell tower positions as close as possible to the real cell tower positions. This is essential if the goal is to use the cell tower positions in other applications, like positioning mobile devices. Now a dilemma occurs. Is it correct to exclude measurements to produce low errors? First we must consider the fact that the purpose of the CTPCM algorithm is to compute the location of cell towers we do not know the exact position of. So how would we know if a measurement is far away for the cell tower or not? One possibility is to look at the signal strength, but this might not be a safe parameter. RSS can be affected by obstacles like buildings, other signals flowing through the air, or even the signal receiver in the mobile device. In short, this parameter may lie. Another possibility is to calculate the average longitude and latitude from the cell's measurements and use this as an origo for excluding measuremens that are too far away.\
+\\subsection\{Analysis\}\
+For some values of $r_\{include\}$ the number of cells used to compute errors is lower than preferred, especially for $r_\{include\} = 2,000$ in figure \\ref\{fig:scalingR_900/1000_errors\}. Recall that the maximum number of measurements we can download through HTTP is 1000, even if OpenCellID has more measurements in their database. When we are running the CTPCM algorithm with $r_\{include\} = 2,000$ and $M_\{min\}=900$ we are dependent of cells that has 900 or more measurements within a radius of 2,000 meters from the cell tower. As we can see from figure \\ref\{fig:scalingR_900/1000_errors\} only 58 of the cells in $S_\{exact\}$ has that property. On the other hand, the values of $error_\{distance\}$ and $error_\{RSS\}$ for every $n$ and every $r_\{include\}$ behave similar statistically in all three graphs. Thus we can argue that 58 cells was enough.\
+\
+The errors computed throughout this section are giving us very valuable information. Just as expected there is a gap in error between the $error_\{distance\}$ and $error_\{RSS\}$ values for $r_\{include\} = 35,000$. We already knew this from our findings in section \\ref\{sect:constant_d_r\} and \\ref\{section:scalingD_timing\}. What we could only project, but not know, is that they would converge for lower values of $r_\{include\}$. This means that a lot of the pairs of measurements we choose when computing $\\vec\{v\}_\{direction\}$ in D-LV in track 1, forms a line between them that is far from projecting the real direction of the cell. This is what was part of the discussion in section \\ref\{sect:greaterAngles\} and \\ref\{sect:sectorAngle120\}. When we reduce $r_\{include\}$ it seems that we prevent the pairing of two measurements that forms such a poor line.\
+\
+By reducing $r_\{include\}$ we produce lower error values which are better results if we want to compute cell tower positions as close as possible to the real cell tower positions. This is essential if the goal is to use the cell tower positions in other applications, like positioning mobile devices. Now a dilemma occurs. Is it correct to exclude measurements to produce low errors? First we must consider the fact that the purpose of the CTPCM algorithm is to compute the location of cell towers we do not know the exact position of. So how would we know if a measurement is far away from the cell tower or not? One possibility is to look at the signal strength, but this might not be a safe parameter. RSS can be affected by obstacles like buildings, other signals flowing through the air, or even the signal receiver in the mobile device. In short, this parameter may lie. Another possibility is to calculate the average longitude and latitude from the cell's measurements and use this as an origo for excluding measuremens that are too far away.\
 \
 But do we want to exclude measurements from the computations? We must remember that we are developing heuristics. In most cases it is very difficult to say how far away our computed cell tower positions is from the real ones. We must base our results and conclusions on the data that is available to us. If we manage to compute cell tower positions such that every measurement fits inside the cell sectors, our heuristics works. We can still calculate the distance from each measurement to the computed cell tower position. If this is very large, then we need to re-evealuate our algorithms.\
 \
-\\section\{What is affecting the errors?\}\
+\\section\{Chapter Review\}\
+In this chapter we have given errors generated from estimated positions of cell towers on real data. To improve the CTPCM algorithm we need to analyze some cells and consider some of the more regular measurement distribution patterns. We also need to pay attention to the measurements that most likely are causing the high errors. These are probably the ones furthest away from the cell tower or the ones far from the other measurements belonging to the cell.\
+\
+\
+\
+\
+\
+\\chapter\{Improving the CTPCM algorithm\}\
+\\textit\{Her vil jeg beskrive forbedringer etter aa ha testet paa ekte data. Her vil det ogsaa bli en del diskusjon. Dette kommer jeg til aa jobbe med i mai, men se an hvordan der ligger an hele veien aa dermed finne et passende sted aa runde av.\}\
+\
+\\section\{What is affecting the error values?\}\
 We will now analyze two different measurement patterns. One where the measurements are scattered and one where they are more structured.\
 \
 \\begin\{figure\}[h!]\
@@ -1404,11 +1624,6 @@ Figure \\ref\{fig:pattern_messy\} shows a cell whose measurements are randomly s
 \\caption\{Cell where the measurements are more structured.\}\
 \\label\{fig:pattern_line\}\
 \\end\{figure\}\
-\
-\
-\
-\\chapter\{Improving the CTPCM algorithm\}\
-\\textit\{Her vil jeg beskrive forbedringer etter aa ha testet paa ekte data. Her vil det ogsaa bli en del diskusjon. Dette kommer jeg til aa jobbe med i mai, men se an hvordan der ligger an hele veien aa dermed finne et passende sted aa runde av.\}\
 \
 \
 \\newpage\
@@ -1431,17 +1646,6 @@ Figure \\ref\{fig:pattern_messy\} shows a cell whose measurements are randomly s
 \
 \\newpage\
 \\appendix\
-\\chapter\{Sub-routines of the CTPCM algorithm\}\
-\\begin\{table\}[h!]\
-  \\center\
-  \\begin\{tabularx\}\{\\textwidth\}\{|X|X|X|X|\}\
-    \\hline\
-    \\cellcolor[gray]\{0.9\}Sub-routine&\\cellcolor[gray]\{0.9\}Abbreviation&\\cellcolor[gray]\{0.9\}Description&\\cellcolor[gray]\{0.9\}Section\\\\\\hline\
-    \
-  \\end\{tabularx\}\
-  \\caption\{Sub-routines of the CTPCM algorithm\}\
-  \\label\{table:subRoutines\}\
-\\end\{table\}\
 \
 \\chapter\{Code\}\
 \\textit\{Jeg tviler paa at jeg kommer til aa legge ved kode, men inkluderer likevel denne slik at vi ser hvordan det evt. vil se ut\}\
