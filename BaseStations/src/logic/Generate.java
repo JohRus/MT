@@ -82,16 +82,14 @@ public class Generate {
 
 	public static Computation computation(DefaultCell originalCell, int n, double d, boolean useRSS) {
 		Line2D.Double longestVector = Process.longestVector(originalCell.getMeasurements(), n, useRSS);
-//		System.out.println("1: "+longestVector.getP1());
-//		System.out.println("2: "+longestVector.getP2());
+		System.out.println("\n"+longestVector.getP1());
+		System.out.println(longestVector.getP2());
+		System.out.println("Line angle: "+Math.toDegrees(Geom.angle(new Line2D.Double(longestVector.getP2(), longestVector.getP1()))));
 
 		DefaultCell heuristicCell1 = Process.findSector(longestVector, originalCell, d);
-//		System.out.println("Done with HC1");
 
 		DefaultCell heuristicCell2 = Process.findSector(
 				new Line2D.Double(longestVector.getP2(), longestVector.getP1()), originalCell, d);
-//		System.out.println("Done with HC2");
-
 
 		Computation comp = new Computation();
 		comp.setLongestVector(longestVector);
@@ -99,7 +97,6 @@ public class Generate {
 		comp.setHeuristicCell2(heuristicCell2);
 
 		Process.chooseHeuristicDynamicCell(originalCell.getMeasurements(), comp, n, useRSS);
-//		System.out.println("Chosed a HC");
 
 		return comp;
 	}
@@ -115,15 +112,9 @@ public class Generate {
 
 	public static double error(DynamicCell testCell, Computation computation) {
 
-		double dist1 = testCell.getCellTowerCoordinates().distance(computation.getHeuristicCell1().getCellTowerCoordinates());
-		double dist2 = testCell.getCellTowerCoordinates().distance(computation.getHeuristicCell2().getCellTowerCoordinates());
+		double dist = testCell.getCellTowerCoordinates().distance(computation.getHeuristicCell1().getCellTowerCoordinates());
 
-		if(dist1 <= dist2)
-			return dist1;
-		else {
-			System.out.println("Generate.error returnerte error for heuristicCell2");
-			return dist2;
-		}
+		return dist;
 	}
 	
 	public static double sphericalError(DefaultCell originalCell, DefaultCell chosenHeuristicCell) {

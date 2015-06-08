@@ -40,7 +40,7 @@ public class Request {
 		s += "&mnc="+net;
 		s += "&lac="+area;
 		s += "&cellid="+cell;
-		s += "&radio=GSM&format=json";
+		s += "&format=json";
 		return s;
 	}
 	
@@ -65,6 +65,7 @@ public class Request {
 			// jumping to START_OBJECT
 			jp.nextToken();
 			JsonNode n = jp.readValueAsTree();
+//			System.out.println(n.size());
 			
 			cell = createCell(n);
 
@@ -170,9 +171,10 @@ public class Request {
 	}
 
 	public static void main(String[] args) {
-		String in = "http://opencellid.org/cell/getMeasures?key=710914bd-60b1-4ad6-aa96-faeb03eb16f8&mcc=260&mnc=1&lac=29001&cellid=22094&radio=GSM&format=json";
+		String in = "http://opencellid.org/cell/getMeasures?key=710914bd-60b1-4ad6-aa96-faeb03eb16f8&mcc=260&mnc=1&lac=29001&cellid=22095&radio=GSM&format=json";
 		Request r = new Request(in);
-		DefaultCell defaultCell = r.getData();
+		OpenCellIdCell openCellIdCell = r.getData();
+		System.out.println(openCellIdCell.getChangeable());
 	}
 
 }

@@ -45,6 +45,7 @@ public class SystemPanel extends JPanel {
 	private boolean showHideLongestVectors;
 	private boolean showHideHeuristicDCs;
 	private boolean showHideChosenHeuristicDC;
+	private boolean showHideCellTowerAndEdges;
 	
 	public SystemPanel() {
 		data = new HashMap<DynamicCell, Computation>();
@@ -52,6 +53,7 @@ public class SystemPanel extends JPanel {
 		showHideLongestVectors = false;
 		showHideHeuristicDCs = false;
 		showHideChosenHeuristicDC = false;
+		showHideCellTowerAndEdges = true;
 	}
 
 	public void addData(DynamicCell dc, Computation computation) {
@@ -84,11 +86,16 @@ public class SystemPanel extends JPanel {
 		showHideChosenHeuristicDC = !showHideChosenHeuristicDC;
 	}
 	
+	public void showHideCellTowerAndEdges() {
+		showHideCellTowerAndEdges = !showHideCellTowerAndEdges;
+	}
+	
 	public void hideAll() {
 		showhideMeasurements = false;
 		showHideLongestVectors = false;
 		showHideHeuristicDCs = false;
 		showHideChosenHeuristicDC = false;
+		showHideCellTowerAndEdges = true;
 	}
 
 	@Override
@@ -108,7 +115,9 @@ public class SystemPanel extends JPanel {
 
 	private void drawEntry(Entry<DynamicCell, Computation> entry, Graphics2D g2d) {
 		
-		drawCell(entry.getKey(), 6, g2d, Color.black);
+		if(showHideCellTowerAndEdges) {
+			drawCell(entry.getKey(), 6, g2d, Color.black);
+		}
 		
 		if(showhideMeasurements) {
 			for(Measurement m : entry.getKey().getMeasurements()) {

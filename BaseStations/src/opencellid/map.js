@@ -67,9 +67,11 @@ function readText(filePath) {
 			iconSize: [25, 41],
 			iconAnchor: [13, 41]
 		});
-
+		//===============================
+		//measurements, estimated, correct:
         L.marker([json.cell.lat, json.cell.lon], {icon: ctMarker}).addTo(map);
         L.marker([json.calculatedCell.lat, json.calculatedCell.lon], {icon: ctCalcMarker}).addTo(map);
+        //L.marker([json.otherCalculatedCell.lat, json.otherCalculatedCell.lon], {icon: ctCalcMarker}).addTo(map);
 
         for(i = 0; i < json.measurements.length; i++) {
         	var circle = L.circleMarker([json.measurements[i].lat, json.measurements[i].lon], {
@@ -91,7 +93,34 @@ function readText(filePath) {
 
         displayContents('Error: '+json.calculatedCell.errorDist);
 
-        map.setView([json.cell.lat, json.cell.lon], 13);
+        map.setView([json.cell.lat, json.cell.lon], 15);
+        //===============================
+        // estimated:
+        /*for(i = 0; i < json.estimatedCellTowers.length; i++) {
+        	L.marker([json.estimatedCellTowers[i].lat, json.estimatedCellTowers[i].lon], {icon: ctCalcMarker}).addTo(map);
+
+        }
+
+        displayContents('Number of cells: '+json.estimatedCellTowers.length);
+
+        map.setView([json.estimatedCellTowers[0].lat, json.estimatedCellTowers[0].lon], 11);*/
+        //================================
+        // estimated, old:
+        /*for(i = 0; i < json.cellTowers.length; i++) {
+        	L.marker([json.cellTowers[i].latOld, json.cellTowers[i].lonOld], {icon: ctMarker}).addTo(map);
+        	L.marker([json.cellTowers[i].latEstimated, json.cellTowers[i].lonEstimated], {icon: ctCalcMarker}).addTo(map);
+
+        	L.polyline(
+				[[json.cellTowers[i].latOld, json.cellTowers[i].lonOld],
+				[json.cellTowers[i].latEstimated, json.cellTowers[i].lonEstimated]], 
+				{color: '#666',
+				weight: 1
+			}).addTo(map);
+        }
+
+        map.setView([json.cellTowers[0].latOld, json.cellTowers[0].lonOld], 11);*/
+
+        //=================================
     };
     reader.onerror = function(event) {
     	console.error("File could not be read! Code " + event.target.error.code);

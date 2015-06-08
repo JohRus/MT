@@ -102,6 +102,11 @@ public class Geom {
 			double angle1, double angle2) {
 		for(Measurement m : measurements) {
 			if(!pointIsWithinSectorAngleBoundries(m.getCoordinates(), origo, angle1, angle2)) {
+				System.out.println(m.getCoordinates());
+				System.out.println(angle1);
+				System.out.println(angle2);
+				System.out.println(Math.toDegrees(angle(new Line2D.Double(origo, m.getCoordinates()))));
+				System.out.println();
 				return false;
 			}
 		}

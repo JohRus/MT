@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
 
 import infrastructure.DefaultCell;
 import infrastructure.Measurement;
@@ -38,7 +39,7 @@ public class JSONFile {
 		}
 	}
 	
-	public void writeResultForMap(OpenCellIdCell originalCell, DefaultCell chosenHeuristicCell, double error) {
+	public void writeResultForMap(OpenCellIdCell originalCell, DefaultCell chosenHeuristicCell, DefaultCell otherHeuristicCell, double error) {
 		try {
 			jg.writeObjectFieldStart("cell");
 			jg.writeObjectField("lon", originalCell.getCellTowerCoordinates().getX());
@@ -46,10 +47,22 @@ public class JSONFile {
 			jg.writeEndObject();
 			
 			jg.writeObjectFieldStart("calculatedCell");
-			jg.writeObjectField("lon", chosenHeuristicCell.getCellTowerCoordinates().getX());
-			jg.writeObjectField("lat", chosenHeuristicCell.getCellTowerCoordinates().getY());
-			jg.writeObjectField("errorDist", error);
+//			if(chosenHeuristicCell == null) {
+//				
+//			}
+//			else {
+				jg.writeObjectField("lon", chosenHeuristicCell.getCellTowerCoordinates().getX());
+				jg.writeObjectField("lat", chosenHeuristicCell.getCellTowerCoordinates().getY());
+				jg.writeObjectField("errorDist", error);
+//			}
 			jg.writeEndObject();
+			
+			if(otherHeuristicCell != null) {
+				jg.writeObjectFieldStart("otherCalculatedCell");
+				jg.writeObjectField("lon", otherHeuristicCell.getCellTowerCoordinates().getX());
+				jg.writeObjectField("lat", otherHeuristicCell.getCellTowerCoordinates().getY());
+				jg.writeEndObject();
+			}
 			
 			jg.writeArrayFieldStart("measurements");
 			for(Measurement measurement : originalCell.getMeasurements()) {
@@ -168,6 +181,41 @@ public class JSONFile {
 		jsonFile.writeThisOpenCellIdCell(cell2);
 		jsonFile.theArrayIsDone();
 		jsonFile.iAmDoneWriting();
+	}
+
+	public void writeEstimatedCellTowerLocation(Point2D.Double cellTowerCoordinates) {
+		try {
+			jg.writeStartObject();
+			jg.writeObjectField("lon", cellTowerCoordinates.getX());
+			jg.writeObjectField("lat", cellTowerCoordinates.getY());
+			jg.writeEndObject();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+
+	public void writeEstimatedCellTowerLocationWithOldLocation(Point2D.Double oldLocation, Point2D.Double estimatedLocation) {
+		try {
+			jg.writeStartObject();
+			jg.writeObjectField("lonOld", oldLocation.getX());
+			jg.writeObjectField("latOld", oldLocation.getY());
+			jg.writeObjectField("lonEstimated", estimatedLocation.getX());
+			jg.writeObjectField("latEstimated", estimatedLocation.getY());
+			jg.writeEndObject();
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }

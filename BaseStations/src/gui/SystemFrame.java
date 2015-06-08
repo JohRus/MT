@@ -30,6 +30,7 @@ public class SystemFrame extends JFrame {
 	JPanel menuPanel;
 	
 	JButton generateCellButton;
+	JButton showHideCellTowerAndEdgesButton;
 	JButton showHideMeasurementsButton;
 	JButton showHideLongestVectorButton;
 	JButton showHideSectorsButton;
@@ -51,6 +52,7 @@ public class SystemFrame extends JFrame {
 		controller = new Controller();
 		
 		generateCellButton = new JButton("Generate Cell");
+		showHideCellTowerAndEdgesButton = new JButton("Show/Hide CellTower and Edges");
 		showHideMeasurementsButton = new JButton("Show/Hide Measurements");
 		showHideLongestVectorButton = new JButton("Show/Hide Longest Vector");
 		showHideSectorsButton = new JButton("Show/Hide Sectors");
@@ -67,17 +69,17 @@ public class SystemFrame extends JFrame {
 //					public void run() {
 //						Stopwatch sw = new Stopwatch();
 						
-						JTextField ctX = new JTextField("200.0");
-						JTextField ctY = new JTextField("200.0");
-						JTextField vectorAngle = new JTextField("30.0");
+						JTextField ctX = new JTextField("400.0");
+						JTextField ctY = new JTextField("400.0");
+						JTextField vectorAngle = new JTextField("120.0");
 						JTextField sectorAngle = new JTextField("120.0");
 						JTextField maxDist = new JTextField("113.0");
 						JTextField minDist = new JTextField("0.0");
 						JTextField measurements = new JTextField("100");
 						JTextField hasSignal = new JTextField("true");
-						JTextField deadzoneRadius = new JTextField("20.0");
-						JTextField n = new JTextField("30");
-						JTextField d = new JTextField("1.0");
+						JTextField deadzoneRadius = new JTextField("0.0");
+						JTextField n = new JTextField("80");
+						JTextField d = new JTextField("2.0");
 						
 						JPanel inputPanel = new JPanel();
 						inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.PAGE_AXIS));
@@ -136,6 +138,15 @@ public class SystemFrame extends JFrame {
 			}
 		});
 		
+		showHideCellTowerAndEdgesButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				visualizePanel.showHideCellTowerAndEdges();
+				repaintSystem();
+			}
+		});
+		
 		showHideMeasurementsButton.addActionListener(new ActionListener() {
 			
 			@Override
@@ -187,14 +198,14 @@ public class SystemFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JTextField testSubjects = new JTextField("1000", 5);
-				JTextField M = new JTextField("100");
-				JTextField n = new JTextField("10,20,40,80");
+				JTextField M = new JTextField("100,1000");
+				JTextField n = new JTextField("20,160");
 				JTextField sectorAngle = new JTextField("120.0");
-				JTextField d = new JTextField("1.0");
-				JTextField maxDist = new JTextField("113.0", 5);
-				JTextField minDist = new JTextField("0.0", 5);
-				JTextField hasSignal = new JTextField("true");
-				JTextField deadzoneRadius = new JTextField("20.0,30.0,40.0,50.0,60.0");
+				JTextField d = new JTextField("2.0");
+				JTextField maxDist = new JTextField("113.0");
+				JTextField minDist = new JTextField("0.0");
+				JTextField hasSignal = new JTextField("false");
+				JTextField deadzoneRadius = new JTextField("10.0,20.0,30.0,40.0");
 				JTextField writeToFileString = new JTextField("false");
 				
 				JPanel inputPanel = new JPanel();
@@ -230,9 +241,9 @@ public class SystemFrame extends JFrame {
 					
 					controller.errors(
 							sectorAngle.getText().split(","),
-							java.lang.Double.parseDouble(maxDist.getText()), 
+							maxDist.getText().split(","), 
 							java.lang.Double.parseDouble(minDist.getText()), 
-							Integer.parseInt(M.getText()), 
+							M.getText().split(","), 
 							Boolean.parseBoolean(hasSignal.getText()), 
 							deadzoneRadius.getText().split(","), 
 							n.getText().split(","), 
@@ -246,6 +257,7 @@ public class SystemFrame extends JFrame {
 
 		
 		menuPanel.add(generateCellButton);
+		menuPanel.add(showHideCellTowerAndEdgesButton);
 		menuPanel.add(showHideMeasurementsButton);
 		menuPanel.add(showHideLongestVectorButton);
 		menuPanel.add(showHideSectorsButton);

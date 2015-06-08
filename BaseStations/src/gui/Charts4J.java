@@ -25,7 +25,7 @@ public class Charts4J {
 
 	public static String errorChartScalingR(HashMap<double[], String> dataPointsMap, int[] cellsSizes) {
 
-		double yLengthMax = 18000.0;
+		double yLengthMax = 1600.0;
 		double yLengthMin = 0.0;
 
 		int i = 0;
@@ -49,7 +49,7 @@ public class Charts4J {
 		//        chart.setGrid(25, 9.090909090, 3, 2);
 //		chart.setGrid(20, 7.142857142, 3, 2);
 //		        chart.setGrid(20, 10, 3, 2);
-		chart.setGrid(20, 5.555555555, 3, 2);
+		chart.setGrid(20, 6.25, 3, 2);
 
 		// Defining axis info and styles
 		AxisStyle axisStyle = AxisStyle.newAxisStyle(Color.BLACK, 10, AxisTextAlignment.CENTER);
@@ -127,10 +127,199 @@ public class Charts4J {
 
 		return chart.toURLString();
 	}
+	
+	public static String errorChartScalingDTheoretically(HashMap<double[], String> dataPointsMap) {
+
+		double yLengthMax = 170.0;
+		double yLengthMin = 30.0;
+
+		int i = 0;
+
+		Line[] lines = new Line[dataPointsMap.size()];
+
+		for(Entry<double[], String> entry : dataPointsMap.entrySet()) {
+			Line line = Plots.newLine(DataUtil.scaleWithinRange(yLengthMin, yLengthMax, entry.getKey()), colors[i], 
+					entry.getValue());
+			line.setLineStyle(LineStyle.newLineStyle(1, 1, 0));
+			line.addShapeMarkers(Shape.SQUARE, colors[i], 5);
+			lines[i] = line;
+			i++;
+		}
+
+		// Defining chart.
+		LineChart chart = GCharts.newLineChart(lines);
+		chart.setSize(550, 350);
+		chart.setGrid(20, 7.142857142, 3, 2);
+
+		// Defining axis info and styles
+		AxisStyle axisStyle = AxisStyle.newAxisStyle(Color.BLACK, 10, AxisTextAlignment.CENTER);
+		AxisLabels xAxis = AxisLabelsFactory.newAxisLabels("2", "4", "8", "16", "32", "64");
+		xAxis.setAxisStyle(axisStyle);
+		AxisLabels yAxis = AxisLabelsFactory.newNumericRangeAxisLabels(yLengthMin, yLengthMax);
+		yAxis.setAxisStyle(axisStyle);
+		AxisLabels xAxis2 = AxisLabelsFactory.newAxisLabels("d_extend", 50.0);
+		xAxis2.setAxisStyle(axisStyle);
+		AxisLabels yAxis2 = AxisLabelsFactory.newAxisLabels("Error", 50.0);
+		yAxis2.setAxisStyle(axisStyle);
+
+		// Adding axis info to chart.
+		chart.addXAxisLabels(xAxis);
+		chart.addXAxisLabels(xAxis2);
+		chart.addYAxisLabels(yAxis);
+		chart.addYAxisLabels(yAxis2);
+
+		// Defining background and chart fills.
+		chart.setBackgroundFill(Fills.newSolidFill(Color.WHITE));
+		chart.setAreaFill(Fills.newSolidFill(Color.WHITE));
+
+		return chart.toURLString();
+	}
+	
+	public static String errorChartScalingRTheoretically(HashMap<double[], String> dataPointsMap) {
+
+		double yLengthMax = 220.0;
+		double yLengthMin = 0.0;
+
+		int i = 0;
+
+		Line[] lines = new Line[dataPointsMap.size()];
+
+		for(Entry<double[], String> entry : dataPointsMap.entrySet()) {
+			Line line = Plots.newLine(DataUtil.scaleWithinRange(yLengthMin, yLengthMax, entry.getKey()), colors[i], 
+					entry.getValue());
+			line.setLineStyle(LineStyle.newLineStyle(1, 1, 0));
+			line.addShapeMarkers(Shape.SQUARE, colors[i], 5);
+			lines[i] = line;
+			i++;
+		}
+
+		// Defining chart.
+		LineChart chart = GCharts.newLineChart(lines);
+		chart.setSize(550, 350);
+		chart.setGrid(25, 9.090909090, 3, 2);
+
+		// Defining axis info and styles
+		AxisStyle axisStyle = AxisStyle.newAxisStyle(Color.BLACK, 10, AxisTextAlignment.CENTER);
+		AxisLabels xAxis = AxisLabelsFactory.newAxisLabels("30", "70", "113", "160", "200");
+		xAxis.setAxisStyle(axisStyle);
+		AxisLabels yAxis = AxisLabelsFactory.newNumericRangeAxisLabels(yLengthMin, yLengthMax);
+		yAxis.setAxisStyle(axisStyle);
+		AxisLabels xAxis2 = AxisLabelsFactory.newAxisLabels("r_include", 50.0);
+		xAxis2.setAxisStyle(axisStyle);
+		AxisLabels yAxis2 = AxisLabelsFactory.newAxisLabels("Error", 50.0);
+		yAxis2.setAxisStyle(axisStyle);
+
+		// Adding axis info to chart.
+		chart.addXAxisLabels(xAxis);
+		chart.addXAxisLabels(xAxis2);
+		chart.addYAxisLabels(yAxis);
+		chart.addYAxisLabels(yAxis2);
+
+		// Defining background and chart fills.
+		chart.setBackgroundFill(Fills.newSolidFill(Color.WHITE));
+		chart.setAreaFill(Fills.newSolidFill(Color.WHITE));
+
+		return chart.toURLString();
+	}
+	
+	public static String errorChartScalingAlphaTheoretically(HashMap<double[], String> dataPointsMap) {
+
+		double yLengthMax = 210.0;
+		double yLengthMin = 50.0;
+
+		int i = 0;
+
+		Line[] lines = new Line[dataPointsMap.size()];
+
+		for(Entry<double[], String> entry : dataPointsMap.entrySet()) {
+			Line line = Plots.newLine(DataUtil.scaleWithinRange(yLengthMin, yLengthMax, entry.getKey()), colors[i], 
+					entry.getValue());
+			line.setLineStyle(LineStyle.newLineStyle(1, 1, 0));
+			line.addShapeMarkers(Shape.SQUARE, colors[i], 5);
+			lines[i] = line;
+			i++;
+		}
+
+		// Defining chart.
+		LineChart chart = GCharts.newLineChart(lines);
+		chart.setSize(550, 350);
+		chart.setGrid(25, 6.25, 3, 2);
+
+		// Defining axis info and styles
+		AxisStyle axisStyle = AxisStyle.newAxisStyle(Color.BLACK, 10, AxisTextAlignment.CENTER);
+		AxisLabels xAxis = AxisLabelsFactory.newAxisLabels("10", "45", "90", "120");
+		xAxis.setAxisStyle(axisStyle);
+		AxisLabels yAxis = AxisLabelsFactory.newNumericRangeAxisLabels(yLengthMin, yLengthMax);
+		yAxis.setAxisStyle(axisStyle);
+		AxisLabels xAxis2 = AxisLabelsFactory.newAxisLabels("Cell Sector Angle", 50.0);
+		xAxis2.setAxisStyle(axisStyle);
+		AxisLabels yAxis2 = AxisLabelsFactory.newAxisLabels("Error", 50.0);
+		yAxis2.setAxisStyle(axisStyle);
+
+		// Adding axis info to chart.
+		chart.addXAxisLabels(xAxis);
+		chart.addXAxisLabels(xAxis2);
+		chart.addYAxisLabels(yAxis);
+		chart.addYAxisLabels(yAxis2);
+
+		// Defining background and chart fills.
+		chart.setBackgroundFill(Fills.newSolidFill(Color.WHITE));
+		chart.setAreaFill(Fills.newSolidFill(Color.WHITE));
+
+		return chart.toURLString();
+	}
+	
+	public static String errorChartScalingDeadzonesTheoretically(HashMap<double[], String> dataPointsMap) {
+
+		double yLengthMax = 210.0;
+		double yLengthMin = 80.0;
+
+		int i = 0;
+
+		Line[] lines = new Line[dataPointsMap.size()];
+
+		for(Entry<double[], String> entry : dataPointsMap.entrySet()) {
+			Line line = Plots.newLine(DataUtil.scaleWithinRange(yLengthMin, yLengthMax, entry.getKey()), colors[i], 
+					entry.getValue());
+			line.setLineStyle(LineStyle.newLineStyle(1, 1, 0));
+			line.addShapeMarkers(Shape.SQUARE, colors[i], 5);
+			lines[i] = line;
+			i++;
+		}
+
+		// Defining chart.
+		LineChart chart = GCharts.newLineChart(lines);
+		chart.setSize(550, 350);
+		chart.setGrid(33.333333333, 7.692307692, 3, 2);
+
+		// Defining axis info and styles
+		AxisStyle axisStyle = AxisStyle.newAxisStyle(Color.BLACK, 10, AxisTextAlignment.CENTER);
+		AxisLabels xAxis = AxisLabelsFactory.newAxisLabels("10", "20", "30", "40");
+		xAxis.setAxisStyle(axisStyle);
+		AxisLabels yAxis = AxisLabelsFactory.newNumericRangeAxisLabels(yLengthMin, yLengthMax);
+		yAxis.setAxisStyle(axisStyle);
+		AxisLabels xAxis2 = AxisLabelsFactory.newAxisLabels("Deadzone radius", 50.0);
+		xAxis2.setAxisStyle(axisStyle);
+		AxisLabels yAxis2 = AxisLabelsFactory.newAxisLabels("Error", 50.0);
+		yAxis2.setAxisStyle(axisStyle);
+
+		// Adding axis info to chart.
+		chart.addXAxisLabels(xAxis);
+		chart.addXAxisLabels(xAxis2);
+		chart.addYAxisLabels(yAxis);
+		chart.addYAxisLabels(yAxis2);
+
+		// Defining background and chart fills.
+		chart.setBackgroundFill(Fills.newSolidFill(Color.WHITE));
+		chart.setAreaFill(Fills.newSolidFill(Color.WHITE));
+
+		return chart.toURLString();
+	}
 
 	public static void main(String[] args) {
 		int res = (int) 20054.69/1000;
 		System.out.println(res);
 
 	}
+	
 }

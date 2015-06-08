@@ -93,6 +93,8 @@ public class DynamicCell extends DefaultCell {
 			}
 		}
 		setMeasurements(new ArrayList<Measurement>(tempList));
+//		if(getMeasurements().size() < 40)
+//			System.out.println("less then 40 meas left");
 	}
 
 	@Override

@@ -28,114 +28,208 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class CellTowersReader {
 
 	public static void main(String[] args) {
-//		String fileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples67-80.json";
-//		try(JsonParser jp = new MappingJsonFactory().createJsonParser(new File(fileName))){
-//
-//			int cellCounter = 0;
-//			long allMeasurements = 0;
-//			int leastMeasurements = 1001;
-//			int measBelow81 = 0;
+		String fileName = "/Users/Johan/Documents/CellTowers/cells_bergen_597.json";
+		try(JsonParser jp = new MappingJsonFactory().createJsonParser(new File(fileName))){
+
+			int cellCounter = 0;
+			long allMeasurements = 0;
+			int leastMeasurements = 1001;
+			int measBelow20 = 0;
 //			int measCorrect = 0;
 //			int measAbove120 = 0;
-//			int measAboveXXX = 0;
-//
-//			int signalStrengthIsZeroCounter = 0;
-//			int signalStrengthAboveZeroCounter = 0;
-//			int invalidSignalStrengthDBMValues = 0;
-//			int signalStrengthNotKnown = 0;
-//			int invalidSignalStrengthASUValues = 0;
-//
-//			int cellsWithOnlyBadMeasurements = 0;
-//
-//			HashSet<String> set = new HashSet<String>();
-//
-//			JsonNode cellsNode = jp.readValueAsTree().get("cells");
-//			if(cellsNode.isArray()) {
-//				for(JsonNode cellNode : cellsNode) {
-//					cellCounter++;
-//					String mcc = cellNode.get("mcc").asText();
-//					String net = cellNode.get("net").asText();
-//					String area = cellNode.get("area").asText();
-//					String cell = cellNode.get("cell").asText();
-//					String cellString = mcc+"-"+net+"-"+area+"-"+cell;
-//					JsonNode measurementsNode = cellNode.get("measurements");
-//					if(measurementsNode.isArray()) {
-//						int measCounter = 0;
-//						int badMeasCounter = 0;
-//						for(JsonNode measurementNode : measurementsNode) {
-//							measCounter++;
-//							int signalStrength = measurementNode.get("signalStrength").asInt();
-//
-//							if(signalStrength == 0) {
-//								signalStrengthIsZeroCounter++;
-//								//								set.add(cellString);
+			int meas1000 = 0;
+
+			int signalStrengthIsZeroCounter = 0;
+			int signalStrengthAboveZeroLessThan32Counter = 0;
+			int invalidSignalStrengthDBMValues = 0;
+			int signalStrengthNotKnown = 0;
+			int invalidSignalStrengthASUValues = 0;
+
+			int cellsWithOnlyBadMeasurements = 0;
+
+			HashSet<String> set = new HashSet<String>();
+
+			JsonNode cellsNode = jp.readValueAsTree().get("cells");
+			if(cellsNode.isArray()) {
+				for(JsonNode cellNode : cellsNode) {
+					cellCounter++;
+					String mcc = cellNode.get("mcc").asText();
+					String net = cellNode.get("net").asText();
+					String area = cellNode.get("area").asText();
+					String cell = cellNode.get("cell").asText();
+					String cellString = mcc+"-"+net+"-"+area+"-"+cell;
+					JsonNode measurementsNode = cellNode.get("measurements");
+					if(measurementsNode.isArray()) {
+						int measCounter = 0;
+						int badMeasCounter = 0;
+						for(JsonNode measurementNode : measurementsNode) {
+							measCounter++;
+							int signalStrength = measurementNode.get("signalStrength").asInt();
+
+							if(signalStrength == 0) {
+								signalStrengthIsZeroCounter++;
 //								badMeasCounter++;
-//							}
-//							else if(signalStrength > 0 && signalStrength <= 31)
-//								signalStrengthAboveZeroCounter++;
-//							else if(signalStrength >= -50 && signalStrength <= -1)
-//								invalidSignalStrengthDBMValues++;
-//							else if(signalStrength == 99) {
-//								signalStrengthNotKnown++;
-//								set.add(cellString);
-//								badMeasCounter++;
-//							}
-//							else if(signalStrength >= 32 && signalStrength != 99) {
-//								invalidSignalStrengthASUValues++;
-//								set.add(cellString);
-//								badMeasCounter++;
-//							}
-//						}
-//						if(measCounter < 81)
-//							measBelow81++;
+							}
+							else if(signalStrength > 0 && signalStrength <= 31)
+								signalStrengthAboveZeroLessThan32Counter++;
+							
+							else if(signalStrength >= -50 && signalStrength <= -1)
+								invalidSignalStrengthDBMValues++;
+							
+							else if(signalStrength == 99) {
+								signalStrengthNotKnown++;
+								set.add(cellString);
+								badMeasCounter++;
+							}
+							else if(signalStrength >= 32 && signalStrength != 99) {
+								invalidSignalStrengthASUValues++;
+								set.add(cellString);
+								badMeasCounter++;
+							}
+						}
+						if(measCounter < 10)
+							measBelow20++;
 //						else if(measCounter > 120)
 //							measAbove120++;
 //						else
 //							measCorrect++;
-//
-//						if(measCounter == 1000)
-//							measAboveXXX++;
-//
-//						if(measCounter == badMeasCounter)
-//							cellsWithOnlyBadMeasurements++;
-//
-//						if(measCounter < leastMeasurements)
-//							leastMeasurements = measCounter;
-//
-//						allMeasurements += measCounter;
-//					}
-//					else
-//						System.out.println("measurementsNode was not array");
-//				}
-//			}
-//			else 
-//				System.out.println("cellsNode was not array");
-//
-//			System.out.println("Cells: "+cellCounter);
-//			System.out.println("Total number of measurements: "+allMeasurements);
-//			System.out.println("Least number of measurements for a cell: "+leastMeasurements);
-//			System.out.println("Cells with less than 81 measurements: "+measBelow81);
+
+						if(measCounter == 1000)
+							meas1000++;
+
+						if(measCounter == badMeasCounter)
+							cellsWithOnlyBadMeasurements++;
+
+						if(measCounter < leastMeasurements)
+							leastMeasurements = measCounter;
+
+						allMeasurements += measCounter;
+					}
+					else
+						System.out.println("measurementsNode was not array");
+				}
+			}
+			else 
+				System.out.println("cellsNode was not array");
+
+			System.out.println("Cells: "+cellCounter);
+			System.out.println("Total number of measurements: "+allMeasurements);
+			System.out.println("Least number of measurements for a cell: "+leastMeasurements);
+			System.out.println("Cells with less than 20 measurements: "+measBelow20);
 //			System.out.println("Cells with more than 120 measurements: "+measAbove120);
 //			System.out.println("Cells with the correct amount of measurements: "+measCorrect);
-//			System.out.println("Cells with more than XXX measurements: "+measAboveXXX);
-//			System.out.println();
-//			System.out.println("Measurements where signal strength is 0: "+signalStrengthIsZeroCounter);
-//			System.out.println("Measurements where signal strength is above 0 and less than 32: "+signalStrengthAboveZeroCounter);
-//			System.out.println("Measurements where signal strength is between -1 and -50: "+invalidSignalStrengthDBMValues);
-//			System.out.println("Measurements where signal strength is 99: "+signalStrengthNotKnown);
-//			System.out.println("Measurements where signal strength is above 31 but not 99: "+invalidSignalStrengthASUValues);
-//			System.out.println();
-//			System.out.println("Cells with one or more bad measurement: "+set.size());
-//			System.out.println("Cells where all measurements are bad: "+cellsWithOnlyBadMeasurements);
-//
-//
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+			System.out.println("Cells with 1000 measurements: "+meas1000);
+			System.out.println();
+			System.out.println("Measurements where signal strength is 0: "+signalStrengthIsZeroCounter);
+			System.out.println("Measurements where signal strength is above 0 and less than 32: "+signalStrengthAboveZeroLessThan32Counter);
+			System.out.println("Measurements where signal strength is between -1 and -50: "+invalidSignalStrengthDBMValues);
+			System.out.println("Measurements where signal strength is 99: "+signalStrengthNotKnown);
+			System.out.println("Measurements where signal strength is above 31 but not 99: "+invalidSignalStrengthASUValues);
+			System.out.println();
+			System.out.println("Cells with one or more bad measurement: "+set.size());
+			System.out.println("Cells where all measurements are bad: "+cellsWithOnlyBadMeasurements);
+
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void findBergenCells() {
+		
+		double minLon = 5.296783;
+		double maxLon = 5.362616;
+		double minLat = 60.374545;
+		double maxLat = 60.403553;
+		
+		String fileName = "/Users/Johan/Documents/CellTowers/cell_towers.csv";
+		try(BufferedReader br = new BufferedReader(new FileReader(fileName));
+				BufferedWriter bw_bergen = new BufferedWriter(new FileWriter("/Users/Johan/Documents/CellTowers/cell_towers_bergen.csv", true));
+				) {
+			
+			String line = "";
+			int totalCount = 0, count = 0;
+			
+			while((line = br.readLine()) != null) {
+				if(totalCount == 0)
+					line = br.readLine();
+				totalCount++;
+				if(totalCount%500000==0)
+					System.out.println("Read "+totalCount+" lines..");
+
+				String[] fields = line.split(",");
+				
+				//6 = lon, 7 = lat
+				double currLon = Double.parseDouble(fields[6]);
+				double currLat = Double.parseDouble(fields[7]);
+				
+				if(currLon >= minLon && currLon <= maxLon && 
+						currLat >= minLat && currLat <=maxLat) {
+					
+					if(Integer.parseInt(fields[1]) != 242) {
+						System.out.println(line);
+					}
+					else {
+						count++;
+						bw_bergen.write(line+"\n");
+					}
+				}
+			}
+			
+			System.out.println("\nRead "+totalCount+" lines in total..");
+			System.out.println("Read "+count+" Bergen lines");
+			
+			
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private static void parseBergenCellsAndRequestMeasurements() {
+		String fileName = "/Users/Johan/Documents/CellTowers/cell_towers_bergen.csv";
+		try(BufferedReader br = new BufferedReader(new FileReader(fileName));) {
+			
+			String line = "";
+			int totalCount = 0;
+			
+			JSONFile jsonFile = new JSONFile(JSONFile.filePathCellTowers+"cells_bergen_605"+JSONFile.fileFormat);
+			jsonFile.iWannaStartAnArray("cells");
+			
+			while((line = br.readLine()) != null) {
+				totalCount++;
+				if(totalCount%1==0)
+					System.out.println("Read "+totalCount+" lines..");
+
+				String[] fields = line.split(",");
+				
+				Request request = new Request(fields[1], fields[2], fields[3], fields[4]);
+				OpenCellIdCell openCellIdCell = request.getData();
+
+				jsonFile.writeThisOpenCellIdCell(openCellIdCell);
+				
+			}
+			jsonFile.theArrayIsDone();
+			jsonFile.iAmDoneWriting();
+			
+			System.out.println("\nRead and parsed "+totalCount+" lines..");
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 	

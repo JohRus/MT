@@ -15,6 +15,7 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
+import org.javatuples.Triplet;
 
 import logic.Generate;
 import logic.Geom;
@@ -37,20 +38,25 @@ public class Controller {
 		
 		List<OpenCellIdCell> cells = parseCells(fullFileName, maxMeasurements, minMeasurements, r);
 		
-		HashMap<double[], String> chartMap = new HashMap<double[], String>();
+//		HashMap<double[], String> chartMap = new HashMap<double[], String>();
 		
-		System.out.printf("Cells\tMaxMeas\tMinMeas\tr\tn\td\terror_dist\ttime_dist\terror_RSS\ttime_RSS\terror_average\taverage_fit\n");
+		System.out.printf("Cells\tMaxMeas\tMinMeas\tr\tn\td\terror_dist\ttime_dist\terror_RSS\ttime_RSS\terror_average\taverage_fit\taverage_miss\n");
 		
-		Pair<Double, Integer> averagedError = errorByAverage(cells);
+		Triplet<Double, Integer, Double> averagedError = errorByAverage(cells);
 		double errorAverage = averagedError.getValue0();
 		int averageFit = averagedError.getValue1();
+		double averageMissPercent = averagedError.getValue2();
+		
+//		System.out.println(errorAverage);
+//		System.out.println(averageFit);
+//		System.out.println(averageMissPercent);
 		
 		
 		for(int i = 0; i < nArray.length; i++) {
 			int n = nArray[i];
 			
-			double[] distanceDataPoints = new double[dArray.length];
-			double[] rssDataPoints = new double[dArray.length];
+//			double[] distanceDataPoints = new double[dArray.length];
+//			double[] rssDataPoints = new double[dArray.length];
 
 			for(int j = 0; j < dArray.length; j++) {
 				double d = dArray[j];
@@ -63,17 +69,17 @@ public class Controller {
 				double timeRSS = data.getValue3();
 				
 
-				System.out.printf("%d\t%d\t%d\t%.1f\t%d\t%.5f\t%.2f \t%.5f\t\t%.2f \t%.5f\t\t%.2f\t\t%d\n", cells.size(), maxMeasurements, minMeasurements, r, n, d, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit);
+				System.out.printf("%d\t%d\t%d\t%.1f\t%d\t%.5f\t%.2f \t%.5f\t\t%.2f \t%.5f\t\t%.2f\t\t%d\t\t%.1f\n", cells.size(), maxMeasurements, minMeasurements, r, n, d, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit, averageMissPercent);
 			
-				distanceDataPoints[j] = errorDistance;
-				rssDataPoints[j] = errorRSS;
+//				distanceDataPoints[j] = errorDistance;
+//				rssDataPoints[j] = errorRSS;
 			}
-			chartMap.put(distanceDataPoints, new String("LV=Distance, n="+n));
-			chartMap.put(rssDataPoints, new String("LV=RSS, n="+n));
+//			chartMap.put(distanceDataPoints, new String("LV=Distance, n="+n));
+//			chartMap.put(rssDataPoints, new String("LV=RSS, n="+n));
 		}
 		
-		String chartURL = Charts4J.errorChartScalingD(chartMap);
-		System.out.println("\n"+chartURL);
+//		String chartURL = Charts4J.errorChartScalingD(chartMap);
+//		System.out.println("\n"+chartURL);
 	}
 	
 	public void errorsScalingR(
@@ -93,9 +99,9 @@ public class Controller {
 		
 		double[] dataPointsAveragedError = new double[rArray.length];
 		int[] dataPointsAveragedFit = new int[rArray.length];
+		double[] dataPointsAveragedMissPercent = new double[rArray.length];
 		
 		int[] cellsSizes = new int[rArray.length];
-		
 
 		for(int i = 0; i < rArray.length; i++) {
 			double currR = rArray[i];
@@ -125,16 +131,19 @@ public class Controller {
 				dataPointsRSSTime[i][j] = timeRSS;
 			}
 			
-			Pair<Double, Integer> averagedError = errorByAverage(cells);
+			Triplet<Double, Integer, Double> averagedError = errorByAverage(cells);
 			
 			double errorAverage = averagedError.getValue0();
 			int averageFit = averagedError.getValue1();
+			double averageMissPercent = averagedError.getValue2();
+//			System.out.printf("%d\t%.1f\n",averageFit,averageMissPercent);
 			
 			dataPointsAveragedError[i] = errorAverage;
 			dataPointsAveragedFit[i] = averageFit;
+			dataPointsAveragedMissPercent[i] = averageMissPercent;
 		}
 		
-		System.out.printf("Cells\tMaxMeas\tMinMeas\td\tn\tr\terror_dist\ttime_dist\terror_RSS\ttime_RSS\terror_average\taverage_fit\n");
+		System.out.printf("Cells\tMaxMeas\tMinMeas\td\tn\tr\terr_dist\ttime_dist\terr_RSS\ttime_RSS\terror_average\taverage_fit\taverage_miss\n");
 		
 		HashMap<double[], String> dataPointsMap = new HashMap<double[], String>();
 		
@@ -154,19 +163,20 @@ public class Controller {
 				double timeRSS = dataPointsRSSTime[i][j];
 				double errorAverage = dataPointsAveragedError[i];
 				int averageFit = dataPointsAveragedFit[i];
+				double averageMiss = dataPointsAveragedMissPercent[i];
 				
-				System.out.printf("%d\t%d\t%d\t%.4f\t%d\t%.1f\t%.2f \t%.5f\t\t%.2f \t%.5f\t\t%.2f\t\t%d\n", cellSize, maxMeasurements, minMeasurements, d, n, r, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit);
+				System.out.printf("%d\t%d\t%d\t%.4f\t%d\t%.1f\t%.2f\t%.5f\t\t%.2f\t%.5f\t\t%.2f\t\t%d\t\t%.1f\n", cellSize, maxMeasurements, minMeasurements, d, n, r, errorDistance, timeDistance, errorRSS, timeRSS, errorAverage, averageFit, averageMiss);
 
 				dataPointsErrorDistance[i] = errorDistance;
 				dataPointsErrorRSS[i] = errorRSS;
 			}
 			
-			dataPointsMap.put(dataPointsErrorDistance, "LV=Distance, n="+n);
-			dataPointsMap.put(dataPointsErrorRSS, "LV=RSS, n="+n);
+			dataPointsMap.put(dataPointsErrorDistance, "D-CTL");
+			dataPointsMap.put(dataPointsErrorRSS, "RSS-CTL");
 			
 		}
 		
-		dataPointsMap.put(dataPointsAveragedError, "Averaged");
+		dataPointsMap.put(dataPointsAveragedError, "OpenCellID");
 		
 		String chartURL = Charts4J.errorChartScalingR(dataPointsMap, cellsSizes);
 		System.out.println("\n"+chartURL);
@@ -180,7 +190,17 @@ public class Controller {
 		double timeDistance = 0.0;
 		double timeRSS = 0.0;
 		
+		int cellCounter = 0;
+		
 		for(OpenCellIdCell cell : cells) {
+			
+			int currN = n;
+			if(cell.getMeasurements().size() < currN)
+				currN = cell.getMeasurements().size();
+			
+			cellCounter++;
+			if(cellCounter%50==0)
+				System.out.println("Estimated for "+cellCounter+" cells..");
 			
 			double errorCellDistance = 0.0;
 			double errorCellRSS = 0.0;
@@ -190,11 +210,11 @@ public class Controller {
 			
 			for(int k = 0; k < 5; k++) {
 				stopWatchCellDistance.start();
-				Computation compDistance = Generate.computation(cell, n, d, false);
+				Computation compDistance = Generate.computation(cell, currN, d, false);
 				stopWatchCellDistance.stop();
 				
 				stopWatchCellRSS.start();
-				Computation compRSS = Generate.computation(cell, n, d, true);
+				Computation compRSS = Generate.computation(cell, currN, d, true);
 				stopWatchCellRSS.stop();
 				
 				errorCellDistance += Generate.sphericalError(cell, compDistance.getHeuristicCell1());
@@ -220,21 +240,28 @@ public class Controller {
 		return new Quartet<Double, Double, Double, Double>(errorDistance, timeDistance, errorRSS, timeRSS);
 	}
 	
-	private Pair<Double, Integer> errorByAverage(List<OpenCellIdCell> cells) {
+	private Triplet<Double, Integer, Double> errorByAverage(List<OpenCellIdCell> cells) {
 		double errorAverage = 0.0;
 		int averageFit = 0;
+		double averageMissPercent = 0.0; 
 		
 		for(OpenCellIdCell cell : cells) {
 			DefaultCell cellByAveraging = Process.averagedCell(cell.getMeasurements());
 			
 			errorAverage += Generate.sphericalError(cell, cellByAveraging);
 			averageFit += cellByAveraging.getMeasurements().size();
+			
+			// miss percent
+			int total = cell.getMeasurements().size();
+			int miss = total-cellByAveraging.getMeasurements().size();
+			averageMissPercent += ((miss*100)/total);
 		}
 		
 		errorAverage = errorAverage/cells.size();
 		averageFit = averageFit/cells.size();
+		averageMissPercent = averageMissPercent/cells.size();
 		
-		return new Pair<Double, Integer>(errorAverage, averageFit);
+		return new Triplet<Double, Integer, Double>(errorAverage, averageFit, averageMissPercent);
 	}
 
 	public List<OpenCellIdCell> parseCells(String fullFileName, int maxMeasurements, int minMeasurements, double r) {
@@ -303,7 +330,7 @@ public class Controller {
 			fullFileName += JSONFile.fileFormat;
 			
 			JSONFile jsonFile = new JSONFile(fullFileName);
-			jsonFile.writeResultForMap(cell, comp.getHeuristicCell1(), error);
+			jsonFile.writeResultForMap(cell, comp.getHeuristicCell1(), comp.getHeuristicCell2(), error);
 		}
 		
 		System.out.println("Wrote "+cellsToWrite+" computations to files");
@@ -328,36 +355,71 @@ public class Controller {
 				
 				System.out.println("Measurements: "+cell.getMeasurements().size());
 				
-				Computation compDist = Generate.computation(cell, n, d, false);
-				Computation compRSS = Generate.computation(cell, n, d, true);
-				Point2D.Double averagedCellTowerPos = Process.averagedCellTowerPosition(cell.getMeasurements());
-				DefaultCell averagedCell = new DefaultCell(averagedCellTowerPos, 120.0);
+				for(Measurement m : cell.getMeasurements()) {
+					System.out.println(m.getCoordinates());
+				}
 				
-				double errorDist = Generate.sphericalError(cell, compDist.getHeuristicCell1());
+//				Computation compDist = Generate.computation(cell, n, d, false);
+//				System.out.println("vectorAngle dist: "+compDist.getHeuristicCell2().getVectorAngle());
+				Computation compRSS = Generate.computation(cell, cell.getMeasurements().size(), d, true);
+//				System.out.println("vectorAngle rss: "+compRSS.getHeuristicCell2().getVectorAngle());
+//				Point2D.Double averagedCellTowerPos = Process.averagedCellTowerPosition(cell.getMeasurements());
+//				DefaultCell averagedCell = new DefaultCell(averagedCellTowerPos, 120.0);
+				
+//				double errorDist = Generate.sphericalError(cell, compDist.getHeuristicCell1());
 				double errorRSS = Generate.sphericalError(cell, compRSS.getHeuristicCell1());
-				double errorAver = Generate.sphericalError(cell, averagedCell);
+				System.out.println("\n"+errorRSS);
+//				double errorAver = Generate.sphericalError(cell, averagedCell);
 				
-				String newFileNameFirst = JSONFile.filePathDesktop;
-				newFileNameFirst += cell.getMcc()+"-"+cell.getNet()+"-"+cell.getArea()+"-"+cell.getCell();
+//				String newFileNameFirst = JSONFile.filePathDesktop;
+//				newFileNameFirst += cell.getMcc()+"-"+cell.getNet()+"-"+cell.getArea()+"-"+cell.getCell();
+//				
+//				String newFileNameDist = newFileNameFirst + "_distance"+"_"+r+JSONFile.fileFormat;
+//				String newFileNameRSS = newFileNameFirst + "_RSS"+"_"+r+JSONFile.fileFormat;
+//				String newFileNameAver = newFileNameFirst + "_averaged"+"_"+r+JSONFile.fileFormat;
 				
-				String newFileNameDist = newFileNameFirst + "_distance"+JSONFile.fileFormat;
-				String newFileNameRSS = newFileNameFirst + "_RSS"+JSONFile.fileFormat;
-				String newFileNameAver = newFileNameFirst + "_averaged"+JSONFile.fileFormat;
+//				JSONFile jsonFile = new JSONFile(JSONFile.filePathDesktop+cell.getMcc()+"-"+cell.getNet()+"-"+cell.getArea()+"-"+cell.getCell()+JSONFile.fileFormat);
+//				jsonFile.writeResultForMap(cell, compDist.getHeuristicCell1(), compDist.getHeuristicCell2(), errorDist);
 				
-				JSONFile jsonFile = new JSONFile(newFileNameDist);
-				jsonFile.writeResultForMap(cell, compDist.getHeuristicCell1(), errorDist);
-				
-				jsonFile = new JSONFile(newFileNameRSS);
-				jsonFile.writeResultForMap(cell, compRSS.getHeuristicCell1(), errorRSS);
-				
-				jsonFile = new JSONFile(newFileNameAver);
-				jsonFile.writeResultForMap(cell, averagedCell, errorAver);
+//				jsonFile = new JSONFile(newFileNameRSS);
+//				jsonFile.writeResultForMap(cell, compRSS.getHeuristicCell1(), compRSS.getHeuristicCell2(), errorRSS);
+//				
+//				jsonFile = new JSONFile(newFileNameAver);
+//				jsonFile.writeResultForMap(cell, averagedCell, null, errorAver);
 				
 				
 				System.out.println("Done writin cells to files");
 				return;
 			}
 		}
+	}
+	
+	public void writeEstimatedBergenCellTowersToFile(
+			String fullFileName,
+			int maxMeas, 
+			int minMeas,
+			int n,
+			double d,
+			double r) {
+		
+		List<OpenCellIdCell> cells = parseCells(fullFileName, maxMeas, minMeas, r);
+		
+		String newJSONFileName = JSONFile.filePathDesktop+"estimatedBergenCellTowersWithOldLocations"+JSONFile.fileFormat;
+		JSONFile jsonFile = new JSONFile(newJSONFileName);
+		jsonFile.iWannaStartAnArray("cellTowers");
+				
+		for(OpenCellIdCell cell :  cells) {
+			
+			int currN = n;
+			if(cell.getMeasurements().size() < currN)
+				currN = cell.getMeasurements().size();
+			
+			Computation compRSS = Generate.computation(cell, currN, d, true);
+			jsonFile.writeEstimatedCellTowerLocationWithOldLocation(cell.getCellTowerCoordinates(), compRSS.getHeuristicCell1().getCellTowerCoordinates());
+		}
+		
+		jsonFile.theArrayIsDone();
+		jsonFile.iAmDoneWriting();
 	}
 	
 	public void cellError() {
@@ -464,34 +526,43 @@ public class Controller {
 
 	public static void main(String[] args) {
 		String fullFileName = "/Users/Johan/Documents/CellTowers/cells_exact_samples67-120_2036.json";
+		String fullFileNameBergenCells = "/Users/Johan/Documents/CellTowers/cells_bergen_597.json";
 		
-		int maxMeasurements = 300;
-		int minMeasurements = 100;
-		double r = 100000.0;
+		int maxMeasurements = 1000;
+		int minMeasurements = 10;
+		double r = 35000.0;
 	
 		Controller controller = new Controller();
-//		controller.errorsScalingD(cells, maxMeasurements, minMeasurements, new int[]{10}, new double[]{0.0001}, r);
+//		controller.errorsScalingD(fullFileNameBergenCells, maxMeasurements, minMeasurements, new int[]{80}, new double[]{0.0001}, r);
 				
-//		controller.errorsScalingR(fullFileName, maxMeasurements, minMeasurements, new int[]{10,20,40,80,160,320,640}, 0.0001, new double[]{35000.0,25000.0,15000.0,10000.0,5000.0,2000.0});
+//		controller.errorsScalingR(fullFileNameBergenCells, maxMeasurements, minMeasurements, new int[]{80}, 0.0001, new double[]{35000.0,25000.0,15000.0,10000.0,5000.0,2000.0});
 		
 //		List<OpenCellIdCell> cells = controller.parseCells(fullFileName, maxMeasurements, minMeasurements, r);
 //		controller.writeRandomCellsToFileForVisualizing(cells, 10, true);
 		
+//		controller.writeEstimatedBergenCellTowersToFile(fullFileNameBergenCells, maxMeasurements, minMeasurements, 80, 0.0001, r);
+		
 		controller.writeCellWithComputationsToFilesForVisualization(
-				fullFileName, 
+				fullFileNameBergenCells, 
 				maxMeasurements, 
 				minMeasurements, 
-				260, 
+				242, 
 				1, 
-				29001, 
-				22095, 
+				11011, 
+				12302, 
 				80, 
 				0.0001, 
 				r);
 		
+//		List<OpenCellIdCell> cells = controller.parseCells(fullFileName, maxMeasurements, minMeasurements, r);
+//		for(OpenCellIdCell cell : cells) {
+//			System.out.println(cell.getMcc()+"-"+cell.getNet()+"-"+cell.getArea()+"-"+cell.getCell());
+//		}
+		
 		
 //		controller.cellError();
 		
+		System.out.println("\nDone with computations");
 	}
 
 }
